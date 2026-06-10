@@ -4,6 +4,10 @@ Thumbs.db
 *.swp
 .idea/
 .vscode/
+.obsidian/
+
+# Bootstrapper-Temp (Scaffold-Zwischenverzeichnis)
+.bootstrap-scaffold/
 
 # Secrets & Environment
 .env

@@ -9,20 +9,20 @@
 
 | Kennzahl | Wert |
 |----------|------|
-| **Laufende Arbeit** | Discovery abgeschlossen + Repo verknüpft (GitHub: spyrad/persona-forge) |
-| **Naechster Schritt** | `/10x-prd` — PRD aus shape-notes.md generieren |
-| **Blocker** | Keine |
+| **Laufende Arbeit** | Bootstrap abgebrochen: npm install scheitert an TLS-Zertifikatsprüfung |
+| **Naechster Schritt** | TLS-Fix (`NODE_OPTIONS=--use-system-ca`), dann `/10x-bootstrapper` erneut |
+| **Blocker** | `UNABLE_TO_VERIFY_LEAF_SIGNATURE` beim supabase-postinstall-Download (Node 24.13.0) |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] `/10x-prd` ausführen — Kontext: schema-konformes `context/foundation/prd.md` aus shape-notes.md
-- [ ] Repo-Description + Topics auf GitHub setzen — Kontext: Description gewählt, manueller Web-UI-Schritt
-- [ ] README.md anlegen — Kontext: GitHub-Landing-Page ist aktuell leer
-- [ ] OEJTS-Items als gemeinfreie Quelle fixieren — Kontext: Open Question #2; blockiert Test-Lauf-Implementierung
-- [ ] Kette fortsetzen — Kontext: nach PRD `10x-tech-stack-selector` → `10x-bootstrapper`
-- [ ] Tech-Stack festlegen + `workflow.config.yaml` (type/test/build) aktualisieren — Kontext: aktuell `unknown`
+- [ ] TLS-Fix anwenden + `npm install` in `.bootstrap-scaffold/` verifizieren — Kontext: Node System-CA nutzen lassen; Details in Session 4
+- [ ] `.bootstrap-scaffold/` aufräumen, `/10x-bootstrapper` erneut ausführen — Kontext: Scaffold-Verzeichnis liegt zur Inspektion bereit
+- [ ] `workflow.config.yaml` aktualisieren (type/test_command/build_command) — Kontext: nach erfolgreichem Bootstrap aus package.json-Scripts
+- [ ] OEJTS-Items als gemeinfreie Quelle fixieren — Kontext: Open Question #2 im PRD; blockiert Test-Lauf-Implementierung
+- [ ] Edge-Runtime vs. lange Testläufe lösen — Kontext: Lauf-Aufteilung oder Cloudflare Queues/Workers, gehört in den Implementierungsplan
+- [ ] Repo-Description + Topics auf GitHub setzen, README.md anlegen — Kontext: manuelle Schritte, Landing-Page leer
 
 ---
 
@@ -33,18 +33,23 @@
 | 2026-06-09 | DTB-Projekt-Initialisierung | Config + Struktur + Basis-Dateien | `dtb-project/project-changelog/2026-06/2026-06-09.md` |
 | 2026-06-10 | 10xWorkflow-Init + Greenfield-Shaping | shape-notes.md accepted (16 FRs, Socrates-geprüft) | `context/foundation/shape-notes.md` |
 | 2026-06-10 | Git/GitHub-Verknüpfung | Repo `spyrad/persona-forge`, Initial-Commit gepusht | `git log` / `origin` |
+| 2026-06-10 | PRD generiert | 10/10 Sektionen, draft, 2 Open Questions | `context/foundation/prd.md` |
+| 2026-06-10 | Tech-Stack gewählt | 10x-astro-starter (standard path, first-class) | `context/foundation/tech-stack.md` |
 
 ---
 
 ## Pausierte Themen
 
-Keine.
+### Bootstrap: Scaffold-Lauf
+**Status:** HARD-STOP bei `npm install` (TLS-Fehler im supabase-postinstall); `.bootstrap-scaffold/` liegt zur Inspektion bereit
+**Details:** `dtb-project/project-changelog/2026-06/2026-06-10.md` (Session 4)
 
 ---
 
 ## Entscheidungs-Eckpunkte (v1)
 
-- Einrolliges Web-Tool, E-Mail+Passwort, Sichtbarkeit privat/global
+- Stack: Astro 6 + React 19 + TS + Tailwind + Supabase + Cloudflare Pages; npm; GitHub Actions, Auto-Deploy auf main
+- Einrolliges Web-Tool, E-Mail+Passwort, Sichtbarkeit privat/global (Default global)
 - Instrument: **OEJTS** (gemeinfrei, MBTI-artig) — Mini-IPIP/Big Five später
 - Methodenkern unverhandelbar: N Wiederholungen, isoliert, permutierbar → Verteilung je Achse + Typ-Stabilität
 - Zwei-Wege-Vergleich; ~6–8 Wochen After-Hours
