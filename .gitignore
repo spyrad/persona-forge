@@ -1,0 +1,26 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Secrets & Environment
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+secrets/
+
+# Dependencies / Build (Stack noch offen)
+node_modules/
+dist/
+build/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Lokales Agent-Tooling (regenerierbar, nicht Projekt-Quellcode)
+.claude/

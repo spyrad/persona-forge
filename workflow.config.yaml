@@ -1,0 +1,14 @@
+project_name: "persona-forge"
+namespace: "pf"
+
+paths:
+  workflows: "dtb-project/project-workflows"
+  changelog: "dtb-project/project-changelog"
+  rules: "dtb-project/project-rules"
+
+repos:
+  - name: "persona-forge"
+    path: "."
+    type: "unknown"
+    test_command: null
+    build_command: null
