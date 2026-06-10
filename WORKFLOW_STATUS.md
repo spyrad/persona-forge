@@ -9,16 +9,18 @@
 
 | Kennzahl | Wert |
 |----------|------|
-| **Laufende Arbeit** | Produkt-Discovery abgeschlossen (shape-notes.md finalisiert) |
+| **Laufende Arbeit** | Discovery abgeschlossen + Repo verknüpft (GitHub: spyrad/persona-forge) |
 | **Naechster Schritt** | `/10x-prd` — PRD aus shape-notes.md generieren |
-| **Blocker** | Keine (OEJTS-Item-Quelle blockiert erst die Implementierung, nicht das PRD) |
+| **Blocker** | Keine |
 
 ---
 
 ## Offene Aufgaben
 
 - [ ] `/10x-prd` ausführen — Kontext: schema-konformes `context/foundation/prd.md` aus shape-notes.md
-- [ ] OEJTS-Items als gemeinfreie Quelle fixieren — Kontext: Open Question #2; Itemtext + Achsen + Reverse + Scoring-Schlüssel; blockiert Test-Lauf-Implementierung
+- [ ] Repo-Description + Topics auf GitHub setzen — Kontext: Description gewählt, manueller Web-UI-Schritt
+- [ ] README.md anlegen — Kontext: GitHub-Landing-Page ist aktuell leer
+- [ ] OEJTS-Items als gemeinfreie Quelle fixieren — Kontext: Open Question #2; blockiert Test-Lauf-Implementierung
 - [ ] Kette fortsetzen — Kontext: nach PRD `10x-tech-stack-selector` → `10x-bootstrapper`
 - [ ] Tech-Stack festlegen + `workflow.config.yaml` (type/test/build) aktualisieren — Kontext: aktuell `unknown`
 
@@ -30,6 +32,7 @@
 |-------|-------------|----------|---------|
 | 2026-06-09 | DTB-Projekt-Initialisierung | Config + Struktur + Basis-Dateien | `dtb-project/project-changelog/2026-06/2026-06-09.md` |
 | 2026-06-10 | 10xWorkflow-Init + Greenfield-Shaping | shape-notes.md accepted (16 FRs, Socrates-geprüft) | `context/foundation/shape-notes.md` |
+| 2026-06-10 | Git/GitHub-Verknüpfung | Repo `spyrad/persona-forge`, Initial-Commit gepusht | `git log` / `origin` |
 
 ---
 
