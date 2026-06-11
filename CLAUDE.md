@@ -16,11 +16,21 @@ persona-forge — psychometrisches Profiling fuer LLMs: Web-Tool, das gemeinfrei
 Tests (v1: OEJTS) mit N Wiederholungen gegen LLMs faehrt und Verteilungen je
 Achse liefert. PRD: `context/foundation/prd.md`.
 
+## Important Gotchas
+
+- Cloudflare-Edge-Runtime begrenzt lang laufende Tasks — Testlaeufe mit N
+  Wiederholungen (FR-012/FR-014) brauchen Lauf-Aufteilung oder Queues/Workers.
+- CI (`.github/workflows/ci.yml`, lint + build) triggert auf `master`, Branch
+  ist `main` — lief daher noch nie; braucht zudem Repo-Secrets `SUPABASE_URL`
+  und `SUPABASE_KEY`. Fix gehoert zu F-02 (deploy-skeleton-live).
+- Lokale TLS-Interception: npm-Downloads in postinstall-Scripts brauchen
+  `NODE_OPTIONS=--use-system-ca` (sonst `UNABLE_TO_VERIFY_LEAF_SIGNATURE`).
+- Supabase RLS frueh konfigurieren, sonst entstehen Auth-Luecken.
+
 ## Tech Stack
 
-Astro 6 + React 19 + TypeScript + Tailwind 4 + Supabase (Postgres/Auth) +
-Cloudflare Pages (Scaffold: 10x-astro-starter). Starter-spezifische Konventionen:
-`CLAUDE.md.scaffold` (vom Starter mitgeliefert, noch nicht gemergt).
+Astro 6 + React 19 + TypeScript + Tailwind 4 + shadcn/ui + Supabase
+(Postgres/Auth) + Cloudflare (Scaffold: 10x-astro-starter). Node 22.14 (`.nvmrc`).
 
 ## Repository Structure
 
@@ -43,25 +53,51 @@ persona-forge/
 
 ## Development Commands
 
-- `npm run dev` — Dev-Server
-- `npm run build` — Production-Build
+- `npm run dev` — Dev-Server (Cloudflare workerd Runtime)
+- `npm run build` / `npm run preview` — Production-Build (SSR) / Preview
 - `npm run lint` / `npm run lint:fix` — ESLint
 - `npm run format` — Prettier
+- Pre-Commit-Hooks (husky + lint-staged): `eslint --fix` auf `*.{ts,tsx,astro}`,
+  `prettier --write` auf `*.{json,css,md}`
 - Kein Test-Runner eingerichtet — `test_command` in `workflow.config.yaml`
   nachziehen sobald vorhanden (z. B. Vitest)
 
 ## Architecture Overview
 
-Astro-Pages mit React-Islands; Supabase liefert Postgres + E-Mail/Passwort-Auth;
-Deploy auf Cloudflare Pages (GitHub Actions, Auto-Deploy auf main).
+Astro 6 SSR (`output: "server"`) mit React-19-Islands; alle Pages
+server-rendered, API-Routes exportieren `const prerender = false`. Supabase
+liefert Postgres + E-Mail/Passwort-Auth. Deploy auf Cloudflare via GitHub
+Actions (Ziel-Verbindung offen, siehe Gotchas/F-02).
 
-## Important Gotchas
+### Auth-Flow
 
-- Cloudflare-Edge-Runtime begrenzt lang laufende Tasks — Testlaeufe mit N
-  Wiederholungen (FR-012/FR-014) brauchen Lauf-Aufteilung oder Queues/Workers.
-- Lokale TLS-Interception: npm-Downloads in postinstall-Scripts brauchen
-  `NODE_OPTIONS=--use-system-ca` (sonst `UNABLE_TO_VERIFY_LEAF_SIGNATURE`).
-- Supabase RLS frueh konfigurieren, sonst entstehen Auth-Luecken.
+- `src/lib/supabase.ts` — SSR-Client (`@supabase/ssr`, Cookie-Sessions);
+  Secrets via `astro:env/server` (`SUPABASE_URL`, `SUPABASE_KEY`)
+- `src/middleware.ts` — loest je Request den User auf → `context.locals.user`;
+  redirectet Unauthentifizierte weg von `PROTECTED_ROUTES`
+- API: `src/pages/api/auth/{signin,signup,signout}.ts`; Pages:
+  `src/pages/auth/*.astro`; geschuetztes Beispiel: `src/pages/dashboard.astro`
+
+### Conventions
+
+- Path-Alias `@/*` → `./src/*`
+- Astro-Components fuer Statisches, React nur bei Interaktivitaet; keine
+  Next.js-Direktiven (`"use client"`); Hooks nach `src/components/hooks/`
+- Tailwind-Klassen via `cn()` aus `@/lib/utils` mergen — nie manuell
+  konkatenieren
+- shadcn/ui in `src/components/ui/` (Variante "new-york"); neue Komponenten via
+  `npx shadcn@latest add [name]`
+- API-Routes: uppercase `GET`/`POST`-Exports, Input mit zod validieren
+- Migrationen: `supabase/migrations/YYYYMMDDHHmmss_kurzbeschreibung.sql`; auf
+  jeder neuen Tabelle RLS aktivieren mit granularen Policies je Operation+Rolle
+- Services/Helpers → `src/lib/` (Business-Logik: `src/lib/services/`);
+  shared Types (Entities, DTOs) → `src/types.ts`
+
+### Environment
+
+- Env-Vars: `SUPABASE_URL`, `SUPABASE_KEY` — `.env` fuer Node (Vorlage
+  `.env.example`), `.dev.vars` fuer Cloudflare-Local-Dev (gitignored)
+- Lokale Supabase: `npx supabase start` (braucht Docker)
 
 ## Quick Reference
 
