@@ -12,13 +12,24 @@ CLAUDE.md Pflege-Richtlinien:
 
 ## Project Context
 
-persona-forge — neues Projekt, Tech-Stack noch nicht festgelegt. Zweck wird beim
-ersten Feature-Plan konkretisiert.
+persona-forge — psychometrisches Profiling fuer LLMs: Web-Tool, das gemeinfreie
+Tests (v1: OEJTS) mit N Wiederholungen gegen LLMs faehrt und Verteilungen je
+Achse liefert. PRD: `context/foundation/prd.md`.
+
+## Tech Stack
+
+Astro 6 + React 19 + TypeScript + Tailwind 4 + Supabase (Postgres/Auth) +
+Cloudflare Pages (Scaffold: 10x-astro-starter). Starter-spezifische Konventionen:
+`CLAUDE.md.scaffold` (vom Starter mitgeliefert, noch nicht gemergt).
 
 ## Repository Structure
 
 ```
 persona-forge/
+├── src/                  Astro-App (Pages, Components, Layouts)
+├── public/               Statische Assets
+├── supabase/             Supabase-Konfiguration & Migrationen
+├── context/              10xWorkflow-Artefakte (foundation/, changes/, archive/)
 ├── dtb-project/          DTB-Workflow-Artefakte
 │   ├── project-changelog/   Session-Logs
 │   ├── project-rules/       Projekt-Regeln
@@ -32,17 +43,25 @@ persona-forge/
 
 ## Development Commands
 
-Noch keine — Tech-Stack offen. Wird in `workflow.config.yaml` ergaenzt sobald
-festgelegt (test_command / build_command).
+- `npm run dev` — Dev-Server
+- `npm run build` — Production-Build
+- `npm run lint` / `npm run lint:fix` — ESLint
+- `npm run format` — Prettier
+- Kein Test-Runner eingerichtet — `test_command` in `workflow.config.yaml`
+  nachziehen sobald vorhanden (z. B. Vitest)
 
 ## Architecture Overview
 
-Noch nicht definiert.
+Astro-Pages mit React-Islands; Supabase liefert Postgres + E-Mail/Passwort-Auth;
+Deploy auf Cloudflare Pages (GitHub Actions, Auto-Deploy auf main).
 
 ## Important Gotchas
 
-- Tech-Stack noch nicht entschieden — vor Implementierung festlegen und
-  `workflow.config.yaml` (type, test_command, build_command) aktualisieren.
+- Cloudflare-Edge-Runtime begrenzt lang laufende Tasks — Testlaeufe mit N
+  Wiederholungen (FR-012/FR-014) brauchen Lauf-Aufteilung oder Queues/Workers.
+- Lokale TLS-Interception: npm-Downloads in postinstall-Scripts brauchen
+  `NODE_OPTIONS=--use-system-ca` (sonst `UNABLE_TO_VERIFY_LEAF_SIGNATURE`).
+- Supabase RLS frueh konfigurieren, sonst entstehen Auth-Luecken.
 
 ## Quick Reference
 

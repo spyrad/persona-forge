@@ -28,3 +28,21 @@ venv/
 
 # Lokales Agent-Tooling (regenerierbar, nicht Projekt-Quellcode)
 .claude/
+
+# from 10x-astro-starter
+# build output
+# generated types
+.astro/
+# dependencies
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+# environment variables
+.env.production
+# cloudflare
+.dev.vars
+.wrangler/
+# macOS-specific files
+# jetbrains setting folder
