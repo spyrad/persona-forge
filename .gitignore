@@ -26,8 +26,9 @@ __pycache__/
 .venv/
 venv/
 
-# Lokales Agent-Tooling (regenerierbar, nicht Projekt-Quellcode)
-.claude/
+# Lokales Agent-Tooling — Skills werden versioniert, Rest (Settings etc.) bleibt lokal
+.claude/*
+!.claude/skills/
 
 # from 10x-astro-starter
 # build output
