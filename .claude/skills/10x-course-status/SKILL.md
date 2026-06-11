@@ -5,7 +5,8 @@ description: >
   .ressources/lekcje/ pro Modul auf den Projektstand (Artefakt-Evidenz) und zeigt
   den nächsten Kurs-Schritt. Trigger: "Kurs-Status", "wo stehen wir im Kurs",
   "Kurs-Standort", "Lektions-Status", "course status", "gdzie jesteśmy w kursie",
-  "welche Lektion", "Modul-Fortschritt". NICHT für Projekt-Workflow-Status —
+  "welche Lektion", "Modul-Fortschritt", "welche Skills gehören zu Lektion X",
+  "Skills je Lektion". NICHT für Projekt-Workflow-Status —
   das ist /dtb:workflow-status.
 argument-hint: "[modul 1..4]"
 allowed-tools:
@@ -29,7 +30,22 @@ nur als Fußnote erwähnen.
 Falls `.ressources/lekcje/` fehlt: ausgeben
 `Kein Kurs-Material gefunden (.ressources/lekcje/ fehlt).` — und abbrechen.
 
-## Schritt 2: Projekt-Evidenz scannen
+## Schritt 2: Skill-Mapping je Lektion
+
+Ein einziger Grep-Aufruf über `.ressources/lekcje/*.md` (ohne `s00e00/`):
+Pattern `/10x-[a-z0-9-]+` mit `output_mode: content` und `-o: true` — liefert
+`datei:match`-Zeilen. **Ziffern im Pattern sind Pflicht**, sonst wird `/10x-e2e`
+zu `/10x-e` abgeschnitten.
+
+Je Lektionsdatei: Treffer zählen, `/10x-cli` ausschließen (CLI-Tool, kein Skill),
+nach Häufigkeit absteigend sortieren.
+
+- **Haupt-Skills** = Top-Treffer; max. 3 je Lektion.
+- Treffer mit nur 1 Erwähnung weglassen, wenn es häufigere gibt
+  (Querverweis-Rauschen auf andere Lektionen).
+- Lektion ohne Treffer: `—`.
+
+## Schritt 3: Projekt-Evidenz scannen
 
 Nur Existenz prüfen bzw. wenige Zeilen lesen:
 
@@ -39,7 +55,7 @@ Nur Existenz prüfen bzw. wenige Zeilen lesen:
 - `workflow.config.yaml`: `test_command` gesetzt oder `null`?
 - `WORKFLOW_STATUS.md`: Sektion "Kurs-Standort" + Blocker (Korrektiv, nicht primäre Quelle)
 
-## Schritt 3: Status je Lektion ableiten
+## Schritt 4: Status je Lektion ableiten
 
 | Lektion | Evidenz für ✅ |
 |---|---|
@@ -60,13 +76,13 @@ Lektion in Kursreihenfolge) · ⬜ offen.
 Bei Widerspruch zwischen Artefakt-Evidenz und WORKFLOW_STATUS-Prosa: **Evidenz
 gewinnt**, Abweichung als einzeiligen Hinweis ausgeben.
 
-## Schritt 4: Zertifizierungs-Deadline (optional)
+## Schritt 5: Zertifizierungs-Deadline (optional)
 
 Falls `.ressources/infos/**/wszystko-o-projekcie-zaliczeniowym*.md` existiert
 (Achtung: jede Info liegt in einem eigenen Unterordner): die nächstgelegene
 zukünftige Deadline herauslesen und als eine Zeile anhängen.
 
-## Schritt 5: Output
+## Schritt 6: Output
 
 ### Ohne Argument (max ~45 Zeilen)
 
@@ -76,9 +92,9 @@ zukünftige Deadline herauslesen und als eine Zeile anhängen.
 **Position:** {1 Satz, z. B. "Übergang Modul 1 → Modul 2 (s02e02)"}
 
 ## Modul {N} — {Kurztitel} ({x}/{y})
-| Lektion | Thema | Status |
-|---|---|---|
-| s0Ne0M | {Titel aus Dateiname} | {✅/🔶/⏭️/⬜ + 3-5 Wörter Evidenz} |
+| Lektion | Thema | Skills | Status |
+|---|---|---|---|
+| s0Ne0M | {Titel aus Dateiname} | {Haupt-Skills aus Schritt 2, max 3} | {✅/🔶/⏭️/⬜ + 3-5 Wörter Evidenz} |
 
 **Nächster Kurs-Schritt:** {Lektion} → {konkreter Skill-Aufruf, z. B. /10x-plan deploy-skeleton-live}
 **Zertifizierung:** nächste Deadline {Datum}   (nur falls gefunden)
@@ -87,7 +103,8 @@ zukünftige Deadline herauslesen und als eine Zeile anhängen.
 ### Mit Argument (`1`–`4`)
 
 Nur dieses Modul, je Lektion 1–2 Zeilen mit konkreter Evidenz
-(welche Datei vorhanden/fehlt, was noch zu tun ist).
+(welche Datei vorhanden/fehlt, was noch zu tun ist) plus **alle** gefundenen
+Skills der Lektion (nicht nur Top-3), Haupt-Skill zuerst markiert.
 
 ## Richtlinien
 
