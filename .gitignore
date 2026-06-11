@@ -46,3 +46,6 @@ pnpm-debug.log*
 .wrangler/
 # macOS-specific files
 # jetbrains setting folder
+
+# Kurs-Inhalte (10xDevs) - nicht ins Remote-Repo pushen
+.ressources/
