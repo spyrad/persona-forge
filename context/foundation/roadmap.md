@@ -3,7 +3,7 @@ project: "persona-forge"
 version: 1
 status: draft
 created: 2026-06-11
-updated: 2026-06-11
+updated: 2026-06-12
 prd_version: 1
 main_goal: learn
 top_blocker: time
@@ -37,7 +37,7 @@ lassen sich direkt vergleichen.
 | ID   | Change ID                | Outcome (user can …)                                                        | Prerequisites | PRD refs                                  | Status   |
 | ---- | ------------------------ | --------------------------------------------------------------------------- | ------------- | ----------------------------------------- | -------- |
 | F-01 | connect-supabase         | (foundation) Supabase-Projekt verbunden; Datenzugriffs-Grundgerüst steht     | —             | FR-001, §Access Control                   | ready    |
-| F-02 | deploy-skeleton-live     | (foundation) Auto-Deploy auf main liefert eine Live-URL                      | —             | tech-stack.md (cloudflare-workers, CI)    | ready    |
+| F-02 | deploy-skeleton-live     | (foundation) Auto-Deploy auf main liefert eine Live-URL                      | —             | tech-stack.md (cloudflare-workers, CI)    | done     |
 | S-01 | email-auth-live          | sich registrieren, anmelden und geschützte Seiten erreichen                  | F-01          | FR-001, §Access Control                   | proposed |
 | S-02 | model-config-management  | ein OpenAI-kompatibles Modell anhängen und als Konfig speichern (Key verschlüsselt) | S-01    | FR-005, FR-006, NFR Key-Dichtheit         | proposed |
 | S-03 | persona-catalog          | eine Persona anlegen (frei/strukturiert), im Katalog finden und kopieren     | S-01          | FR-007, FR-008                            | proposed |
@@ -96,7 +96,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Früh sequenziert (learn-Bias: Cloudflare ist unbekannte Technik); wartet man bis zum Schluss, kollidieren Edge-Runtime-Überraschungen mit fertigen Features statt mit einem leeren Skeleton.
-- **Status:** ready
+- **Status:** done
 
 ## Slices
 
@@ -232,4 +232,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Done
 
-(Empty on first generation. `/10x-archive` appends an entry here — and flips that item's `Status` to `done` — when a change whose `Change ID` matches the item is archived.)
+- **F-02: (foundation) Merge auf `main` deployt automatisch auf Cloudflare Workers; eine Live-URL existiert. Umfasst den CI-Fix (`master`→`main`), Repo-Secrets und die Workers-Verknüpfung — nicht mehr.** — Archived 2026-06-12 → `context/archive/2026-06-11-deploy-skeleton-live/`. Lesson: —.

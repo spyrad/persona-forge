@@ -2,9 +2,10 @@
 change_id: deploy-skeleton-live
 roadmap_id: F-02
 title: "CI-Fix + Cloudflare-Workers-Deploy mit Live-URL"
-status: impl_reviewed
+status: archived
 created: 2026-06-11
 updated: 2026-06-12
+archived_at: 2026-06-12T04:18:35Z
 ---
 
 # Change: deploy-skeleton-live
