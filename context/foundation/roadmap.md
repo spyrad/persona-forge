@@ -37,7 +37,7 @@ lassen sich direkt vergleichen.
 | ID   | Change ID                | Outcome (user can …)                                                        | Prerequisites | PRD refs                                  | Status   |
 | ---- | ------------------------ | --------------------------------------------------------------------------- | ------------- | ----------------------------------------- | -------- |
 | F-01 | connect-supabase         | (foundation) Supabase-Projekt verbunden; Datenzugriffs-Grundgerüst steht     | —             | FR-001, §Access Control                   | ready    |
-| F-02 | deploy-skeleton-live     | (foundation) Auto-Deploy auf main liefert eine Live-URL                      | —             | tech-stack.md (cloudflare-pages, CI)      | ready    |
+| F-02 | deploy-skeleton-live     | (foundation) Auto-Deploy auf main liefert eine Live-URL                      | —             | tech-stack.md (cloudflare-workers, CI)    | ready    |
 | S-01 | email-auth-live          | sich registrieren, anmelden und geschützte Seiten erreichen                  | F-01          | FR-001, §Access Control                   | proposed |
 | S-02 | model-config-management  | ein OpenAI-kompatibles Modell anhängen und als Konfig speichern (Key verschlüsselt) | S-01    | FR-005, FR-006, NFR Key-Dichtheit         | proposed |
 | S-03 | persona-catalog          | eine Persona anlegen (frei/strukturiert), im Katalog finden und kopieren     | S-01          | FR-007, FR-008                            | proposed |
@@ -67,7 +67,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Backend / API:** partial — Astro-API-Routen vorhanden, aber nur Auth (`src/pages/api/auth/`); keine Domänen-API
 - **Data:** partial — Supabase-SDK + `supabase/config.toml` vorhanden, aber keine Migrationen, kein Schema, kein Projekt verbunden
 - **Auth:** partial — E-Mail+Passwort-Flows gescaffoldet (Signin/Signup/Signout, Route-Schutz in `src/middleware.ts`), aber ohne verbundenes Supabase-Projekt nicht funktionsfähig
-- **Deploy / infra:** partial — `wrangler.jsonc` + CI-Workflow vorhanden, aber CI triggert auf `master` statt `main`, Secrets fehlen, kein Cloudflare-Pages-Projekt verbunden
+- **Deploy / infra:** partial — `wrangler.jsonc` + CI-Workflow vorhanden, aber CI triggert auf `master` statt `main`, Secrets fehlen, kein Cloudflare-Workers-Deployment konfiguriert
 - **Observability:** absent — keine Logging-/Error-Tracking-Integration (bewusst: kein NFR verlangt sie; bleibt schlank)
 
 ## Foundations
@@ -87,9 +87,9 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ### F-02: Deploy-Skeleton live
 
-- **Outcome:** (foundation) Merge auf `main` deployt automatisch auf Cloudflare Pages; eine Live-URL existiert. Umfasst den CI-Fix (`master`→`main`), Repo-Secrets und die Pages-Verknüpfung — nicht mehr.
+- **Outcome:** (foundation) Merge auf `main` deployt automatisch auf Cloudflare Workers; eine Live-URL existiert. Umfasst den CI-Fix (`master`→`main`), Repo-Secrets und die Workers-Verknüpfung — nicht mehr.
 - **Change ID:** deploy-skeleton-live
-- **PRD refs:** tech-stack.md (deployment_target: cloudflare-pages, ci_default_flow: auto-deploy-on-merge)
+- **PRD refs:** tech-stack.md (deployment_target: cloudflare-workers, ci_default_flow: auto-deploy-on-merge)
 - **Unlocks:** den Verifikationspfad „jeder Slice ist auf Produktion prüfbar" für S-01–S-08; schließt zudem die offene Kurs-Anforderung „Live-Deployment" (Modul 1) ab
 - **Prerequisites:** —
 - **Parallel with:** F-01
@@ -204,7 +204,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | Roadmap ID | Change ID               | Suggested issue title                                   | Ready for `/10x-plan` | Notes                                  |
 | ---------- | ----------------------- | -------------------------------------------------------- | --------------------- | -------------------------------------- |
 | F-01       | connect-supabase        | Supabase-Projekt anbinden + RLS-Grundgerüst              | yes                   | Run `/10x-plan connect-supabase`       |
-| F-02       | deploy-skeleton-live    | CI-Fix + Cloudflare-Pages-Deploy mit Live-URL            | yes                   | Run `/10x-plan deploy-skeleton-live`   |
+| F-02       | deploy-skeleton-live    | CI-Fix + Cloudflare-Workers-Deploy mit Live-URL          | yes                   | Run `/10x-plan deploy-skeleton-live`   |
 | S-01       | email-auth-live         | E-Mail-Auth end-to-end verdrahten und verifizieren        | no                    | Wartet auf F-01                        |
 | S-02       | model-config-management | Modellkonfiguration mit verschlüsseltem API-Key          | no                    | Wartet auf S-01                        |
 | S-03       | persona-catalog         | Persona anlegen, Katalog, Kopie-statt-Änderung           | no                    | Wartet auf S-01                        |

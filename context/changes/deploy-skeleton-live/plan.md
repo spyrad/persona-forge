@@ -274,10 +274,10 @@ CI-Zeit und ist beim aktuellen Projektumfang irrelevant.
 
 #### Automated
 
-- [ ] 1.1 Lint passes: `npm run lint`
-- [ ] 1.2 Build passes: `npm run build`
-- [ ] 1.3 Wrangler-Config + Worker-Bundle valide: `npx wrangler deploy --dry-run`
-- [ ] 1.4 Workflow-YAML syntaktisch valide
+- [x] 1.1 Lint passes: `npm run lint`
+- [x] 1.2 Build passes: `npm run build`
+- [x] 1.3 Wrangler-Config + Worker-Bundle valide: `npx wrangler deploy --dry-run`
+- [x] 1.4 Workflow-YAML syntaktisch valide
 
 #### Manual
 
