@@ -1,0 +1,6 @@
+# Vorlage für .dev.vars (gitignored) — maßgeblicher Secrets-Kanal für den
+# lokalen Dev-Server (Astro 6 läuft in workerd). Identisch in .env pflegen.
+# SUPABASE_KEY = Publishable Key (sb_publishable_..., Legacy-Name "anon key") —
+# NIEMALS den service_role/Secret-Key verwenden (hebelt RLS aus).
+SUPABASE_URL=###
+SUPABASE_KEY=###
