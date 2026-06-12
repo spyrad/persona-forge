@@ -339,15 +339,15 @@ Test-Runner steht (Modul 3), ist das `_rls_probe`-Muster der erste Kandidat.
 
 #### Automated
 
-- [x] 1.1 `npx supabase migration list` zeigt Migration als remote angewendet
-- [x] 1.2 `npm run lint` grün
-- [x] 1.3 `npm run build` grün
+- [x] 1.1 `npx supabase migration list` zeigt Migration als remote angewendet — f96303a
+- [x] 1.2 `npm run lint` grün — f96303a
+- [x] 1.3 `npm run build` grün — f96303a
 
 #### Manual
 
-- [x] 1.4 Supabase-Projekt angelegt; `.dev.vars` + `.env` befüllt
-- [x] 1.5 Lokal: Banner weg; Signup → confirm → Signin → `/dashboard`
-- [x] 1.6 RLS-Probe: Eigenes+Globales sichtbar, Fremd-Privates nicht, Spoofing abgelehnt
+- [x] 1.4 Supabase-Projekt angelegt; `.dev.vars` + `.env` befüllt — f96303a
+- [x] 1.5 Lokal: Banner weg; Signup → confirm → Signin → `/dashboard` — f96303a
+- [x] 1.6 RLS-Probe: Eigenes+Globales sichtbar, Fremd-Privates nicht, Spoofing abgelehnt — f96303a
 
 ### Phase 2: Secrets-Sync in CI + Live-Gang
 

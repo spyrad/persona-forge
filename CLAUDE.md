@@ -22,9 +22,13 @@ Achse liefert. PRD: `context/foundation/prd.md`.
   Wiederholungen (FR-012/FR-014) brauchen Lauf-Aufteilung oder Queues/Workers.
 - Push auf `main` deployt automatisch auf Cloudflare Workers
   (`https://persona-forge.damian-spyra-ai.workers.dev`); CI braucht Secrets
-  `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` (gesetzt). Supabase-Secrets
-  (`SUPABASE_URL`, `SUPABASE_KEY`) folgen mit F-01 — als Worker-Secrets doppelt
-  setzen (Build + `wrangler secret put` fuer Runtime).
+  `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` (gesetzt). Die
+  Supabase-Secrets (`SUPABASE_URL`, `SUPABASE_KEY`) synct der Deploy-Job bei
+  jedem Deploy automatisch als Worker-Secrets (`secrets:`-Input der
+  wrangler-action) — GitHub-Secrets sind die Single Source of Truth, kein
+  manuelles `wrangler secret put`. `SUPABASE_KEY` = Publishable Key
+  (`sb_publishable_...`), nie `service_role`. Lokal ist `.dev.vars`
+  massgeblich (workerd-Dev-Server), `.env` parallel identisch pflegen.
 - Lokale TLS-Interception: npm-Downloads in postinstall-Scripts brauchen
   `NODE_OPTIONS=--use-system-ca` (sonst `UNABLE_TO_VERIFY_LEAF_SIGNATURE`).
 - Supabase RLS frueh konfigurieren, sonst entstehen Auth-Luecken.
@@ -68,8 +72,8 @@ persona-forge/
 
 Astro 6 SSR (`output: "server"`) mit React-19-Islands; alle Pages
 server-rendered, API-Routes exportieren `const prerender = false`. Supabase
-liefert Postgres + E-Mail/Passwort-Auth. Deploy auf Cloudflare via GitHub
-Actions (Ziel-Verbindung offen, siehe Gotchas/F-02).
+liefert Postgres + E-Mail/Passwort-Auth. Deploy auf Cloudflare Workers via
+GitHub Actions (live, Secrets-Sync siehe Gotchas).
 
 ### Auth-Flow
 
