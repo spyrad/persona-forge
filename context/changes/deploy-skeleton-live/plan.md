@@ -281,17 +281,17 @@ CI-Zeit und ist beim aktuellen Projektumfang irrelevant.
 
 #### Manual
 
-- [x] 1.5 Review: Deploy-Job läuft nachweislich nicht auf PRs / bei rotem ci-Job
+- [x] 1.5 Review: Deploy-Job läuft nachweislich nicht auf PRs / bei rotem ci-Job — 7d7b4d2
 
 ### Phase 2: Cloudflare-Setup + Live-Gang
 
 #### Automated
 
-- [x] 2.1 CI-Lauf grün auf `main` (`gh run list`)
-- [x] 2.2 Live-URL antwortet mit HTTP 200
+- [x] 2.1 CI-Lauf grün auf `main` (`gh run list`) — 7d7b4d2
+- [x] 2.2 Live-URL antwortet mit HTTP 200 — 7d7b4d2
 
 #### Manual
 
-- [x] 2.3 Landing-Page lädt im Browser (Styles intakt)
-- [x] 2.4 `/auth/signin` zeigt erwarteten Bis-F-01-Zustand
-- [x] 2.5 PR-Lauf deployt nicht (nur ci-Job)
+- [x] 2.3 Landing-Page lädt im Browser (Styles intakt) — 7d7b4d2
+- [x] 2.4 `/auth/signin` zeigt erwarteten Bis-F-01-Zustand — 7d7b4d2
+- [x] 2.5 PR-Lauf deployt nicht (nur ci-Job) — 7d7b4d2
