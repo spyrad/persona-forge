@@ -20,9 +20,11 @@ Achse liefert. PRD: `context/foundation/prd.md`.
 
 - Cloudflare-Edge-Runtime begrenzt lang laufende Tasks — Testlaeufe mit N
   Wiederholungen (FR-012/FR-014) brauchen Lauf-Aufteilung oder Queues/Workers.
-- CI (`.github/workflows/ci.yml`, lint + build) triggert auf `master`, Branch
-  ist `main` — lief daher noch nie; braucht zudem Repo-Secrets `SUPABASE_URL`
-  und `SUPABASE_KEY`. Fix gehoert zu F-02 (deploy-skeleton-live).
+- Push auf `main` deployt automatisch auf Cloudflare Workers
+  (`https://persona-forge.damian-spyra-ai.workers.dev`); CI braucht Secrets
+  `CLOUDFLARE_API_TOKEN` + `CLOUDFLARE_ACCOUNT_ID` (gesetzt). Supabase-Secrets
+  (`SUPABASE_URL`, `SUPABASE_KEY`) folgen mit F-01 — als Worker-Secrets doppelt
+  setzen (Build + `wrangler secret put` fuer Runtime).
 - Lokale TLS-Interception: npm-Downloads in postinstall-Scripts brauchen
   `NODE_OPTIONS=--use-system-ca` (sonst `UNABLE_TO_VERIFY_LEAF_SIGNATURE`).
 - Supabase RLS frueh konfigurieren, sonst entstehen Auth-Luecken.

@@ -274,24 +274,24 @@ CI-Zeit und ist beim aktuellen Projektumfang irrelevant.
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Build passes: `npm run build`
-- [x] 1.3 Wrangler-Config + Worker-Bundle valide: `npx wrangler deploy --dry-run`
-- [x] 1.4 Workflow-YAML syntaktisch valide
+- [x] 1.1 Lint passes: `npm run lint` — 2f04fee
+- [x] 1.2 Build passes: `npm run build` — 2f04fee
+- [x] 1.3 Wrangler-Config + Worker-Bundle valide: `npx wrangler deploy --dry-run` — 2f04fee
+- [x] 1.4 Workflow-YAML syntaktisch valide — 2f04fee
 
 #### Manual
 
-- [ ] 1.5 Review: Deploy-Job läuft nachweislich nicht auf PRs / bei rotem ci-Job
+- [x] 1.5 Review: Deploy-Job läuft nachweislich nicht auf PRs / bei rotem ci-Job
 
 ### Phase 2: Cloudflare-Setup + Live-Gang
 
 #### Automated
 
-- [ ] 2.1 CI-Lauf grün auf `main` (`gh run list`)
-- [ ] 2.2 Live-URL antwortet mit HTTP 200
+- [x] 2.1 CI-Lauf grün auf `main` (`gh run list`)
+- [x] 2.2 Live-URL antwortet mit HTTP 200
 
 #### Manual
 
-- [ ] 2.3 Landing-Page lädt im Browser (Styles intakt)
-- [ ] 2.4 `/auth/signin` zeigt erwarteten Bis-F-01-Zustand
-- [ ] 2.5 PR-Lauf deployt nicht (nur ci-Job)
+- [x] 2.3 Landing-Page lädt im Browser (Styles intakt)
+- [x] 2.4 `/auth/signin` zeigt erwarteten Bis-F-01-Zustand
+- [x] 2.5 PR-Lauf deployt nicht (nur ci-Job)
