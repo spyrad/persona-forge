@@ -353,11 +353,11 @@ Test-Runner steht (Modul 3), ist das `_rls_probe`-Muster der erste Kandidat.
 
 #### Automated
 
-- [ ] 2.1 CI-Lauf auf `main` grün (ci + deploy)
-- [ ] 2.2 `npx wrangler secret list` zeigt beide Secrets
+- [x] 2.1 CI-Lauf auf `main` grün (ci + deploy) — e298d17
+- [x] 2.2 `npx wrangler secret list` zeigt beide Secrets — e298d17
 
 #### Manual
 
-- [ ] 2.3 Signup → Confirm → Signin auf Live-URL funktioniert
-- [ ] 2.4 Config-Banner auf der Live-URL verschwunden
-- [ ] 2.5 CLAUDE.md-Gotcha beschreibt Live-Zustand
+- [x] 2.3 Signup → Confirm → Signin auf Live-URL funktioniert — e298d17
+- [x] 2.4 Config-Banner auf der Live-URL verschwunden — e298d17
+- [x] 2.5 CLAUDE.md-Gotcha beschreibt Live-Zustand — e298d17
