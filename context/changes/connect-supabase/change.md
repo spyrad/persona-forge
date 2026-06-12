@@ -2,7 +2,7 @@
 change_id: connect-supabase
 roadmap_id: F-01
 title: "Supabase-Projekt anbinden + RLS-Grundgerüst"
-status: implemented
+status: impl_reviewed
 created: 2026-06-12
 updated: 2026-06-12
 ---

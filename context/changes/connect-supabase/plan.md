@@ -321,6 +321,11 @@ Test-Runner steht (Modul 3), ist das `_rls_probe`-Muster der erste Kandidat.
   (S-02 `model_configs`: owner-only, fix privat, KEINE visibility-Spalte;
   S-03 `personas`: volles Muster, Default `'global'`). `_rls_probe` droppen,
   sobald die erste echte Muster-Tabelle existiert.
+- Impl-Review-Hinweis (F2): `profiles` hat BEWUSST keine delete-Policy —
+  Löschung läuft ausschließlich über die `auth.users`-Cascade; Asymmetrie zu
+  `_rls_probe` (4 Policies) ist gewollt. Beim Kopieren des Musters in
+  S-02/S-03 die delete-Policy NICHT weglassen — sie gehört zum vollen
+  owner+visibility-Muster; nur `profiles` ist der Sonderfall.
 - Env-Schema-Hardening (`optional: true` entfernen, `validateSecrets`) ist
   jetzt möglich, sobald gewünscht — bewusst nicht Teil von F-01.
 
