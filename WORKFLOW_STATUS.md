@@ -9,16 +9,16 @@
 
 | Kennzahl | Wert |
 |----------|------|
-| **Laufende Arbeit** | S-01 (email-auth-live) — Plan fertig, Plan-Review ausstehend |
-| **Naechster Schritt** | `/10x-plan-review email-auth-live`, dann `/10x-implement email-auth-live phase 1` |
+| **Laufende Arbeit** | S-01 (email-auth-live) — Phase 1 code-fertig + auto-verifiziert (WIP `fa1f632`); manuelle Browser-Checks 1.4–1.6 ausstehend |
+| **Naechster Schritt** | Manuelle Verifikation 1.4–1.6 (Browser gegen `npm run dev`), dann 1.3–1.6 in `plan.md` abhaken + Phase-End-Ritual (SHA-Write-back), dann `/10x-implement email-auth-live phase 2` |
 | **Blocker** | S-04 (Messlauf) wartet auf gemeinfreie OEJTS-Quelle (Owner: Damian) — blockt nicht S-01 |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] `/10x-plan-review email-auth-live` — Plan-Review vor Implementierung (s02e04-Muster)
-- [ ] `/10x-implement email-auth-live phase 1` — nach Plan-Review SOUND
+- [ ] **S-01 Phase 1 abschliessen:** manuelle Browser-Checks 1.4 (Signup echte Mail → confirm-email), 1.5 (Signin → /dashboard), 1.6 (7-Zeichen-PW client-seitig geblockt); danach 1.3–1.6 in `plan.md` abhaken + Phase-End-Ritual (SHA-Write-back auf 1.0–1.6). Achtung: Code ist als WIP `fa1f632` schon committet — Phase-End-Commit wird leer/dokumentarisch sein
+- [ ] `/10x-implement email-auth-live phase 2` — profiles-Trigger-Migration (danach Phase 3, 4)
 - [ ] OEJTS-Items als gemeinfreie Quelle fixieren — blockt S-04 → S-05/S-06/S-08; Owner: Damian
 - [ ] Review-Follow-ups CLAUDE.md (atomar): RLS-Doppelung mergen, Environment-Sektion kürzen
 - [ ] Repo-Description + Topics auf GitHub setzen — manueller Schritt
