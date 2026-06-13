@@ -3,7 +3,7 @@ project: "persona-forge"
 version: 1
 status: draft
 created: 2026-06-11
-updated: 2026-06-12
+updated: 2026-06-13
 prd_version: 1
 main_goal: learn
 top_blocker: time
@@ -36,7 +36,7 @@ lassen sich direkt vergleichen.
 
 | ID   | Change ID                | Outcome (user can …)                                                        | Prerequisites | PRD refs                                  | Status   |
 | ---- | ------------------------ | --------------------------------------------------------------------------- | ------------- | ----------------------------------------- | -------- |
-| F-01 | connect-supabase         | (foundation) Supabase-Projekt verbunden; Datenzugriffs-Grundgerüst steht     | —             | FR-001, §Access Control                   | ready    |
+| F-01 | connect-supabase         | (foundation) Supabase-Projekt verbunden; Datenzugriffs-Grundgerüst steht     | —             | FR-001, §Access Control                   | done     |
 | F-02 | deploy-skeleton-live     | (foundation) Auto-Deploy auf main liefert eine Live-URL                      | —             | tech-stack.md (cloudflare-workers, CI)    | done     |
 | S-01 | email-auth-live          | sich registrieren, anmelden und geschützte Seiten erreichen                  | F-01          | FR-001, §Access Control                   | proposed |
 | S-02 | model-config-management  | ein OpenAI-kompatibles Modell anhängen und als Konfig speichern (Key verschlüsselt) | S-01    | FR-005, FR-006, NFR Key-Dichtheit         | proposed |
@@ -83,7 +83,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Zuerst sequenziert, weil jeder Slice user-scoped persistiert; ohne den Zugriffs-Contract von Anfang an entstehen Auth-Lücken, die später teuer nachzurüsten sind.
-- **Status:** ready
+- **Status:** done
 
 ### F-02: Deploy-Skeleton live
 
@@ -233,3 +233,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 ## Done
 
 - **F-02: (foundation) Merge auf `main` deployt automatisch auf Cloudflare Workers; eine Live-URL existiert. Umfasst den CI-Fix (`master`→`main`), Repo-Secrets und die Workers-Verknüpfung — nicht mehr.** — Archived 2026-06-12 → `context/archive/2026-06-11-deploy-skeleton-live/`. Lesson: —.
+- **F-01: (foundation) Ein Supabase-Projekt ist angelegt und mit der App verbunden (`.env`/`.dev.vars`); das Datenzugriffs-Grundgerüst (Nutzer sieht nur Eigenes + Globales, per Row Level Security) ist als Contract etabliert — nicht das fertige Schema, nur der minimale Anker, an den Slices ihre Tabellen hängen.** — Archived 2026-06-13 → `context/archive/2026-06-12-connect-supabase/`. Lesson: —.
