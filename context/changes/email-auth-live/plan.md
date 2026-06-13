@@ -77,10 +77,17 @@ laufen — der Plan sequenziert sie trotzdem, da Phase 2 einen manuellen `db pus
 
 ## Critical Implementation Details
 
-- **Zod-Fehler → 400, nicht Redirect:** API-Routes werfen bislang bei Supabase-Fehlern
-  einen Query-Parameter-Redirect. Für Validierungsfehler (ungültige E-Mail, zu kurzes
-  Passwort) soll stattdessen ein HTTP-400 mit JSON-Body zurückkommen — das macht die
-  Route testbar und die React-Forms können die Antwort auswerten.
+- **Zod-Fehler → 400 (bewusst API-Contract, nicht Browser-UX):** Für
+  Validierungsfehler kommt ein HTTP-400 mit JSON-Body zurück. Das ist der
+  Defense-in-Depth-/API-Contract: per curl/Direktaufruf testbar (die
+  Success-Criteria nutzen genau das) und schützt vor umgangener Client-Prüfung.
+  **Wichtig:** Die Forms (`SignInForm`/`SignUpForm`) machen KEIN `fetch()` — sie
+  posten nativ und zeigen Fehler ausschließlich über den `serverError`-Prop aus
+  dem `?error=`-Query-Param. Ein realer Browser-Nutzer trifft den 400-JSON also
+  NICHT, solange Client- und Server-Validierung deckungsgleich sind (siehe F1:
+  Passwort min 8 auf beiden Seiten). Supabase-Fehler bleiben beim bestehenden
+  `?error=`-Redirect-Kanal — die zwei Stile sind bewusst getrennt: 400-JSON =
+  API/maschinell, Redirect-Param = Browser-UI.
 - **Trigger `security definer set search_path = ''`:** Supabase-Auth-Triggers müssen
   immer mit explizitem `search_path = ''` und Schema-Qualified Namen arbeiten
   (`public.profiles`, `public.handle_new_user`), sonst besteht search_path-Injection-Risiko.
@@ -100,6 +107,17 @@ Zod-Validierung auf `signup.ts` und `signin.ts`; Signin-Erfolgs-Redirect auf `/d
 
 ### Changes Required:
 
+#### 0. `npm install zod` — direkte Dependency deklarieren
+
+**Intent**: `zod` liegt derzeit nur transitiv in `node_modules` (zod@4.4.3,
+von einem anderen Paket gezogen). Der Build löst den Import heute auf, aber ein
+künftiges `npm update` kann zod entfernen → Build bricht. Vor dem ersten
+Import als direkte Dependency festschreiben.
+
+**Contract**: `npm install zod` (landet unter `dependencies` in package.json);
+Major 4.x bleibt. Lockfile-Diff prüfen, dass `"zod"` jetzt als direkter Eintrag
+erscheint.
+
 #### 1. `src/pages/api/auth/signup.ts` — Zod-Validierung
 
 **File**: `src/pages/api/auth/signup.ts`
@@ -109,8 +127,10 @@ E-Mail, zu kurzes Passwort) sollen mit 400 beantwortet werden, nicht mit einem
 Supabase-Fehler-Redirect.
 
 **Contract**: Zod-Schema `z.object({ email: z.string().email(), password: z.string().min(8) })`.
-Fehler → `new Response(JSON.stringify({ error: result.error.flatten() }), { status: 400 })`.
-Gültige Daten → bestehende Supabase-Logik + Redirect auf `/auth/confirm-email`.
+Fehler → `new Response(JSON.stringify({ error: z.flattenError(result.error) }), { status: 400 })`
+(Zod-4-Form — `result.error.flatten()` ist in v4 deprecated; alternativ
+`result.error.issues`). Gültige Daten → bestehende Supabase-Logik + Redirect auf
+`/auth/confirm-email`.
 
 #### 2. `src/pages/api/auth/signin.ts` — Zod-Validierung + Redirect-Fix
 
@@ -132,10 +152,25 @@ ersetzen; Scaffold-Docs-URL entfernen (nicht mehr relevant).
 **Contract**: `message`-Feld → `"Supabase is not configured — authentication is
 disabled."`, `docsUrl` und `docsLabel` Felder entfernen.
 
+#### 4. `src/components/auth/SignUpForm.tsx` — Client-Mindestlänge auf 8 angleichen
+
+**File**: `src/components/auth/SignUpForm.tsx`
+
+**Intent**: Client- und Server-Mindestlänge konsistent halten. Das Formular
+postet nativ (`<form method="POST">`); bei min 6 client / min 8 server bestände
+ein 6–7-Zeichen-Passwort die Client-Prüfung, würde nativ abgeschickt und vom
+Server mit 400-JSON beantwortet — der Browser zeigt dann rohes JSON. Die
+dokumentierte S-01-Entscheidung lautet „Passwort min 8".
+
+**Contract**: `MIN_PASSWORD_LENGTH = 8` (Zeile 8); Placeholder-Text
+`"Min. 6 characters"` → `"Min. 8 characters"` (Zeile 90). Der `passwordHint`
+nutzt `MIN_PASSWORD_LENGTH` bereits dynamisch — keine weitere Änderung.
+
 ### Success Criteria:
 
 #### Automated Verification:
 
+- `package.json` listet `zod` unter `dependencies`
 - `npm run lint` grün
 - `npm run build` grün (Exit 0)
 
@@ -145,6 +180,8 @@ disabled."`, `docsUrl` und `docsLabel` Felder entfernen.
 - POST auf `/api/auth/signup` mit gültiger E-Mail + `"passwort1"` (8 Zeichen) → Redirect
   auf `/auth/confirm-email`
 - POST auf `/api/auth/signin` mit gültigen Credentials → Redirect auf `/dashboard`
+- Browser: Signup-Formular mit 7-Zeichen-Passwort → Client blockt (kein nativer
+  Submit, keine 400-JSON-Seite); ab 8 Zeichen geht es durch
 
 **Implementation Note**: Kurze manuelle Verifikation per curl oder Browser-DevTools vor
 Phase 2 — Phase 2 braucht `db push`, der die Prod-DB berührt.
@@ -313,6 +350,7 @@ Keine Code-Änderungen — nur Push und manuelle Verifikation nach dem CI-Deploy
 
 #### Automated
 
+- [ ] 1.0 `package.json` listet `zod` unter `dependencies`
 - [ ] 1.1 `npm run lint` grün
 - [ ] 1.2 `npm run build` grün
 
@@ -321,6 +359,7 @@ Keine Code-Änderungen — nur Push und manuelle Verifikation nach dem CI-Deploy
 - [ ] 1.3 POST `/api/auth/signup` leer → HTTP 400 + Zod-JSON
 - [ ] 1.4 POST `/api/auth/signup` valid → Redirect confirm-email
 - [ ] 1.5 POST `/api/auth/signin` valid → Redirect /dashboard
+- [ ] 1.6 Browser: 7-Zeichen-Passwort wird client-seitig geblockt (keine 400-JSON-Seite)
 
 ### Phase 2: profiles-Trigger-Migration
 
@@ -356,3 +395,4 @@ Keine Code-Änderungen — nur Push und manuelle Verifikation nach dem CI-Deploy
 - [ ] 4.2 Lokal: Signup → confirm → Signin → Dashboard → Signout
 - [ ] 4.3 Lokal: profiles-Eintrag nach Signup vorhanden
 - [ ] 4.4 Prod: Signup → confirm → Signin → Dashboard → Signout auf Live-URL
+- [ ] 4.5 Prod: GET `/auth/signin` — kein Auth-Header in Supabase-Requests (Network-Tab)
