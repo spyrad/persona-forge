@@ -350,9 +350,9 @@ Keine Code-Änderungen — nur Push und manuelle Verifikation nach dem CI-Deploy
 
 #### Automated
 
-- [ ] 1.0 `package.json` listet `zod` unter `dependencies`
-- [ ] 1.1 `npm run lint` grün
-- [ ] 1.2 `npm run build` grün
+- [x] 1.0 `package.json` listet `zod` unter `dependencies`
+- [x] 1.1 `npm run lint` grün
+- [x] 1.2 `npm run build` grün
 
 #### Manual
 

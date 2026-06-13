@@ -1,10 +1,36 @@
 import type { APIRoute } from "astro";
+import { z } from "zod";
 import { createClient } from "@/lib/supabase";
 
+const signupSchema = z.object({
+  email: z.email(),
+  password: z.string().min(8),
+});
+
 export const POST: APIRoute = async (context) => {
-  const form = await context.request.formData();
-  const email = form.get("email") as string;
-  const password = form.get("password") as string;
+  let form: FormData;
+  try {
+    form = await context.request.formData();
+  } catch {
+    return new Response(JSON.stringify({ error: "Invalid request body — expected form data." }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const result = signupSchema.safeParse({
+    email: form.get("email"),
+    password: form.get("password"),
+  });
+
+  if (!result.success) {
+    return new Response(JSON.stringify({ error: z.flattenError(result.error) }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const { email, password } = result.data;
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
