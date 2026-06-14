@@ -9,8 +9,8 @@
 
 | Kennzahl | Wert |
 |----------|------|
-| **Laufende Arbeit** | S-01 `email-auth-live` — **Phase 1 abgeschlossen** (1.0–1.6 grün, `80357ca`); Phasen 2–4 offen |
-| **Naechster Schritt** | `/10x-implement email-auth-live phase 2` — `profiles`-Trigger (`db push` + frischer User für 2.2) |
+| **Laufende Arbeit** | S-01 `email-auth-live` — **Phase 2 abgeschlossen** (`96adb0b`, Trigger live); **Phase 3 WIP** (`4ca2744`, 3.1/3.2 grün, manuelle Checks 3.3+3.5 offen); Phase 4 offen |
+| **Naechster Schritt** | Phase 3 manuell verifizieren: **3.3** GET `/auth/signin` ohne Supabase-Auth-Roundtrip (DevTools-Network) + **3.5** Login mit bestätigtem User → `/dashboard` zeigt E-Mail. Danach Phase-3-Commit, dann `/10x-implement email-auth-live phase 4` |
 | **Blocker** | OEJTS-Quelle (Owner: Damian) blockt S-04 transitiv; kein akuter Blocker für S-01 |
 
 ---
@@ -26,10 +26,10 @@
 
 ## Offene Aufgaben
 
-- [ ] S-01 Phase 2–4: `profiles`-Trigger → Middleware-Optimierung → Live-Verifikation (Push auf `main`)
+- [ ] S-01 Phase 3 (Rest): manuelle Checks 3.3+3.5 → Phase-3-Commit → Phase 4 (Live-Verifikation, Push auf `main`)
 - [ ] OEJTS-Quelle fixieren — Itemtexte, Achsen, Scoring-Schlüssel (Owner: Damian)
 - [ ] Test-Runner einrichten (Vitest), dann `test_command` in `workflow.config.yaml` setzen — Voraussetzung Modul 3
-- [ ] Cleanup: Test-User `damian.spyra.ai+pf1781454054@gmail.com` aus remote-DB; `.playwright-mcp/` in `.gitignore`
+- [ ] Cleanup: Test-User aus remote-DB — `damian.spyra.ai+pf1781454054@gmail.com` (bestätigt, ohne `profiles`) + `damian.spyra.ai+pf1781467650@gmail.com` (unbestätigt, Phase-2-Trigger-Test, hat `profiles`-Zeile `7ad40ffa-…514794`)
 - [ ] GitHub Repo-Description + Topics setzen (manuell)
 - [ ] Stale Duplikat klären: Root-`WORKFLOW_STATUS.md` vs. dieses (config-konforme) File
 
@@ -39,6 +39,7 @@
 
 | Datum | Meilenstein | Ergebnis | Details |
 |-------|-------------|----------|---------|
+| 2026-06-14 | S-01 Phase 2 (profiles-Trigger) | Migration remote applied, Trigger feuert bei Signup, `96adb0b` | `supabase/migrations/20260614174810_profiles_trigger.sql` |
 | 2026-06-14 | S-01 Phase 1 (API-Validierung + Fixes) | Zod-Auth verdrahtet, 1.0–1.6 grün, `80357ca` | `context/changes/email-auth-live/plan.md` |
 | 2026-06-13 | F-01: connect-supabase | Supabase angebunden, RLS-Grundgerüst, archiviert | `context/archive/2026-06-12-connect-supabase/` |
 | 2026-06-12 | F-02: deploy-skeleton-live | Live-URL, CI grün | `context/archive/2026-06-11-deploy-skeleton-live/` |
