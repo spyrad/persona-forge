@@ -9,6 +9,9 @@ Thumbs.db
 # Bootstrapper-Temp (Scaffold-Zwischenverzeichnis)
 .bootstrap-scaffold/
 
+# Playwright-MCP Test-Artefakte (Snapshots, Logs)
+.playwright-mcp/
+
 # Secrets & Environment
 .env
 .env.*
