@@ -365,11 +365,11 @@ Keine Code-Änderungen — nur Push und manuelle Verifikation nach dem CI-Deploy
 
 #### Automated
 
-- [ ] 2.1 `npx supabase migration list` zeigt neue Migration als remote applied
+- [x] 2.1 `npx supabase migration list` zeigt neue Migration als remote applied
 
 #### Manual
 
-- [ ] 2.2 Neuer User → `select * from public.profiles` zeigt Eintrag
+- [x] 2.2 Neuer User → `select * from public.profiles` zeigt Eintrag
 
 ### Phase 3: Middleware-Optimierung
 
