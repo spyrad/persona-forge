@@ -356,10 +356,10 @@ Keine Code-Änderungen — nur Push und manuelle Verifikation nach dem CI-Deploy
 
 #### Manual
 
-- [ ] 1.3 POST `/api/auth/signup` leer → HTTP 400 + Zod-JSON
-- [ ] 1.4 POST `/api/auth/signup` valid → Redirect confirm-email
-- [ ] 1.5 POST `/api/auth/signin` valid → Redirect /dashboard
-- [ ] 1.6 Browser: 7-Zeichen-Passwort wird client-seitig geblockt (keine 400-JSON-Seite)
+- [x] 1.3 POST `/api/auth/signup` leer → HTTP 400 + Zod-JSON — curl (leere + 7-Zeichen-Felder), beide 400 mit `fieldErrors`
+- [x] 1.4 POST `/api/auth/signup` valid → Redirect confirm-email — curl, `302 → /auth/confirm-email`
+- [x] 1.5 POST `/api/auth/signin` valid → Redirect /dashboard — curl mit bestätigtem User, `302 → /dashboard` + Auth-Cookie
+- [x] 1.6 Browser: 7-Zeichen-Passwort wird client-seitig geblockt (keine 400-JSON-Seite) — Playwright, URL bleibt `/auth/signup`, Hinweis „Password must be at least 8 characters"
 
 ### Phase 2: profiles-Trigger-Migration
 
