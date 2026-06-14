@@ -365,18 +365,18 @@ Keine Code-Änderungen — nur Push und manuelle Verifikation nach dem CI-Deploy
 
 #### Automated
 
-- [x] 2.1 `npx supabase migration list` zeigt neue Migration als remote applied
+- [x] 2.1 `npx supabase migration list` zeigt neue Migration als remote applied — 96adb0b
 
 #### Manual
 
-- [x] 2.2 Neuer User → `select * from public.profiles` zeigt Eintrag
+- [x] 2.2 Neuer User → `select * from public.profiles` zeigt Eintrag — 96adb0b
 
 ### Phase 3: Middleware-Optimierung
 
 #### Automated
 
-- [ ] 3.1 `npm run lint` grün
-- [ ] 3.2 `npm run build` grün
+- [x] 3.1 `npm run lint` grün
+- [x] 3.2 `npm run build` grün
 
 #### Manual
 

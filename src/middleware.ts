@@ -4,8 +4,16 @@ import { createClient } from "@/lib/supabase";
 const PROTECTED_ROUTES = ["/dashboard"];
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  const supabase = createClient(context.request.headers, context.cookies);
+  const isProtected = PROTECTED_ROUTES.some((route) => context.url.pathname.startsWith(route));
 
+  // Oeffentliche Routen brauchen keinen Auth-Roundtrip: user bleibt null,
+  // kein Supabase-Netzwerkaufruf fuer /, /auth/* oder statische Assets.
+  if (!isProtected) {
+    context.locals.user = null;
+    return next();
+  }
+
+  const supabase = createClient(context.request.headers, context.cookies);
   if (supabase) {
     const {
       data: { user },
@@ -15,10 +23,8 @@ export const onRequest = defineMiddleware(async (context, next) => {
     context.locals.user = null;
   }
 
-  if (PROTECTED_ROUTES.some((route) => context.url.pathname.startsWith(route))) {
-    if (!context.locals.user) {
-      return context.redirect("/auth/signin");
-    }
+  if (!context.locals.user) {
+    return context.redirect("/auth/signin");
   }
 
   return next();
