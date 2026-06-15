@@ -1,6 +1,9 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase";
+import { safeAuthError } from "@/lib/auth-errors";
+
+export const prerender = false;
 
 const signupSchema = z.object({
   email: z.email(),
@@ -44,7 +47,8 @@ export const POST: APIRoute = async (context) => {
   });
 
   if (error) {
-    return context.redirect(`/auth/signup?error=${encodeURIComponent(error.message)}`);
+    const message = safeAuthError(error, "Could not create account.");
+    return context.redirect(`/auth/signup?error=${encodeURIComponent(message)}`);
   }
 
   return context.redirect("/auth/confirm-email");

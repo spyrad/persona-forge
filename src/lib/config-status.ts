@@ -4,8 +4,6 @@ export interface ConfigStatus {
   name: string;
   configured: boolean;
   message: string;
-  docsUrl?: string;
-  docsLabel?: string;
 }
 
 export const configStatuses: ConfigStatus[] = [

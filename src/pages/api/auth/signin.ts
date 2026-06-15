@@ -1,6 +1,9 @@
 import type { APIRoute } from "astro";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase";
+import { safeAuthError } from "@/lib/auth-errors";
+
+export const prerender = false;
 
 const signinSchema = z.object({
   email: z.email(),
@@ -39,7 +42,8 @@ export const POST: APIRoute = async (context) => {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    return context.redirect(`/auth/signin?error=${encodeURIComponent(error.message)}`);
+    const message = safeAuthError(error, "Invalid email or password.");
+    return context.redirect(`/auth/signin?error=${encodeURIComponent(message)}`);
   }
 
   return context.redirect("/dashboard");
