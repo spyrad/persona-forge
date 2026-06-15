@@ -3,7 +3,7 @@ project: "persona-forge"
 version: 1
 status: draft
 created: 2026-06-11
-updated: 2026-06-13
+updated: 2026-06-15
 prd_version: 1
 main_goal: learn
 top_blocker: time
@@ -38,7 +38,7 @@ lassen sich direkt vergleichen.
 | ---- | ------------------------ | --------------------------------------------------------------------------- | ------------- | ----------------------------------------- | -------- |
 | F-01 | connect-supabase         | (foundation) Supabase-Projekt verbunden; Datenzugriffs-Grundgerüst steht     | —             | FR-001, §Access Control                   | done     |
 | F-02 | deploy-skeleton-live     | (foundation) Auto-Deploy auf main liefert eine Live-URL                      | —             | tech-stack.md (cloudflare-workers, CI)    | done     |
-| S-01 | email-auth-live          | sich registrieren, anmelden und geschützte Seiten erreichen                  | F-01          | FR-001, §Access Control                   | proposed |
+| S-01 | email-auth-live          | sich registrieren, anmelden und geschützte Seiten erreichen                  | F-01          | FR-001, §Access Control                   | done |
 | S-02 | model-config-management  | ein OpenAI-kompatibles Modell anhängen und als Konfig speichern (Key verschlüsselt) | S-01    | FR-005, FR-006, NFR Key-Dichtheit         | proposed |
 | S-03 | persona-catalog          | eine Persona anlegen (frei/strukturiert), im Katalog finden und kopieren     | S-01          | FR-007, FR-008                            | proposed |
 | S-04 | oejts-measurement-run    | einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen          | S-02, S-03    | US-01, FR-010, FR-012, FR-013, NFR Resilienz/Last/Fortschritt | blocked  |
@@ -110,7 +110,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Das Scaffold liefert die Flows schon — der Slice ist bewusst klein (verdrahten + verifizieren statt bauen) und damit ein risikoarmer Einstieg in den Stack.
-- **Status:** proposed
+- **Status:** done
 
 ### S-02: Modellkonfiguration anlegen und sicher speichern
 
@@ -234,3 +234,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 - **F-02: (foundation) Merge auf `main` deployt automatisch auf Cloudflare Workers; eine Live-URL existiert. Umfasst den CI-Fix (`master`→`main`), Repo-Secrets und die Workers-Verknüpfung — nicht mehr.** — Archived 2026-06-12 → `context/archive/2026-06-11-deploy-skeleton-live/`. Lesson: —.
 - **F-01: (foundation) Ein Supabase-Projekt ist angelegt und mit der App verbunden (`.env`/`.dev.vars`); das Datenzugriffs-Grundgerüst (Nutzer sieht nur Eigenes + Globales, per Row Level Security) ist als Contract etabliert — nicht das fertige Schema, nur der minimale Anker, an den Slices ihre Tabellen hängen.** — Archived 2026-06-13 → `context/archive/2026-06-12-connect-supabase/`. Lesson: —.
+- **S-01: Nutzer kann sich per E-Mail + Passwort registrieren, anmelden, abmelden und erreicht geschützte Seiten; Unangemeldete landen auf der Anmeldung.** — Archived 2026-06-15 → `context/archive/2026-06-13-email-auth-live/`. Lesson: CI-Lint-Fehler skippt den deploy-Job lautlos (Prod blieb auf altem Stand) — nach Push auf `main` immer den deploy-Job prüfen.
