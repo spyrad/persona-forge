@@ -11,16 +11,12 @@ export const GET: APIRoute = async (context) => {
   const code = context.url.searchParams.get("code");
 
   if (!code) {
-    return context.redirect(
-      `/auth/signin?error=${encodeURIComponent("Missing confirmation code")}`,
-    );
+    return context.redirect(`/auth/signin?error=${encodeURIComponent("Missing confirmation code")}`);
   }
 
   const supabase = createClient(context.request.headers, context.cookies);
   if (!supabase) {
-    return context.redirect(
-      `/auth/signin?error=${encodeURIComponent("Supabase is not configured")}`,
-    );
+    return context.redirect(`/auth/signin?error=${encodeURIComponent("Supabase is not configured")}`);
   }
 
   const { error } = await supabase.auth.exchangeCodeForSession(code);
