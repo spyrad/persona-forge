@@ -9,9 +9,9 @@
 
 | Kennzahl | Wert |
 |----------|------|
-| **Laufende Arbeit** | S-01 `email-auth-live` — **Phase 4 komplett (4.1–4.5 ✅)**, Status `complete`. Callback-Fix nach CI-Lint-Blocker **live deployt** (`5025edf`, Run `27559204315` ci+deploy grün); Prod `/auth/callback` verdrahtet (404 → 302-`?error=` behoben) |
-| **Naechster Schritt** | `email-auth-live` archivieren (`/dtb:archive` bzw. `/10x-archive`) → S-01 schließen. Optional: frischer Prod-Mail-Confirm-Durchlauf wenn SMTP-Limit zurückgesetzt |
-| **Blocker** | Keiner für S-01. Supabase-SMTP-Rate-Limit verhindert nur weitere Mail-Tests (zeitlich); OEJTS-Quelle blockt S-04 (unverändert) |
+| **Laufende Arbeit** | **Keine.** S-01 `email-auth-live` **abgeschlossen + archiviert** (`8b84ace` → `context/archive/2026-06-13-email-auth-live/`); Roadmap S-01 → `done`. Impl-Review gefahren (F1–F5 gefixt + Härtung live `72fa7ce`, Run `27561116880` grün), F6 als Follow-up |
+| **Naechster Schritt** | Nächsten Slice starten — **S-02** `model-config-management` oder **S-03** `persona-catalog` (beide entsperrt durch S-01, parallel möglich). Mit `/dtb:feature-start` bzw. `/10x-new` + `/10x-plan` |
+| **Blocker** | Keiner. Supabase-SMTP-Rate-Limit nur zeitlich für Mail-Tests; OEJTS-Quelle blockt S-04 (unverändert) |
 
 ---
 
@@ -19,9 +19,11 @@
 
 - [x] Supabase URL-Config (Site-URL + Redirect-Allowlist `/auth/callback`) — Damian erledigt 2026-06-15
 - [x] Mail-Link verifiziert (lokal, echter Link → Verify → `/auth/callback` → E-Mail confirmed → Login → `/dashboard`); Prod-Callback-Wiring per curl belegt; Prod-Re-Deploy `5025edf` grün → 4.4 + 4.5 ✅
-- [ ] **S-01 abschließen + `email-auth-live` archivieren** (`/dtb:archive`)
+- [x] **S-01 abschließen + `email-auth-live` archivieren** — erledigt 2026-06-15 (`8b84ace`), inkl. Impl-Review
+- [ ] **F6 (Follow-up):** Trigger-Migration idempotent machen (`on conflict do nothing`) — Detail: `context/archive/2026-06-13-email-auth-live/follow-ups/review-fixes.md`
 - [ ] Husky/lint-staged-Hook prüfen: griff bei `4b5e916` nicht (2 prettier-Fehler in callback.ts rutschten durch → CI-Lint-Fail → deploy skipped). Hook-Setup verifizieren, damit Format-Fehler nicht erneut die CI brechen
 - [ ] Cleanup Test-User remote-DB: `7ad40ffa…514794`, `98cbe7ba…2d4fd`, `pf…1742`, `pf174558b` + `+pf…`-Aliases; `.playwright-mcp/` in `.gitignore`
+- [ ] (Optional) Frischer Prod-Mail-Confirm-Happy-Path wenn SMTP-Limit zurückgesetzt (Auto-Login direkt nach Mail-Klick, einmal live beobachten)
 - [ ] OEJTS-Quelle fixieren — Itemtexte, Achsen, Scoring (Owner: Damian)
 - [ ] Test-Runner (Vitest), dann `test_command` in `workflow.config.yaml` — Voraussetzung Modul 3
 - [ ] GitHub Repo-Description + Topics setzen (manuell); stale Root-`WORKFLOW_STATUS.md`-Duplikat klären
@@ -32,6 +34,7 @@
 
 | Datum | Meilenstein | Ergebnis | Details |
 |-------|-------------|----------|---------|
+| 2026-06-15 | **S-01 abgeschlossen + archiviert** | Impl-Review (F1–F5 gefixt, Härtung live), Change archiviert, Roadmap S-01 → done | `72fa7ce` (Härtung), `8b84ace` (Archiv) |
 | 2026-06-15 | S-01 Phase 4 komplett (4.1–4.5) | Auth end-to-end lokal+Prod verifiziert; Callback live | `5025edf`, Run `27559204315` |
 | 2026-06-15 | CI-Deploy-Blocker behoben | prettier-Fehler in callback.ts → CI-Lint-Fail (`27522902004`) → deploy skipped; gefixt | `5025edf` |
 | 2026-06-15 | S-01 Phase 3 (Middleware) | Manual-Gate grün, live deployt | `a210f0c`, CI-Run `27521878004` |
