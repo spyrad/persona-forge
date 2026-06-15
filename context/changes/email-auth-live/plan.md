@@ -380,9 +380,9 @@ Keine Code-Änderungen — nur Push und manuelle Verifikation nach dem CI-Deploy
 
 #### Manual
 
-- [ ] 3.3 GET `/auth/signin` — kein Auth-Roundtrip im Netzwerk-Tab
-- [ ] 3.4 GET `/dashboard` ohne Session → Redirect /auth/signin
-- [ ] 3.5 GET `/dashboard` mit Session → Dashboard + User-E-Mail
+- [x] 3.3 GET `/auth/signin` — kein Auth-Roundtrip im Netzwerk-Tab — DevTools Network: nur document/script/css/png + Vite-HMR-Websocket, kein `…supabase.co/auth/v1/…`-Request
+- [x] 3.4 GET `/dashboard` ohne Session → Redirect /auth/signin — curl, `302 → /auth/signin` (4ca2744)
+- [x] 3.5 GET `/dashboard` mit Session → Dashboard + User-E-Mail — Browser-Login → `/dashboard` zeigt „Welcome, md.motion.value@gmail.com"
 
 ### Phase 4: Live-Verifikation
 
