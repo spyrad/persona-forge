@@ -388,11 +388,11 @@ Keine Code-Änderungen — nur Push und manuelle Verifikation nach dem CI-Deploy
 
 #### Automated
 
-- [ ] 4.1 CI-Lauf auf `main` grün (ci + deploy)
+- [x] 4.1 CI-Lauf auf `main` grün (ci + deploy) — Run 27521878004 (a210f0c), beide Jobs success
 
 #### Manual
 
-- [ ] 4.2 Lokal: Signup → confirm → Signin → Dashboard → Signout
-- [ ] 4.3 Lokal: profiles-Eintrag nach Signup vorhanden
+- [x] 4.2 Lokal: Signup → confirm → Signin → Dashboard → Signout — frischer Signup (User `98cbe7ba…`), confirm-email „Registration successful", Login → Dashboard mit E-Mail, Signout → `/`. (confirm-email zeigte einmalig transienten miniflare „Network connection lost", per F5 grün — Dev-only workerd-Reload-Quirk, kein Code-Bug)
+- [x] 4.3 Lokal: profiles-Eintrag nach Signup vorhanden — Studio `select * from public.profiles` zeigt neue UUID `98cbe7ba-3d80-4dd2-8708-fe26c1d2d4fd` (Trigger gefeuert)
 - [ ] 4.4 Prod: Signup → confirm → Signin → Dashboard → Signout auf Live-URL
 - [ ] 4.5 Prod: GET `/auth/signin` — kein Auth-Header in Supabase-Requests (Network-Tab)

@@ -1,7 +1,7 @@
 # Workflow-Status: persona-forge
 
-**Letztes Update:** 2026-06-14
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-06/2026-06-14.md`
+**Letztes Update:** 2026-06-15
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-06/2026-06-15.md`
 
 ---
 
@@ -9,29 +9,21 @@
 
 | Kennzahl | Wert |
 |----------|------|
-| **Laufende Arbeit** | S-01 `email-auth-live` — **Phase 2 abgeschlossen** (`96adb0b`, Trigger live); **Phase 3 WIP** (`4ca2744`, 3.1/3.2 grün, manuelle Checks 3.3+3.5 offen); Phase 4 offen |
-| **Naechster Schritt** | Phase 3 manuell verifizieren: **3.3** GET `/auth/signin` ohne Supabase-Auth-Roundtrip (DevTools-Network) + **3.5** Login mit bestätigtem User → `/dashboard` zeigt E-Mail. Danach Phase-3-Commit, dann `/10x-implement email-auth-live phase 4` |
-| **Blocker** | OEJTS-Quelle (Owner: Damian) blockt S-04 transitiv; kein akuter Blocker für S-01 |
-
----
-
-## Kurs-Standort (10xDevs)
-
-| Modul | Stand | Offenes |
-|-------|-------|---------|
-| M1 (Bootstrap + Deploy) | ✅ 5/5 | — |
-| M2 (Roadmap + Plan→Code) | 🔶 4/5 | s02e05 läuft via S-01 (Multi-Agenten-Feature) |
+| **Laufende Arbeit** | S-01 `email-auth-live` — **Phase 3 fertig** (`a210f0c`), **live deployt** (`27521878004` grün); Phase 4 lokal grün (4.1–4.3); **Confirm-Mail-Callback gefixt** (`4b5e916`, lokal) |
+| **Naechster Schritt** | **Damian:** Supabase URL-Config (Site-URL + Redirect-Allowlist für `/auth/callback`) → lokal Mail-Link verifizieren → `4b5e916` pushen → Prod-Runde 4.4/4.5 |
+| **Blocker** | Confirm-Mail-Link braucht Supabase-Dashboard-Config (Allowlist), sonst greift `emailRedirectTo` nicht; OEJTS-Quelle blockt S-04 (unverändert) |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] S-01 Phase 3 (Rest): manuelle Checks 3.3+3.5 → Phase-3-Commit → Phase 4 (Live-Verifikation, Push auf `main`)
-- [ ] OEJTS-Quelle fixieren — Itemtexte, Achsen, Scoring-Schlüssel (Owner: Damian)
-- [ ] Test-Runner einrichten (Vitest), dann `test_command` in `workflow.config.yaml` setzen — Voraussetzung Modul 3
-- [ ] Cleanup: Test-User aus remote-DB — `damian.spyra.ai+pf1781454054@gmail.com` (bestätigt, ohne `profiles`) + `damian.spyra.ai+pf1781467650@gmail.com` (unbestätigt, Phase-2-Trigger-Test, hat `profiles`-Zeile `7ad40ffa-…514794`)
-- [ ] GitHub Repo-Description + Topics setzen (manuell)
-- [ ] Stale Duplikat klären: Root-`WORKFLOW_STATUS.md` vs. dieses (config-konforme) File
+- [ ] Supabase URL-Config: Site-URL → Prod; Redirect-Allowlist → `localhost:4321/auth/callback` + Prod-`/auth/callback` (Owner: Damian)
+- [ ] Lokal Mail-Link verifizieren (Signup → Link → `/auth/callback` → `/dashboard`) → dann `4b5e916` pushen → Prod 4.4 + 4.5
+- [ ] S-01 abschließen + `email-auth-live` archivieren (`/dtb:archive`)
+- [ ] Cleanup Test-User remote-DB: `7ad40ffa…514794`, `98cbe7ba…2d4fd` + `+pf…`-Aliases; `.playwright-mcp/` in `.gitignore`
+- [ ] OEJTS-Quelle fixieren — Itemtexte, Achsen, Scoring (Owner: Damian)
+- [ ] Test-Runner (Vitest), dann `test_command` in `workflow.config.yaml` — Voraussetzung Modul 3
+- [ ] GitHub Repo-Description + Topics setzen (manuell); stale Root-`WORKFLOW_STATUS.md`-Duplikat klären
 
 ---
 
@@ -39,9 +31,11 @@
 
 | Datum | Meilenstein | Ergebnis | Details |
 |-------|-------------|----------|---------|
-| 2026-06-14 | S-01 Phase 2 (profiles-Trigger) | Migration remote applied, Trigger feuert bei Signup, `96adb0b` | `supabase/migrations/20260614174810_profiles_trigger.sql` |
-| 2026-06-14 | S-01 Phase 1 (API-Validierung + Fixes) | Zod-Auth verdrahtet, 1.0–1.6 grün, `80357ca` | `context/changes/email-auth-live/plan.md` |
-| 2026-06-13 | F-01: connect-supabase | Supabase angebunden, RLS-Grundgerüst, archiviert | `context/archive/2026-06-12-connect-supabase/` |
+| 2026-06-15 | S-01 Phase 3 (Middleware) | Manual-Gate grün, live deployt | `a210f0c`, CI-Run `27521878004` |
+| 2026-06-15 | Confirm-Mail-Callback (Bug-Fix) | `/auth/callback` + `emailRedirectTo`, build grün | `4b5e916` |
+| 2026-06-14 | S-01 Phase 2 (profiles-Trigger) | Migration remote applied, Trigger feuert | `96adb0b` |
+| 2026-06-14 | S-01 Phase 1 (API-Validierung) | Zod-Auth, 1.0–1.6 grün | `80357ca` |
+| 2026-06-13 | F-01: connect-supabase | Supabase + RLS-Grundgerüst | `context/archive/2026-06-12-connect-supabase/` |
 | 2026-06-12 | F-02: deploy-skeleton-live | Live-URL, CI grün | `context/archive/2026-06-11-deploy-skeleton-live/` |
 
 ---
@@ -54,11 +48,11 @@
 
 ---
 
-## Befunde / Gotchas (Session 2026-06-14)
+## Befunde / Gotchas (Session 2026-06-15)
 
-- **„Confirm email" im Supabase-Projekt aktiv** — frischer User braucht Mail-Bestätigung vor Signin.
-- **Gmail-MCP hängt an Fremd-Account `eli.assistant.ai`** — Mail-Checks nicht automatisierbar, brauchen Damian.
-- **curl-Auth-Tests:** Astro-6-CSRF → `-H Origin:http://localhost:4321`; `+`-Alias → `--data-urlencode`.
+- **miniflare-Dev-Quirk:** transienter „Network connection lost" (`entry.worker.js`) bei in-flight-Request während Vite-`program reload`; per F5 grün, in Prod unmöglich. Kein Code-Bug.
+- **Astro-Watcher-Race (Windows):** `astro dev` crasht gelegentlich beim Anlegen neuer Routen (`stat` auf `*.ts.tmp.*`) — Dev-Server neu starten.
+- **PKCE-Confirm:** `emailRedirectTo` wird nur akzeptiert, wenn es in der Supabase-Redirect-Allowlist steht — sonst Fallback auf Site-URL.
 
 ---
 
