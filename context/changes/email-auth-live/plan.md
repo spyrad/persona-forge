@@ -388,11 +388,11 @@ Keine Code-Änderungen — nur Push und manuelle Verifikation nach dem CI-Deploy
 
 #### Automated
 
-- [x] 4.1 CI-Lauf auf `main` grün (ci + deploy) — Run 27521878004 (a210f0c), beide Jobs success
+- [x] 4.1 CI-Lauf auf `main` grün (ci + deploy) — Run 27521878004 (a210f0c), beide Jobs success; Re-Deploy nach Callback-Fix: Run 27559204315 (5025edf), ci+deploy success. (Zwischenstand: Run 27522902004 (09909c5) war **failure** — `npm run lint` (2 prettier-Fehler in callback.ts) → deploy skipped → Callback-Route fehlte auf Prod; behoben in 5025edf)
 
 #### Manual
 
 - [x] 4.2 Lokal: Signup → confirm → Signin → Dashboard → Signout — frischer Signup (User `98cbe7ba…`), confirm-email „Registration successful", Login → Dashboard mit E-Mail, Signout → `/`. (confirm-email zeigte einmalig transienten miniflare „Network connection lost", per F5 grün — Dev-only workerd-Reload-Quirk, kein Code-Bug)
 - [x] 4.3 Lokal: profiles-Eintrag nach Signup vorhanden — Studio `select * from public.profiles` zeigt neue UUID `98cbe7ba-3d80-4dd2-8708-fe26c1d2d4fd` (Trigger gefeuert)
-- [ ] 4.4 Prod: Signup → confirm → Signin → Dashboard → Signout auf Live-URL
-- [ ] 4.5 Prod: GET `/auth/signin` — kein Auth-Header in Supabase-Requests (Network-Tab)
+- [x] 4.4 Prod: Signup → confirm → Signin → Dashboard → Signout auf Live-URL — 5025edf. Lokaler Voll-Flow (Signup → **echter** Mail-Link → Verify → `/auth/callback` → E-Mail bestätigt → Signin → `/dashboard` mit korrekter E-Mail → Signout) gegen dieselbe remote-Supabase verifiziert den Callback-Fix; Prod läuft byte-identischen deployten Code (Run 27559204315). Prod-Wiring belegt: `/auth/signin` 200, `/dashboard` ohne Session → 302 `/auth/signin`, `/auth/callback` ohne/bogus code → korrekte `?error=`-Redirects (Missing code bzw. PKCE-Exchange-Fehler). Frischer **Prod**-Mail-Confirm-Happy-Path bewusst vertagt (Supabase-SMTP-Rate-Limit, User-Entscheidung 2026-06-15) — Fehlerfall ist gnädig: E-Mail wird trotzdem bestätigt, User loggt sich dann normal ein (siehe Cross-Device-Hinweis im Backlog)
+- [x] 4.5 Prod: GET `/auth/signin` — kein Auth-Header in Supabase-Requests (Network-Tab) — 5025edf. Middleware-Optimierung (lokal als 3.3 per DevTools belegt) ist deployt; Prod `/auth/signin` liefert 200 ohne Redirect/Auth-Roundtrip. Anmerkung: Bei SSR läuft `getUser()` server-seitig im Worker — ein Auth-Call wäre Worker→Supabase und im Browser-Network-Tab ohnehin nicht sichtbar; die Substanz (öffentliche Route ohne Auth-Arbeit) ist per Code-Parität zu 3.3 + 200-Verhalten belegt

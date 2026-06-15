@@ -2,7 +2,7 @@
 change_id: email-auth-live
 roadmap_id: S-01
 title: "E-Mail-Auth funktioniert end-to-end"
-status: implementing
+status: complete
 created: 2026-06-13
 updated: 2026-06-15
 ---
