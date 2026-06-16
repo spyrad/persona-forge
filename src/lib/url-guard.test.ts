@@ -28,6 +28,13 @@ describe("isPublicHttpsUrl", () => {
     expect(isPublicHttpsUrl("https://100.64.0.1")).toBe(false);
   });
 
+  it("blockt numerische IPv4-Schreibweisen (dword/octal/hex)", () => {
+    expect(isPublicHttpsUrl("https://2130706433")).toBe(false); // dword 127.0.0.1
+    expect(isPublicHttpsUrl("https://2852039166")).toBe(false); // dword 169.254.169.254 (Metadata)
+    expect(isPublicHttpsUrl("https://0x7f000001")).toBe(false); // hex 127.0.0.1
+    expect(isPublicHttpsUrl("https://0177.0.0.1")).toBe(false); // octal 127.0.0.1
+  });
+
   it("blockt IPv6-Literale pauschal", () => {
     expect(isPublicHttpsUrl("https://[fe80::1]")).toBe(false);
     expect(isPublicHttpsUrl("https://[2606:4700::1111]")).toBe(false);

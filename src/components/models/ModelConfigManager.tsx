@@ -7,6 +7,8 @@ import type { ModelConfigView } from "@/types";
 
 interface Props {
   initialConfigs: ModelConfigView[];
+  /** Server-seitiger Initial-Load fehlgeschlagen → Banner statt stumm leerer Liste. */
+  loadError?: boolean;
 }
 
 interface FormState {
@@ -38,12 +40,14 @@ function messageFromPayload(payload: unknown): string {
   return "Something went wrong. Please try again.";
 }
 
-export default function ModelConfigManager({ initialConfigs }: Props) {
+export default function ModelConfigManager({ initialConfigs, loadError = false }: Props) {
   const [configs, setConfigs] = useState<ModelConfigView[]>(initialConfigs);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [errors, setErrors] = useState<FieldErrors>({});
-  const [serverError, setServerError] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(
+    loadError ? "Couldn't load configurations. Please reload." : null,
+  );
   const [pending, setPending] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
@@ -88,6 +92,8 @@ export default function ModelConfigManager({ initialConfigs }: Props) {
     }
     if (res.ok) {
       setConfigs((await res.json()) as ModelConfigView[]);
+    } else {
+      setServerError("Couldn't load configurations. Please reload.");
     }
   }
 

@@ -48,6 +48,15 @@ export function isPublicHttpsUrl(raw: string): boolean {
     return true; // oeffentliches IPv4-Literal
   }
 
+  // Numerische Nicht-dotted-quad-Formen (dword/octal/hex) wuerden sonst als
+  // "benannter Host" durchrutschen und dieselben internen Ziele adressieren
+  // (z.B. 2852039166 = 169.254.169.254, 0177.0.0.1 = 127.0.0.1, 0x7f000001).
+  // Echte API-Endpoints sind stets Domainnamen → jeden rein numerischen/hex
+  // Host ablehnen (jedes Label nur Ziffern oder 0x-Hex).
+  if (host.split(".").every((label) => /^(0x[0-9a-f]+|\d+)$/.test(label))) {
+    return false;
+  }
+
   // Benannter Host (kein IP-Literal) → erlaubt.
   return true;
 }

@@ -14,7 +14,7 @@ const updateSchema = z.object({
   baseUrl: z.url().refine(isPublicHttpsUrl, { message: "base_url must be a public https URL." }),
   modelName: z.string().trim().min(1).max(200),
   // Fehlt apiKey, bleibt der bestehende Key unveraendert.
-  apiKey: z.string().min(1).optional(),
+  apiKey: z.string().min(1).max(512).optional(),
 });
 
 /** Aktualisiert Metadaten (+ optional Key); Response enthaelt nie den Key. */

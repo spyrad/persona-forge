@@ -9,16 +9,20 @@ import ModelConfigManager from "@/components/models/ModelConfigManager";
 const { user } = Astro.locals;
 
 // Initiale Liste server-seitig laden (RLS-gescoped ueber die Request-Session).
-// Faellt ENCRYPTION_KEY/Supabase aus, bleibt die Liste leer; die Island laedt
-// nach Mutationen ohnehin neu.
+// Faellt Supabase/Service aus, signalisiert `loadError` der Island einen
+// sichtbaren Hinweis statt einer stumm leeren Liste; die Island laedt nach
+// Mutationen ohnehin neu.
 let initialConfigs: ModelConfigView[] = [];
+let loadError = false;
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 if (supabase) {
   try {
     initialConfigs = await listModelConfigs(supabase);
   } catch {
-    initialConfigs = [];
+    loadError = true;
   }
+} else {
+  loadError = true;
 }
 ---
 
@@ -43,7 +47,7 @@ if (supabase) {
         </a>
       </header>
 
-      <ModelConfigManager client:load initialConfigs={initialConfigs} />
+      <ModelConfigManager client:load initialConfigs={initialConfigs} loadError={loadError} />
     </div>
   </div>
 </Layout>

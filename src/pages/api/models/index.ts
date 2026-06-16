@@ -11,7 +11,7 @@ const createSchema = z.object({
   label: z.string().trim().min(1).max(120),
   baseUrl: z.url().refine(isPublicHttpsUrl, { message: "base_url must be a public https URL." }),
   modelName: z.string().trim().min(1).max(200),
-  apiKey: z.string().min(1),
+  apiKey: z.string().min(1).max(512),
 });
 
 /** Liste der eigenen Konfigs (ohne Key-Material). */
