@@ -102,10 +102,15 @@ export async function updateModelConfig(
   return data ? toView(data) : null;
 }
 
-/** Loescht eine Konfig (RLS beschraenkt auf die eigene; fremde id → kein Effekt). */
-export async function deleteModelConfig(sb: SupabaseClient, id: string): Promise<void> {
-  const { error } = await sb.from(TABLE).delete().eq("id", id);
+/**
+ * Loescht eine Konfig (RLS beschraenkt auf die eigene; fremde/fehlende id →
+ * kein Effekt). Gibt `true`, wenn eine Zeile getroffen wurde, sonst `false` —
+ * die Route mappt `false` auf 404 (analog zu `updateModelConfig`).
+ */
+export async function deleteModelConfig(sb: SupabaseClient, id: string): Promise<boolean> {
+  const { data, error } = await sb.from(TABLE).delete().eq("id", id).select("id").maybeSingle();
   if (error) fail("delete", error.message);
+  return data !== null;
 }
 
 /**

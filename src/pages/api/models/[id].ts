@@ -53,7 +53,8 @@ export const DELETE: APIRoute = async (context) => {
   if (!id.success) return jsonError("Invalid config id.", 400);
 
   try {
-    await deleteModelConfig(auth.supabase, id.data);
+    const deleted = await deleteModelConfig(auth.supabase, id.data);
+    if (!deleted) return jsonError("Config not found.", 404);
     return json({ ok: true });
   } catch (err) {
     return serviceErrorResponse("models:delete", err);
