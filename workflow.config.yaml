@@ -10,8 +10,7 @@ repos:
   - name: "persona-forge"
     path: "."
     type: "astro"
-    # Kein Test-Runner im Starter enthalten — setzen sobald eingerichtet (z. B. Vitest)
-    test_command: null
+    test_command: "npm run test"
     build_command: "npm run build"
     lint_command: "npm run lint"
     dev_command: "npm run dev"
