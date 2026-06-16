@@ -489,10 +489,10 @@ spätere Rotation (kein Aufwand jetzt). Vor Prod-Nutzung muss das GitHub-Secret
 
 #### Automated
 
-- [ ] 2.1 Migration appliziert sauber (lokal: `npx supabase db reset`/`db push`)
-- [ ] 2.2 Build grün: `npm run build`
-- [ ] 2.3 Lint grün: `npm run lint`
-- [ ] 2.4 Bestehende + neue Unit-Tests grün: `npm run test`
+- [x] 2.1 Migration appliziert sauber (remote `db push` → Prod, local+remote synced)
+- [x] 2.2 Build grün: `npm run build`
+- [x] 2.3 Lint grün: `npm run lint`
+- [x] 2.4 Bestehende + neue Unit-Tests grün: `npm run test`
 
 #### Manual
 
