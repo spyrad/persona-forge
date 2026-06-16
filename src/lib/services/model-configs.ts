@@ -16,7 +16,7 @@
  * zum bestehenden Auth-Muster. Der `ENCRYPTION_KEY`-Zugriff liegt in
  * `getEncryptionKey()` (server-only) — `crypto.ts` bleibt key-parametrisiert.
  */
-import { encryptApiKey } from "@/lib/crypto";
+import { decryptApiKey, encryptApiKey } from "@/lib/crypto";
 import { getEncryptionKey } from "@/lib/encryption-key";
 import type { createClient } from "@/lib/supabase";
 import type { CreateModelConfigInput, ModelConfig, ModelConfigView, UpdateModelConfigInput } from "@/types";
@@ -77,12 +77,14 @@ export async function createModelConfig(sb: SupabaseClient, input: CreateModelCo
 /**
  * Aktualisiert Metadaten (immer) und `updated_at`; der Key wird nur ersetzt,
  * wenn `apiKey` gesetzt ist — sonst bleibt der bestehende Ciphertext unberuehrt.
+ * Gibt `null`, wenn keine Zeile getroffen wurde (fremde/fehlende id via RLS) —
+ * die Route mappt das auf 404.
  */
 export async function updateModelConfig(
   sb: SupabaseClient,
   id: string,
   input: UpdateModelConfigInput,
-): Promise<ModelConfigView> {
+): Promise<ModelConfigView | null> {
   const patch: Record<string, string | number> = {
     label: input.label,
     base_url: input.baseUrl,
@@ -95,13 +97,38 @@ export async function updateModelConfig(
     patch.key_iv = encrypted.iv;
     patch.key_version = encrypted.keyVersion;
   }
-  const { data, error } = await sb.from(TABLE).update(patch).eq("id", id).select(VIEW_COLUMNS).single();
+  const { data, error } = await sb.from(TABLE).update(patch).eq("id", id).select(VIEW_COLUMNS).maybeSingle();
   if (error) fail("update", error.message);
-  return toView(data);
+  return data ? toView(data) : null;
 }
 
-/** Loescht eine Konfig (RLS beschraenkt auf die eigene). */
+/** Loescht eine Konfig (RLS beschraenkt auf die eigene; fremde id → kein Effekt). */
 export async function deleteModelConfig(sb: SupabaseClient, id: string): Promise<void> {
   const { error } = await sb.from(TABLE).delete().eq("id", id);
   if (error) fail("delete", error.message);
+}
+
+/**
+ * Server-only: laedt eine Konfig inkl. entschluesseltem API-Key fuer den
+ * Verbindungstest. Der Key wird NUR fuer den Upstream-Call genutzt und NIE an
+ * den Client zurueckgegeben. Gibt `null`, wenn die Konfig nicht existiert oder
+ * (per RLS) nicht dem Aufrufer gehoert.
+ */
+export async function getDecryptedTarget(
+  sb: SupabaseClient,
+  id: string,
+): Promise<{ baseUrl: string; apiKey: string } | null> {
+  const { data, error } = await sb
+    .from(TABLE)
+    .select("base_url, key_ciphertext, key_iv, key_version")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) fail("test-target", error.message);
+  if (!data) return null;
+  const row = data as Pick<ModelConfig, "base_url" | "key_ciphertext" | "key_iv" | "key_version">;
+  const apiKey = await decryptApiKey(
+    { ciphertext: row.key_ciphertext, iv: row.key_iv, keyVersion: row.key_version },
+    getEncryptionKey(),
+  );
+  return { baseUrl: row.base_url, apiKey };
 }
