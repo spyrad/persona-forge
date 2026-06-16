@@ -496,9 +496,9 @@ spätere Rotation (kein Aufwand jetzt). Vor Prod-Nutzung muss das GitHub-Secret
 
 #### Manual
 
-- [ ] 2.5 Tabelle `model_configs` existiert mit RLS aktiv + vier Policies
-- [ ] 2.6 RLS owner-only über zwei Test-User belegt (A sieht B nicht)
-- [ ] 2.7 `key_ciphertext` enthält keinen lesbaren Klartext-Key
+- [x] 2.5 Tabelle `model_configs` existiert mit RLS aktiv + vier Policies — E2E 2026-06-16 (Studio bestätigt)
+- [x] 2.6 RLS owner-only über zwei Test-User belegt (A sieht B nicht) — E2E 2026-06-16 (B-Liste leer)
+- [x] 2.7 `key_ciphertext` enthält keinen lesbaren Klartext-Key — E2E 2026-06-16 (Studio: base64, kein Klartext)
 
 ### Phase 3: API-Routes
 
@@ -510,10 +510,10 @@ spätere Rotation (kein Aufwand jetzt). Vor Prod-Nutzung muss das GitHub-Secret
 
 #### Manual
 
-- [ ] 3.4 Create gibt keine Key-Felder zurück
-- [ ] 3.5 Update ohne `apiKey` behält Key; mit `apiKey` ersetzt ihn
-- [ ] 3.6 Delete entfernt nur eigene Konfig (RLS)
-- [ ] 3.7 test-connection: ok bei gültigem Key, fehler bei falschem
+- [x] 3.4 Create gibt keine Key-Felder zurück — E2E 2026-06-16 (Response = ModelConfigView)
+- [x] 3.5 Update ohne `apiKey` behält Key; mit `apiKey` ersetzt ihn — E2E 2026-06-16 (PUT-Body geprüft)
+- [x] 3.6 Delete entfernt nur eigene Konfig (RLS) — 23e82c6 (Zwei-User-Test; Fix: 404 statt no-op-200)
+- [x] 3.7 test-connection: ok bei gültigem Key, fehler bei falschem — E2E 2026-06-16 (ok:true 127 Modelle, 401, SSRF-Guard, configId-decrypt)
 
 ### Phase 4: UI — geschützte /models-Page + React-Island
 
@@ -525,7 +525,7 @@ spätere Rotation (kein Aufwand jetzt). Vor Prod-Nutzung muss das GitHub-Secret
 
 #### Manual
 
-- [ ] 4.4 Ausgeloggt → `/models` redirectet auf `/auth/signin`
-- [ ] 4.5 Anlegen → Katalog zeigt Konfig mit maskiertem Key
-- [ ] 4.6 Editieren behält/ersetzt Key korrekt; Löschen funktioniert
-- [ ] 4.7 Kein Klartext-Key in Props/Responses/Markup (DevTools)
+- [x] 4.4 Ausgeloggt → `/models` redirectet auf `/auth/signin` — E2E 2026-06-16
+- [x] 4.5 Anlegen → Katalog zeigt Konfig mit maskiertem Key — E2E 2026-06-16 (•••••••• + „Key hinterlegt")
+- [x] 4.6 Editieren behält/ersetzt Key korrekt; Löschen funktioniert — E2E 2026-06-16
+- [x] 4.7 Kein Klartext-Key in Props/Responses/Markup (DevTools) — E2E 2026-06-16 (DOM/Scripts/JSON-Responses geprüft)
