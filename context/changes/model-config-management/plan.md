@@ -475,15 +475,15 @@ spätere Rotation (kein Aufwand jetzt). Vor Prod-Nutzung muss das GitHub-Secret
 
 #### Automated
 
-- [x] 1.1 Vitest läuft: `npm run test`
-- [x] 1.2 Krypto-Roundtrip- und Fehlerpfad-Tests grün: `npm run test`
-- [x] 1.3 Build grün: `npm run build`
-- [x] 1.4 Lint grün: `npm run lint`
+- [x] 1.1 Vitest läuft: `npm run test` — f4e748d
+- [x] 1.2 Krypto-Roundtrip- und Fehlerpfad-Tests grün: `npm run test` — f4e748d
+- [x] 1.3 Build grün: `npm run build` — f4e748d
+- [x] 1.4 Lint grün: `npm run lint` — f4e748d
 
 #### Manual
 
-- [x] 1.5 `npm run test` ohne `ENCRYPTION_KEY` zeigt den Fail-closed-Test grün
-- [x] 1.6 Config-Hinweis erscheint bei fehlendem `ENCRYPTION_KEY`
+- [x] 1.5 `npm run test` ohne `ENCRYPTION_KEY` zeigt den Fail-closed-Test grün — f4e748d
+- [x] 1.6 Config-Hinweis erscheint bei fehlendem `ENCRYPTION_KEY` — f4e748d
 
 ### Phase 2: Datenschicht — Migration, RLS, Service, Types
 
