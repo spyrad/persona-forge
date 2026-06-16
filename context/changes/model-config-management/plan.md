@@ -489,10 +489,10 @@ spätere Rotation (kein Aufwand jetzt). Vor Prod-Nutzung muss das GitHub-Secret
 
 #### Automated
 
-- [x] 2.1 Migration appliziert sauber (remote `db push` → Prod, local+remote synced)
-- [x] 2.2 Build grün: `npm run build`
-- [x] 2.3 Lint grün: `npm run lint`
-- [x] 2.4 Bestehende + neue Unit-Tests grün: `npm run test`
+- [x] 2.1 Migration appliziert sauber (remote `db push` → Prod, local+remote synced) — 9e7ce22
+- [x] 2.2 Build grün: `npm run build` — 9e7ce22
+- [x] 2.3 Lint grün: `npm run lint` — 9e7ce22
+- [x] 2.4 Bestehende + neue Unit-Tests grün: `npm run test` — 9e7ce22
 
 #### Manual
 
