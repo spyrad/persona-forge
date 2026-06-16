@@ -504,9 +504,9 @@ spätere Rotation (kein Aufwand jetzt). Vor Prod-Nutzung muss das GitHub-Secret
 
 #### Automated
 
-- [x] 3.1 Build grün: `npm run build`
-- [x] 3.2 Lint grün: `npm run lint`
-- [x] 3.3 Unit-Tests grün: `npm run test`
+- [x] 3.1 Build grün: `npm run build` — 3bb77b6
+- [x] 3.2 Lint grün: `npm run lint` — 3bb77b6
+- [x] 3.3 Unit-Tests grün: `npm run test` — 3bb77b6
 
 #### Manual
 
