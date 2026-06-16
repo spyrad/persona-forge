@@ -34,7 +34,15 @@ async function probeModels(baseUrl: string, apiKey: string): Promise<ProbeResult
       method: "GET",
       headers: { Authorization: `Bearer ${apiKey}`, Accept: "application/json" },
       signal: controller.signal,
+      // SSRF-Haertung: Redirects NICHT transparent folgen — sonst koennte ein
+      // oeffentlicher Host per 3xx auf ein internes Ziel (Cloud-Metadata,
+      // private IP) umleiten und den isPublicHttpsUrl-Guard umgehen. Ein
+      // legitimer /models-Endpunkt antwortet direkt mit 200.
+      redirect: "manual",
     });
+    if (res.type === "opaqueredirect" || (res.status >= 300 && res.status < 400)) {
+      return { ok: false, reason: "Endpoint redirected — not allowed." };
+    }
     if (!res.ok) {
       return { ok: false, reason: `Endpoint returned status ${res.status}.` };
     }
