@@ -72,7 +72,8 @@ export async function listPersonas(sb: SupabaseClient, userId: string): Promise<
 }
 
 /**
- * Legt eine Persona an. owner_id via DB-Default, visibility = Default ('global').
+ * Legt eine Persona an. owner_id via DB-Default, visibility immer 'private'
+ * (globale Personas nur per Seed/Migration, FR-009).
  * Bei `sourceKind = 'structured'` wird der `system_prompt` serverseitig aus den
  * Feldern kompiliert und die Felder selbst in `structured_fields` abgelegt; bei
  * `'freeform'` wird der getippte Prompt direkt gespeichert.
@@ -95,6 +96,10 @@ export async function createPersona(
       system_prompt: systemPrompt,
       source_kind: input.sourceKind,
       structured_fields: structuredFields,
+      // Privacy-by-default: nutzerangelegte Personas sind privat. Globale
+      // Personas entstehen ausschliesslich per Seed/Migration (FR-009); der
+      // nutzerseitige Sichtbarkeits-Toggle ist S-07. (impl-review F1)
+      visibility: "private",
     })
     .select(VIEW_COLUMNS)
     .single();
