@@ -370,6 +370,16 @@ kein Tag-Index. `text[]` ohne GIN-Index ausreichend.
   `src/pages/models.astro`
 - RLS-Foundation: `supabase/migrations/20260612164633_rls_foundation.sql` (`visibility`-Enum, `_rls_probe`-Muster)
 
+## Addenda (Post-Implementation)
+
+- **Kopieren vs. Anpassen (Hybrid, abgestimmt mit Damian, 2026-06-17 S2):** Der
+  Plan beschrieb „Kopieren" als einen Pfad, der das Formular vorbefüllt. Umgesetzt
+  wurde stattdessen ein Hybrid: **„Kopieren"** bleibt ein sofortiger Server-Duplicate
+  (Endpoint bleibt genutzt, kein verifiziertes Verhalten geändert), ein neuer
+  **„Anpassen"**-Button befüllt das Formular vorbefüllt (Submit = neue Persona).
+  Das schließt die Immutabilitäts-Edit-Lücke, ohne den Duplicate-Endpoint zu
+  verwaisen. Gilt als bewusste, dokumentierte Plan-Abweichung (impl-review F2).
+
 ## Progress
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.

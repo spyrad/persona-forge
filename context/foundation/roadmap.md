@@ -3,7 +3,7 @@ project: "persona-forge"
 version: 1
 status: draft
 created: 2026-06-11
-updated: 2026-06-16
+updated: 2026-06-17
 prd_version: 1
 main_goal: learn
 top_blocker: time
@@ -40,7 +40,7 @@ lassen sich direkt vergleichen.
 | F-02 | deploy-skeleton-live     | (foundation) Auto-Deploy auf main liefert eine Live-URL                      | —             | tech-stack.md (cloudflare-workers, CI)    | done     |
 | S-01 | email-auth-live          | sich registrieren, anmelden und geschützte Seiten erreichen                  | F-01          | FR-001, §Access Control                   | done |
 | S-02 | model-config-management  | ein OpenAI-kompatibles Modell anhängen und als Konfig speichern (Key verschlüsselt) | S-01    | FR-005, FR-006, NFR Key-Dichtheit         | done |
-| S-03 | persona-catalog          | eine Persona anlegen (frei/strukturiert), im Katalog finden und kopieren     | S-01          | FR-007, FR-008                            | proposed |
+| S-03 | persona-catalog          | eine Persona anlegen (frei/strukturiert), im Katalog finden und kopieren     | S-01          | FR-007, FR-008                            | done |
 | S-04 | oejts-measurement-run    | einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen          | S-02, S-03    | US-01, FR-010, FR-012, FR-013, NFR Resilienz/Last/Fortschritt | blocked  |
 | S-05 | distribution-results     | das Ergebnis je Achse als Verteilung mit Streuung plus Typ-Stabilität sehen  | S-04          | US-01, FR-016, NFR Reproduzierbarkeit     | proposed |
 | S-06 | run-control-and-tokens   | einen laufenden Test abbrechen und den Token-Verbrauch je Lauf sehen         | S-04          | FR-014, FR-015                            | proposed |
@@ -135,7 +135,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Zwei Eingabewege (frei + strukturiert) sind bewusst beide v1-Scope (Socrates-geprüft); der strukturierte Weg hängt an `docs/persona-authoring-spec.md` und kann im Plan als zweite Phase geschnitten werden.
-- **Status:** proposed
+- **Status:** done
 
 ### S-04: OEJTS-Messlauf ausführen
 
