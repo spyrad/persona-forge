@@ -378,29 +378,29 @@ kein Tag-Index. `text[]` ohne GIN-Index ausreichend.
 
 #### Automated
 
-- [x] 1.1 Migration appliziert sauber (`personas` + RLS + Seed)
-- [x] 1.2 Lint grün: `npm run lint`
-- [x] 1.3 Build grün: `npm run build`
-- [x] 1.4 Typecheck grün: `npx astro check` (0 errors)
+- [x] 1.1 Migration appliziert sauber (`personas` + RLS + Seed) — 0f62896
+- [x] 1.2 Lint grün: `npm run lint` — 0f62896
+- [x] 1.3 Build grün: `npm run build` — 0f62896
+- [x] 1.4 Typecheck grün: `npx astro check` (0 errors) — 0f62896
 
 #### Manual
 
-- [x] 1.5 Create (Freitext) erscheint im Katalog mit Tags + System-Prompt
-- [x] 1.6 Kopieren einer eigenen Persona → private „(Kopie)", Original unverändert
-- [x] 1.7 Kopieren der globalen Seed-Persona → eigene private Kopie
-- [x] 1.8 Löschen entfernt eigene Persona; globale Seed-Persona ohne Löschen-Button
-- [x] 1.9 Tag-Filter zeigt nur passende Personas
-- [x] 1.10 Ausgeloggt → `/personas` redirectet auf `/auth/signin`
-- [x] 1.11 Zwei-User-RLS: B sieht A's private nicht, sieht globale; fremde id löschen → 404
+- [x] 1.5 Create (Freitext) erscheint im Katalog mit Tags + System-Prompt — 0f62896
+- [x] 1.6 Kopieren einer eigenen Persona → private „(Kopie)", Original unverändert — 0f62896
+- [x] 1.7 Kopieren der globalen Seed-Persona → eigene private Kopie — 0f62896
+- [x] 1.8 Löschen entfernt eigene Persona; globale Seed-Persona ohne Löschen-Button — 0f62896
+- [x] 1.9 Tag-Filter zeigt nur passende Personas — 0f62896
+- [x] 1.10 Ausgeloggt → `/personas` redirectet auf `/auth/signin` — 0f62896
+- [x] 1.11 Zwei-User-RLS: B sieht A's private nicht, sieht globale; fremde id löschen → 404 — 0f62896
 
 ### Phase 2: Strukturierter Spec-Editor
 
 #### Automated
 
-- [ ] 2.1 Kompilier-Unit-Tests grün: `npm run test`
-- [ ] 2.2 Lint grün: `npm run lint`
-- [ ] 2.3 Build grün: `npm run build`
-- [ ] 2.4 Typecheck grün: `npx astro check`
+- [x] 2.1 Kompilier-Unit-Tests grün: `npm run test`
+- [x] 2.2 Lint grün: `npm run lint`
+- [x] 2.3 Build grün: `npm run build`
+- [x] 2.4 Typecheck grün: `npx astro check`
 
 #### Manual
 

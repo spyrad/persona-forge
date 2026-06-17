@@ -13,8 +13,9 @@
  * `isOwn` wird im View-Mapping aus `owner_id === userId` abgeleitet (steuert
  * Loeschbarkeit/Badge); dafuer selektieren die Lese-Operationen `owner_id` mit.
  */
+import { compilePersonaPrompt } from "@/lib/persona-compile";
 import type { createClient } from "@/lib/supabase";
-import type { CreatePersonaInput, Persona, PersonaView } from "@/types";
+import type { CreatePersonaInput, Persona, PersonaStructuredFields, PersonaView } from "@/types";
 
 type SupabaseClient = NonNullable<ReturnType<typeof createClient>>;
 
@@ -22,7 +23,7 @@ const TABLE = "personas";
 
 /** Spalten der client-sicheren Projektion (inkl. owner_id fuer `isOwn`-Ableitung). */
 const VIEW_COLUMNS =
-  "id, owner_id, name, description, tags, system_prompt, visibility, source_kind, created_at, updated_at";
+  "id, owner_id, name, description, tags, system_prompt, visibility, source_kind, structured_fields, created_at, updated_at";
 
 /** DB-Zeilenform der View-Projektion. */
 type PersonaViewRow = Pick<
@@ -35,6 +36,7 @@ type PersonaViewRow = Pick<
   | "system_prompt"
   | "visibility"
   | "source_kind"
+  | "structured_fields"
   | "created_at"
   | "updated_at"
 >;
@@ -48,6 +50,9 @@ function toView(row: PersonaViewRow, userId: string): PersonaView {
     systemPrompt: row.system_prompt,
     visibility: row.visibility,
     sourceKind: row.source_kind,
+    // jsonb kommt als `unknown` zurueck; unsere eigene Schreibseite garantiert die
+    // Form (nur bei source_kind = 'structured' gesetzt).
+    structuredFields: (row.structured_fields as PersonaStructuredFields | null) ?? null,
     isOwn: row.owner_id === userId,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -66,20 +71,30 @@ export async function listPersonas(sb: SupabaseClient, userId: string): Promise<
   return (data as PersonaViewRow[]).map((row) => toView(row, userId));
 }
 
-/** Legt eine Persona an (Freitext). owner_id via DB-Default, visibility = Default ('global'). */
+/**
+ * Legt eine Persona an. owner_id via DB-Default, visibility = Default ('global').
+ * Bei `sourceKind = 'structured'` wird der `system_prompt` serverseitig aus den
+ * Feldern kompiliert und die Felder selbst in `structured_fields` abgelegt; bei
+ * `'freeform'` wird der getippte Prompt direkt gespeichert.
+ */
 export async function createPersona(
   sb: SupabaseClient,
   userId: string,
   input: CreatePersonaInput,
 ): Promise<PersonaView> {
+  const systemPrompt =
+    input.sourceKind === "structured" ? compilePersonaPrompt(input.structuredFields) : input.systemPrompt;
+  const structuredFields = input.sourceKind === "structured" ? input.structuredFields : null;
+
   const { data, error } = await sb
     .from(TABLE)
     .insert({
       name: input.name,
       description: input.description,
       tags: input.tags,
-      system_prompt: input.systemPrompt,
-      source_kind: "freeform",
+      system_prompt: systemPrompt,
+      source_kind: input.sourceKind,
+      structured_fields: structuredFields,
     })
     .select(VIEW_COLUMNS)
     .single();

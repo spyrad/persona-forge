@@ -81,9 +81,32 @@ export interface Persona {
 }
 
 /**
+ * Strukturierte Persona-Felder nach `docs/persona-authoring-spec.md` (§§1–6).
+ * §§1–4 sind Pflicht (mind. ein Eintrag), §5/§6 optional. Wird als `jsonb`
+ * gespeichert und von `compilePersonaPrompt` deterministisch zum `system_prompt`
+ * kompiliert.
+ */
+export interface PersonaStructuredFields {
+  /** §1 Kerndenken */
+  coreThinking: string[];
+  /** §2 Stimme */
+  voice: string[];
+  /** §3 Entscheidungsfilter */
+  decisionFilters: string[];
+  /** §4 Bekannte Risiken */
+  risks: string[];
+  /** §5 Stimme in Aktion (optional) */
+  exampleDialog?: string;
+  /** §6 Nutzung (optional) */
+  usage?: string;
+}
+
+/**
  * Client-sichere Projektion einer Persona (camelCase). Personas verstecken kein
  * Material, daher inkl. `systemPrompt`. `isOwn` (aus `owner_id === userId`)
  * steuert Loeschbarkeit/Badge in der UI — globale Seed-Personas sind nicht eigen.
+ * `structuredFields` ist nur bei `sourceKind = 'structured'` gesetzt und erlaubt
+ * das Vorbefuellen des strukturierten Editors beim „Anpassen".
  */
 export interface PersonaView {
   id: string;
@@ -93,18 +116,33 @@ export interface PersonaView {
   systemPrompt: string;
   visibility: Visibility;
   sourceKind: PersonaSourceKind;
+  structuredFields: PersonaStructuredFields | null;
   isOwn: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-/**
- * Eingabe beim Anlegen einer Persona (Phase 1: Freitext). Phase 2 erweitert um
- * den strukturierten Pfad (`structuredFields`/`sourceKind`).
- */
-export interface CreatePersonaInput {
+/** Gemeinsame Metadaten beider Eingabewege. */
+interface CreatePersonaBase {
   name: string;
   description: string;
   tags: string[];
+}
+
+/** Freitext-Eingabe: der System-Prompt wird direkt getippt. */
+export interface CreateFreeformPersonaInput extends CreatePersonaBase {
+  sourceKind: "freeform";
   systemPrompt: string;
 }
+
+/** Strukturierte Eingabe: der System-Prompt wird serverseitig kompiliert. */
+export interface CreateStructuredPersonaInput extends CreatePersonaBase {
+  sourceKind: "structured";
+  structuredFields: PersonaStructuredFields;
+}
+
+/**
+ * Eingabe beim Anlegen einer Persona — diskriminiert ueber `sourceKind`.
+ * Bei `'structured'` kompiliert der Server `systemPrompt` aus `structuredFields`.
+ */
+export type CreatePersonaInput = CreateFreeformPersonaInput | CreateStructuredPersonaInput;

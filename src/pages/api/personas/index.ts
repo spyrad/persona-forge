@@ -6,12 +6,28 @@ import { createPersona, listPersonas } from "@/lib/services/personas";
 
 export const prerender = false;
 
-const createSchema = z.object({
+const baseFields = {
   name: z.string().trim().min(1).max(120),
   description: z.string().trim().max(2000).default(""),
   tags: z.array(z.string().trim().min(1).max(40)).max(20).default([]),
-  systemPrompt: z.string().trim().min(1).max(20000),
+};
+
+/** §§1–4 Pflicht (mind. ein Eintrag), §5/§6 optional. */
+const structuredFieldsSchema = z.object({
+  coreThinking: z.array(z.string().trim().min(1).max(500)).min(1).max(20),
+  voice: z.array(z.string().trim().min(1).max(500)).min(1).max(20),
+  decisionFilters: z.array(z.string().trim().min(1).max(500)).min(1).max(20),
+  risks: z.array(z.string().trim().min(1).max(500)).min(1).max(20),
+  exampleDialog: z.string().trim().max(4000).optional(),
+  usage: z.string().trim().max(2000).optional(),
 });
+
+// Diskriminiert ueber sourceKind: 'freeform' liefert den Prompt direkt,
+// 'structured' liefert die Felder (Server kompiliert den Prompt).
+const createSchema = z.discriminatedUnion("sourceKind", [
+  z.object({ sourceKind: z.literal("freeform"), ...baseFields, systemPrompt: z.string().trim().min(1).max(20000) }),
+  z.object({ sourceKind: z.literal("structured"), ...baseFields, structuredFields: structuredFieldsSchema }),
+]);
 
 /** Liste der sichtbaren Personas (eigene + globale). */
 export const GET: APIRoute = async (context) => {
