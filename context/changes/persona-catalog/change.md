@@ -1,7 +1,7 @@
 ---
 change_id: persona-catalog
 title: Persona-Katalog
-status: implementing
+status: implemented
 created: 2026-06-17
 updated: 2026-06-17
 ---

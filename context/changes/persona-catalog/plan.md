@@ -397,14 +397,14 @@ kein Tag-Index. `text[]` ohne GIN-Index ausreichend.
 
 #### Automated
 
-- [x] 2.1 Kompilier-Unit-Tests grün: `npm run test`
-- [x] 2.2 Lint grün: `npm run lint`
-- [x] 2.3 Build grün: `npm run build`
-- [x] 2.4 Typecheck grün: `npx astro check`
+- [x] 2.1 Kompilier-Unit-Tests grün: `npm run test` — 12403c7
+- [x] 2.2 Lint grün: `npm run lint` — 12403c7
+- [x] 2.3 Build grün: `npm run build` — 12403c7
+- [x] 2.4 Typecheck grün: `npx astro check` — 12403c7
 
 #### Manual
 
-- [ ] 2.5 Strukturierte Persona anlegen → kompilierter `system_prompt` entspricht Spec-Struktur
-- [ ] 2.6 Kopieren strukturierter Persona öffnet strukturiertes Formular vorbefüllt
-- [ ] 2.7 Kopieren Freitext-Persona öffnet Freitext-Modus
-- [ ] 2.8 Modus-Umschaltung mit klarer Reset-Semantik (keine unerwarteten Feldverluste)
+- [x] 2.5 Strukturierte Persona anlegen → kompilierter `system_prompt` entspricht Spec-Struktur — 12403c7
+- [x] 2.6 Kopieren strukturierter Persona öffnet strukturiertes Formular vorbefüllt — 12403c7
+- [x] 2.7 Kopieren Freitext-Persona öffnet Freitext-Modus — 12403c7
+- [x] 2.8 Modus-Umschaltung mit klarer Reset-Semantik (keine unerwarteten Feldverluste) — 12403c7
