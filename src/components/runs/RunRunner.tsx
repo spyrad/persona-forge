@@ -227,14 +227,8 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
     }
   }
 
-  /** Loescht einen Lauf. Ist es der aktive, wird zuerst der Loop gestoppt (Abbruch). */
-  async function remove(id: string) {
-    if (id === activeRunId) {
-      stopLoop();
-      setProgress(null);
-    } else if (!window.confirm("Diesen Lauf löschen?")) {
-      return;
-    }
+  /** Schickt den harten DELETE (Lauf + alle run_repetitions via cascade) und laedt die Liste neu. */
+  async function deleteRunRequest(id: string) {
     setBusyId(id);
     setServerError(null);
     try {
@@ -249,6 +243,26 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
     } finally {
       setBusyId(null);
     }
+  }
+
+  /**
+   * Bricht den aktiven Lauf ab: stoppt den Loop und loescht den Lauf hart
+   * (FR-014). Da dabei alle bereits erhobenen Messdaten unwiderruflich
+   * verworfen werden, zuerst bestaetigen lassen.
+   */
+  async function cancelActive() {
+    if (activeRunId === null) return;
+    if (!window.confirm("Lauf abbrechen? Alle bereits erhobenen Messdaten gehen verloren.")) return;
+    const id = activeRunId;
+    stopLoop();
+    setProgress(null);
+    await deleteRunRequest(id);
+  }
+
+  /** Loescht einen abgeschlossenen/fehlgeschlagenen Lauf (mit Bestaetigung). */
+  async function remove(id: string) {
+    if (!window.confirm("Diesen Lauf löschen?")) return;
+    await deleteRunRequest(id);
   }
 
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
@@ -347,7 +361,10 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
               value={reps}
               disabled={!canRun || isRunning}
               onChange={(e) => {
-                setReps(e.target.valueAsNumber);
+                // Geleertes Feld liefert NaN — auf MIN_REPS klemmen, damit der
+                // kontrollierte Input nie value={NaN} rendert.
+                const v = e.target.valueAsNumber;
+                setReps(Number.isNaN(v) ? MIN_REPS : v);
               }}
               className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 pl-10 text-white transition-colors focus:ring-2 focus:ring-purple-400 focus:outline-none"
             />
@@ -386,7 +403,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
               variant="destructive"
               disabled={busyId === activeRunId}
               onClick={() => {
-                void remove(activeRunId);
+                void cancelActive();
               }}
             >
               <Ban className="size-3.5" />

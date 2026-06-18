@@ -340,10 +340,13 @@ export async function processNextRepetition(
     fail("step:insert", insErr.message);
   }
 
-  // Lauf-Aggregat fortschreiben: Fehlquote + (nur bei ok) Token-Summen.
+  // Lauf-Aggregat fortschreiben: Fehlquote nach Status; Token-Summen zaehlen
+  // ALLE real verbrauchten Tokens (auch fehlgeschlagene Wiederholungen, die
+  // dennoch eine Antwort + usage lieferten) — sonst wird der Verbrauch (FR-015)
+  // untertrieben. Fehlt usage, ist der Beitrag 0.
   const newFailedCount = run.failedCount + (repStatus === "ok" ? 0 : 1);
-  const newPromptTokens = run.promptTokens + (repStatus === "ok" ? (repPrompt ?? 0) : 0);
-  const newCompletionTokens = run.completionTokens + (repStatus === "ok" ? (repCompletion ?? 0) : 0);
+  const newPromptTokens = run.promptTokens + (repPrompt ?? 0);
+  const newCompletionTokens = run.completionTokens + (repCompletion ?? 0);
   await patchRun(sb, runId, {
     failed_count: newFailedCount,
     prompt_tokens: newPromptTokens,
