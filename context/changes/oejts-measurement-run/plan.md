@@ -462,10 +462,10 @@ Lauf-Liste in v1 (kleine Mengen), konsistent mit `models`/`personas`.
 
 #### Automated
 
-- [ ] 2.1 Lint grün: `npm run lint`
-- [ ] 2.2 Build grün: `npm run build`
-- [ ] 2.3 Typecheck grün: `npx astro check`
-- [ ] 2.4 Unit-Tests weiterhin grün: `npm run test`
+- [x] 2.1 Lint grün: `npm run lint`
+- [x] 2.2 Build grün: `npm run build`
+- [x] 2.3 Typecheck grün: `npx astro check`
+- [x] 2.4 Unit-Tests weiterhin grün: `npm run test`
 
 #### Manual
 

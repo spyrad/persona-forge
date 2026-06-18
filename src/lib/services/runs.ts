@@ -11,8 +11,12 @@
  *     Persona-System-Prompt fest (reproduzierbar, auch wenn Persona spaeter geloescht wird).
  *   * RLS erzwingt den Scope serverseitig (select own-or-global, writes owner-only).
  */
+import { OEJTS } from "@/lib/instruments/oejts";
+import { chatCompletion } from "@/lib/llm/openai-compatible";
+import { buildOejtsMessages, parseOejtsResponse, permuteItems } from "@/lib/runs/oejts-run";
+import { getDecryptedTarget } from "@/lib/services/model-configs";
 import type { createClient } from "@/lib/supabase";
-import type { CreateRunInput, Run, RunView } from "@/types";
+import type { CreateRunInput, ItemValue, RepetitionStatus, Run, RunProgress, RunStatus, RunView } from "@/types";
 
 type SupabaseClient = NonNullable<ReturnType<typeof createClient>>;
 
@@ -79,9 +83,10 @@ export async function getRun(sb: SupabaseClient, userId: string, id: string): Pr
 /**
  * Legt einen Lauf an (Status `pending`). Loest die Persona RLS-gescoped auf und
  * schreibt deren `system_prompt` als Snapshot; validiert, dass auch die
- * Modellkonfig sichtbar/eigen ist. Beides nicht sichtbar → Fehler (Route → 400/404).
+ * Modellkonfig sichtbar/eigen ist. Gibt `null`, wenn Persona ODER Modellkonfig
+ * nicht sichtbar ist (die Route mappt das auf 400) — echte DB-Fehler werfen.
  */
-export async function createRun(sb: SupabaseClient, userId: string, input: CreateRunInput): Promise<RunView> {
+export async function createRun(sb: SupabaseClient, userId: string, input: CreateRunInput): Promise<RunView | null> {
   // Persona RLS-gescoped lesen (eigene oder globale) → Snapshot.
   const { data: persona, error: pErr } = await sb
     .from("personas")
@@ -89,7 +94,7 @@ export async function createRun(sb: SupabaseClient, userId: string, input: Creat
     .eq("id", input.personaId)
     .maybeSingle();
   if (pErr) fail("create:persona", pErr.message);
-  if (!persona) fail("create", "persona not found or not visible");
+  if (!persona) return null;
 
   // Modellkonfig-Sichtbarkeit pruefen (RLS: nur eigene).
   const { data: model, error: mErr } = await sb
@@ -98,7 +103,7 @@ export async function createRun(sb: SupabaseClient, userId: string, input: Creat
     .eq("id", input.modelConfigId)
     .maybeSingle();
   if (mErr) fail("create:model", mErr.message);
-  if (!model) fail("create", "model config not found or not visible");
+  if (!model) return null;
 
   const { data, error } = await sb
     .from(TABLE)
@@ -126,4 +131,229 @@ export async function deleteRun(sb: SupabaseClient, id: string): Promise<boolean
   const { data, error } = await sb.from(TABLE).delete().eq("id", id).select("id").maybeSingle();
   if (error) fail("delete", error.message);
   return data !== null;
+}
+
+// ─── Orchestrierung (Phase 2) ────────────────────────────────────────────────
+
+/** Lauf-Felder, die ein Step-Aufruf braucht. */
+const STEP_COLUMNS =
+  "id, owner_id, model_config_id, persona_prompt_snapshot, repetition_count, status, prompt_tokens, completion_tokens, failed_count";
+
+/** Typisierter Step-Stand eines Laufs (camelCase). */
+interface RunStepState {
+  modelConfigId: string | null;
+  personaPromptSnapshot: string;
+  repetitionCount: number;
+  status: RunStatus;
+  promptTokens: number;
+  completionTokens: number;
+  failedCount: number;
+}
+
+/**
+ * Mappt eine `runs`-Zeile auf den getippten Step-Stand. Der typisierte Parameter
+ * launtert das `any` des untypisierten Supabase-Clients (gleiches Muster wie
+ * `toView`), sodass die Orchestrierung typsicher auf den Feldern arbeitet.
+ */
+function toStepState(
+  row: Pick<
+    Run,
+    | "model_config_id"
+    | "persona_prompt_snapshot"
+    | "repetition_count"
+    | "status"
+    | "prompt_tokens"
+    | "completion_tokens"
+    | "failed_count"
+  >,
+): RunStepState {
+  return {
+    modelConfigId: row.model_config_id,
+    personaPromptSnapshot: row.persona_prompt_snapshot,
+    repetitionCount: row.repetition_count,
+    status: row.status,
+    promptTokens: row.prompt_tokens,
+    completionTokens: row.completion_tokens,
+    failedCount: row.failed_count,
+  };
+}
+
+/**
+ * Deterministischer Seed je (Lauf, Wiederholung) — FNV-1a ueber `runId:repIndex`.
+ * Gleicher Lauf + gleiche rep_index → gleiche Permutation (Reproduzierbarkeit).
+ */
+function seedFrom(runId: string, repIndex: number): number {
+  let h = 0x811c9dc5;
+  const s = `${runId}:${repIndex}`;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return h >>> 0;
+}
+
+/** Zaehlt die bereits geschriebenen Wiederholungen eines Laufs (RLS-gescoped). */
+async function countReps(sb: SupabaseClient, runId: string): Promise<number> {
+  const { count, error } = await sb
+    .from("run_repetitions")
+    .select("id", { count: "exact", head: true })
+    .eq("run_id", runId);
+  if (error) fail("step:count", error.message);
+  return count ?? 0;
+}
+
+/** Schreibt Lauf-Felder fort (immer mit aktualisiertem `updated_at`). */
+async function patchRun(sb: SupabaseClient, runId: string, patch: Record<string, unknown>): Promise<void> {
+  const { error } = await sb
+    .from(TABLE)
+    .update({ ...patch, updated_at: new Date().toISOString() })
+    .eq("id", runId);
+  if (error) fail("step:patch", error.message);
+}
+
+/**
+ * Verarbeitet die naechste offene Wiederholung eines Laufs (eine pro Aufruf,
+ * client-orchestriert) und schreibt den Fortschritt fort:
+ *   decrypt → permute → build → call(+Retry) → parse → run_repetition persistieren
+ *   → Lauf-Aggregat (Tokens/Fehlquote) → Status-Uebergang.
+ *
+ * Resilienz (NFR): eine fehlgeschlagene/ungparsebare Wiederholung wird als
+ * `failed` festgehalten, der Lauf laeuft weiter; erst wenn am Ende 0 verwertbar
+ * sind → Lauf `failed`. Gibt `null`, wenn der Lauf nicht (mehr) sichtbar ist
+ * (Route → 404).
+ *
+ * Sonderfaelle:
+ *   * F3 (Plan-Review): Modellkonfig nicht mehr verfuegbar (geloescht/unsichtbar)
+ *     → ganzen Lauf `failed`, statt eine Exception zu werfen.
+ *   * F4 (Plan-Review): paralleler Doppelaufruf → unique-Verletzung
+ *     `(run_id, rep_index)` wird NICHT propagiert, sondern als „bereits
+ *     fortgeschritten" behandelt (aktuellen Fortschritt neu lesen).
+ */
+export async function processNextRepetition(
+  sb: SupabaseClient,
+  userId: string,
+  runId: string,
+): Promise<RunProgress | null> {
+  const { data, error } = await sb.from(TABLE).select(STEP_COLUMNS).eq("id", runId).maybeSingle();
+  if (error) fail("step:read", error.message);
+  if (!data) return null;
+  const run = toStepState(data);
+
+  // Terminal → idempotent den aktuellen Stand zurueckgeben.
+  if (run.status === "completed" || run.status === "failed") {
+    return {
+      status: run.status,
+      completedReps: await countReps(sb, runId),
+      totalReps: run.repetitionCount,
+      failedCount: run.failedCount,
+    };
+  }
+
+  // pending → running (erster Schritt).
+  if (run.status === "pending") {
+    await patchRun(sb, runId, { status: "running" });
+  }
+
+  const completedReps = await countReps(sb, runId);
+
+  // Alle Wiederholungen geschrieben → Lauf finalisieren.
+  if (completedReps >= run.repetitionCount) {
+    const finalStatus: RunStatus = run.failedCount >= run.repetitionCount ? "failed" : "completed";
+    await patchRun(sb, runId, { status: finalStatus });
+    return { status: finalStatus, completedReps, totalReps: run.repetitionCount, failedCount: run.failedCount };
+  }
+
+  // F3: ohne Modellkonfig kann kein Call erfolgen → ganzer Lauf failed.
+  if (!run.modelConfigId) {
+    await patchRun(sb, runId, { status: "failed" });
+    return { status: "failed", completedReps, totalReps: run.repetitionCount, failedCount: run.failedCount };
+  }
+  const target = await getDecryptedTarget(sb, run.modelConfigId);
+  if (!target) {
+    await patchRun(sb, runId, { status: "failed" });
+    return { status: "failed", completedReps, totalReps: run.repetitionCount, failedCount: run.failedCount };
+  }
+
+  // Naechste Wiederholung: permutieren → Messages bauen → Call.
+  const repIndex = completedReps + 1;
+  const seed = seedFrom(runId, repIndex);
+  // v1: OEJTS permutiert immer (FR-012, `permute: true`). Die Generalisierung auf
+  // permute:false folgt mit einem zweiten Instrument.
+  const { ordered, order } = permuteItems(OEJTS.items, seed);
+  const expectedIds = ordered.map((it) => it.id);
+  const messages = buildOejtsMessages(run.personaPromptSnapshot, ordered);
+
+  let repStatus: RepetitionStatus = "failed";
+  let rawResponse: string | null = null;
+  let itemValues: ItemValue[] | null = null;
+  let repPrompt: number | null = null;
+  let repCompletion: number | null = null;
+  let repError: string | null = null;
+
+  try {
+    const completion = await chatCompletion({
+      baseUrl: target.baseUrl,
+      apiKey: target.apiKey,
+      model: target.modelName,
+      messages,
+      jsonMode: true,
+    });
+    rawResponse = completion.content;
+    repPrompt = completion.promptTokens;
+    repCompletion = completion.completionTokens;
+    const parsed = parseOejtsResponse(completion.content, expectedIds);
+    itemValues = parsed.values;
+    if (parsed.okCount === 0) {
+      repError = "no parseable item values in response";
+    } else {
+      repStatus = "ok";
+    }
+  } catch (err) {
+    repError = err instanceof Error ? err.message : "completion failed";
+  }
+
+  // Wiederholung persistieren; F4: unique-Verletzung tolerieren (Doppelaufruf).
+  const { error: insErr } = await sb.from("run_repetitions").insert({
+    run_id: runId,
+    rep_index: repIndex,
+    item_order: order,
+    raw_response: rawResponse,
+    item_values: itemValues,
+    status: repStatus,
+    error: repError,
+    prompt_tokens: repPrompt,
+    completion_tokens: repCompletion,
+  });
+  if (insErr) {
+    if (insErr.code === "23505") {
+      // Parallel bereits geschrieben → aktuellen Fortschritt neu lesen.
+      const { data: cur } = await sb.from(TABLE).select(STEP_COLUMNS).eq("id", runId).maybeSingle();
+      if (!cur) return null;
+      const c = toStepState(cur);
+      return {
+        status: c.status,
+        completedReps: await countReps(sb, runId),
+        totalReps: c.repetitionCount,
+        failedCount: c.failedCount,
+      };
+    }
+    fail("step:insert", insErr.message);
+  }
+
+  // Lauf-Aggregat fortschreiben: Fehlquote + (nur bei ok) Token-Summen.
+  const newFailedCount = run.failedCount + (repStatus === "ok" ? 0 : 1);
+  const newPromptTokens = run.promptTokens + (repStatus === "ok" ? (repPrompt ?? 0) : 0);
+  const newCompletionTokens = run.completionTokens + (repStatus === "ok" ? (repCompletion ?? 0) : 0);
+  await patchRun(sb, runId, {
+    failed_count: newFailedCount,
+    prompt_tokens: newPromptTokens,
+    completion_tokens: newCompletionTokens,
+  });
+
+  return {
+    status: "running",
+    completedReps: repIndex,
+    totalReps: run.repetitionCount,
+    failedCount: newFailedCount,
+  };
 }

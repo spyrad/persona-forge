@@ -114,26 +114,26 @@ export async function deleteModelConfig(sb: SupabaseClient, id: string): Promise
 }
 
 /**
- * Server-only: laedt eine Konfig inkl. entschluesseltem API-Key fuer den
- * Verbindungstest. Der Key wird NUR fuer den Upstream-Call genutzt und NIE an
- * den Client zurueckgegeben. Gibt `null`, wenn die Konfig nicht existiert oder
- * (per RLS) nicht dem Aufrufer gehoert.
+ * Server-only: laedt eine Konfig inkl. entschluesseltem API-Key + Modellname
+ * fuer einen Upstream-Call (Verbindungstest ODER Mess-Lauf S-04). Der Key wird
+ * NUR fuer den Call genutzt und NIE an den Client zurueckgegeben. Gibt `null`,
+ * wenn die Konfig nicht existiert oder (per RLS) nicht dem Aufrufer gehoert.
  */
 export async function getDecryptedTarget(
   sb: SupabaseClient,
   id: string,
-): Promise<{ baseUrl: string; apiKey: string } | null> {
+): Promise<{ baseUrl: string; apiKey: string; modelName: string } | null> {
   const { data, error } = await sb
     .from(TABLE)
-    .select("base_url, key_ciphertext, key_iv, key_version")
+    .select("base_url, model_name, key_ciphertext, key_iv, key_version")
     .eq("id", id)
     .maybeSingle();
   if (error) fail("test-target", error.message);
   if (!data) return null;
-  const row = data as Pick<ModelConfig, "base_url" | "key_ciphertext" | "key_iv" | "key_version">;
+  const row = data as Pick<ModelConfig, "base_url" | "model_name" | "key_ciphertext" | "key_iv" | "key_version">;
   const apiKey = await decryptApiKey(
     { ciphertext: row.key_ciphertext, iv: row.key_iv, keyVersion: row.key_version },
     getEncryptionKey(),
   );
-  return { baseUrl: row.base_url, apiKey };
+  return { baseUrl: row.base_url, apiKey, modelName: row.model_name };
 }

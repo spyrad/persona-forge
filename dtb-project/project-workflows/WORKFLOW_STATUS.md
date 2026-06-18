@@ -1,7 +1,7 @@
 # Workflow-Status: persona-forge
 
-**Letztes Update:** 2026-06-17 (Session 3)
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-06/2026-06-17.md`
+**Letztes Update:** 2026-06-18 (Session 1)
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-06/2026-06-18.md`
 
 ---
 
@@ -9,18 +9,18 @@
 
 | Kennzahl | Wert |
 |----------|------|
-| **Laufende Arbeit** | Keine — **S-03 `persona-catalog` abgeschlossen, archiviert & auf Prod deployt** (Stream A komplett). |
-| **Naechster Schritt** | **S-04 `oejts-measurement-run`** starten — sobald OEJTS-Quelle vorliegt (`/10x-plan oejts-measurement-run`). |
-| **Blocker** | S-04 **blocked**: OEJTS-Quelldatensatz fehlt (Owner: Damian). |
+| **Laufende Arbeit** | **S-04 `oejts-measurement-run` in Arbeit** — **Phase 1 deployed + committet** (`8c2fd52`, `6e396ec`), **Phase 2 codiert, alle Automated-Gates grün** (Tests 33), uncommitted, am Manual-Gate (2.5–2.10). |
+| **Naechster Schritt** | **Phase-2-Manual-Gate** (echter Endpunkt — via curl/PowerShell ODER zusammen mit Phase-3-UI) → Phase-2-Commit + SHA-Writeback; dann Phase 3 (`/runs`-UI). |
+| **Blocker** | Keine (Manual-Gate braucht einen erreichbaren OpenAI-kompatiblen Endpunkt). |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] OEJTS-Quelle fixieren (Itemtexte, Achsen, Scoring) — blockt S-04, Owner: Damian
-- [ ] Cleanup Test-User remote-DB — alte `'global'`-Personas bleiben global (`set default` ändert keine Bestandszeilen)
-- [ ] F6: Trigger-Migration idempotent (`on conflict do nothing`) — neue Migration
-- [ ] Husky/lint-staged-Hook reparieren (griff bei `4b5e916` nicht → CI-Lint-Fail)
+- [ ] S-04 Phase-2-Manual-Gate (2.5–2.10): Endpunkt fährt N Wiederholungen, Fehlquote/Tokens/Abbruch/SSRF → Phase-2-Commit
+- [ ] S-04 Phase 3 `/10x-implement oejts-measurement-run phase 3` (`/runs`-Seite, client-getriebener Step-Loop)
+- [ ] Slice abschließen: `/10x-impl-review` → Roadmap S-04 `done` → `/10x-archive` → Push (Prod-Deploy)
+- [ ] Cleanup Test-User remote-DB; F6 Trigger-Idempotenz; Husky/lint-staged-Hook reparieren
 
 ---
 
@@ -28,29 +28,34 @@
 
 | Datum | Meilenstein | Ergebnis | Details |
 |-------|-------------|----------|---------|
-| 2026-06-17 | **S-03 abgeschlossen + deployed** | Persona-Katalog (frei+strukturiert), impl-reviewt (F1 privacy-Fix), archiviert, live | `3d8bb4e`, `context/archive/2026-06-17-persona-catalog/` |
-| 2026-06-16 | S-02 abgeschlossen + deployed | Model-Config + E2E-Gate, archiviert, live | `92192ce`, `context/archive/2026-06-15-model-config-management/` |
+| 2026-06-18 | **S-04 Phase 1 deployed + committet** | Migration auf Prod, Manual-Gate ✅, 2 Commits | `8c2fd52`, `6e396ec` |
+| 2026-06-18 | **S-04 Phase 2 codiert** | LLM-Call + `/step`-Orchestrierung (F3/F4), API-Routen, Gates grün | `context/changes/oejts-measurement-run/plan.md` |
+| 2026-06-17 | S-04 geplant + Phase 1 codiert | OEJTS-Blocker gelöst, 3-Phasen-Plan (SOUND), 33 Tests | `context/changes/oejts-measurement-run/` |
+| 2026-06-17 | S-03 abgeschlossen + deployed | Persona-Katalog, F1-Privacy-Fix, archiviert, live | `3d8bb4e` |
+| 2026-06-16 | S-02 abgeschlossen + deployed | Model-Config + E2E-Gate, archiviert, live | `92192ce` |
 | 2026-06-15 | S-01 impl-reviewt + archiviert | E-Mail-Auth, F1–F5 gefixt & live | `72fa7ce`, `8b84ace` |
-| 2026-06-13 | F-01 connect-supabase | Supabase + RLS-Grundgerüst | `context/archive/2026-06-12-connect-supabase/` |
-| 2026-06-12 | F-02 deploy-skeleton-live | Live-URL, CI grün | `context/archive/2026-06-11-deploy-skeleton-live/` |
 
 ---
 
 ## Gotchas (Referenz)
 
-- **Sichtbarkeits-Default (S-03 F1):** user-scoped Tabellen → `visibility` explizit `'private'` beim Insert; DB-Default `'global'` leakt cross-tenant. Globale Objekte nur per Seed/Migration (FR-009).
-- **RLS + DELETE/UPDATE:** 0-Row-Match (fremde id) ist kein Erfolg — Zeilenzahl prüfen, sonst fälschlich `ok:true`. (`23e82c6`.)
-- **React-Compiler immutability:** `window.location.href =` in voll kompilierbaren Islands → Navigation in Modul-Scope-Helper (`redirectToSignin()`).
-- **Migration auf Prod:** Docker lokal oft nicht oben → `npx supabase db push` direkt aufs Prod-Projekt (autorisiert); Worker-Deploy (`git push`) appliziert die DB-Migration NICHT.
-- **`git mv` Windows-Lock → `Move-Item`** · **CI-Lint blockt deploy lautlos → Deploy-Job prüfen** · **`astro check` ≠ build/lint** · **Prod-Check: `Invoke-WebRequest -UseBasicParsing`** (curl exit 35 an lokaler TLS-Interception) · **Test-User:** A=`damian.spyra@googlemail.com`, B=`md.motion.value@gmail.com`.
+- **OEJTS-Lizenz:** CC BY-NC-SA 4.0 (nicht gemeinfrei) — privat/MVP OK, vor kommerziell/Verteilung neu prüfen.
+- **Studio-RLS-Test:** `set local request.jwt.claims` wirkt nur in einer Transaktion → Test in `begin; … commit;` kapseln (sonst `auth.uid()` = null).
+- **Untypisierter Supabase-Client + strictTypeChecked:** `data` aus `.maybeSingle()` ist `any` → über typisierten Funktionsparameter lautern (Mapper wie `toView`/`toStepState`), nicht Cast + Zugriff.
+- **JSON-Import aus `context/` scheitert** (kein resolveJsonModule/Alias) → Instrument-Daten als `.ts`-Modul unter `src/`.
+- **Vitest kann `astro:env/server` nicht stubben** → reine Logik env-frei halten (Parser/Permutation/Prompt).
+- **Prod-`db push` braucht je Migration eigene Freigabe** (Auto-Mode-Classifier blockt Auto-Confirm) → User-`!`-Kommando.
+- **Sichtbarkeits-Default** an user-scoped Tabellen explizit `'private'` (S-03 F1); globale Objekte nur per Seed.
+- **RLS + DELETE/UPDATE:** 0-Row-Match ist kein Erfolg — Zeilenzahl prüfen. **Child-RLS** via exists-Subquery auf Parent.
+- **`git mv` Windows-Lock → `Move-Item`** · **CI-Lint blockt deploy lautlos → Deploy-Job prüfen** · **Worker-Deploy appliziert KEINE DB-Migration (separat `db push`)**.
 
 ---
 
 ## Pausierte Themen
 
 ### S-04: oejts-measurement-run
-**Status:** Blocked — OEJTS-Quelldatensatz (Itemtexte, Achsen, Scoring) muss von Damian beschafft werden.
-**Details:** `context/foundation/roadmap.md` (S-04, Open Roadmap Questions)
+**Status:** In Arbeit — Phase 1 deployed+committet, Phase 2 codiert (Automated grün), wartet auf Manual-Gate 2.5–2.10 + Phase-2-Commit.
+**Details:** `context/changes/oejts-measurement-run/plan.md` (Progress-Sektion)
 
 ---
 
