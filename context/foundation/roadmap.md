@@ -3,7 +3,7 @@ project: "persona-forge"
 version: 1
 status: draft
 created: 2026-06-11
-updated: 2026-06-17
+updated: 2026-06-18
 prd_version: 1
 main_goal: learn
 top_blocker: time
@@ -41,7 +41,7 @@ lassen sich direkt vergleichen.
 | S-01 | email-auth-live          | sich registrieren, anmelden und geschützte Seiten erreichen                  | F-01          | FR-001, §Access Control                   | done |
 | S-02 | model-config-management  | ein OpenAI-kompatibles Modell anhängen und als Konfig speichern (Key verschlüsselt) | S-01    | FR-005, FR-006, NFR Key-Dichtheit         | done |
 | S-03 | persona-catalog          | eine Persona anlegen (frei/strukturiert), im Katalog finden und kopieren     | S-01          | FR-007, FR-008                            | done |
-| S-04 | oejts-measurement-run    | einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen          | S-02, S-03    | US-01, FR-010, FR-012, FR-013, NFR Resilienz/Last/Fortschritt | proposed |
+| S-04 | oejts-measurement-run    | einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen          | S-02, S-03    | US-01, FR-010, FR-012, FR-013, NFR Resilienz/Last/Fortschritt | done |
 | S-05 | distribution-results     | das Ergebnis je Achse als Verteilung mit Streuung plus Typ-Stabilität sehen  | S-04          | US-01, FR-016, NFR Reproduzierbarkeit     | proposed |
 | S-06 | run-control-and-tokens   | einen laufenden Test abbrechen und den Token-Verbrauch je Lauf sehen         | S-04          | FR-014, FR-015                            | proposed |
 | S-07 | visibility-controls      | Sichtbarkeit (privat/global) eigener Personas und Ergebnisse setzen          | S-03, S-05    | FR-003, §Access Control                   | proposed |
@@ -149,7 +149,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
   - ~~OEJTS-Quelle (Itemtexte, Achsen, Reverse-Items, Scoring)~~ — **aufgelöst 2026-06-17**: OEJTS 1.2 vollständig in `context/foundation/instruments/oejts-1.2.json` (32 Items, 4 Achsen, Scoring-Formeln, Cutoff >24). Lizenz CC BY-NC-SA 4.0 — privat/MVP OK (siehe [[oejts-license-decision]]).
   - Edge-Runtime vs. lange Läufe (Lauf-Aufteilung oder Cloudflare Queues/Workers) — Owner: team (`/10x-plan`-Research). Block: no.
 - **Risk:** Der schwerste Slice (Orchestrierung + Parsing + Persistenz + Edge-Limits) — bewusst direkt nach den Bausteinen sequenziert, weil er die riskanteste Annahme des Produkts trägt: dass wiederholte, isolierte Läufe praktikabel gegen externe Endpunkte fahrbar sind.
-- **Status:** proposed
+- **Status:** done
 
 ### S-05: Ergebnis als Verteilung und Typ (Leitstern)
 
@@ -237,3 +237,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-01: Nutzer kann sich per E-Mail + Passwort registrieren, anmelden, abmelden und erreicht geschützte Seiten; Unangemeldete landen auf der Anmeldung.** — Archived 2026-06-15 → `context/archive/2026-06-13-email-auth-live/`. Lesson: CI-Lint-Fehler skippt den deploy-Job lautlos (Prod blieb auf altem Stand) — nach Push auf `main` immer den deploy-Job prüfen.
 - **S-02: Nutzer kann ein OpenAI-kompatibles Modell anhängen (Base-URL, API-Key, Modellname) und als wiederverwendbare Konfiguration speichern; der Key liegt verschlüsselt at rest und verlässt den Server nie Richtung Client.** — Archived 2026-06-16 → `context/archive/2026-06-15-model-config-management/`. Lesson: DELETE/UPDATE hinter RLS müssen die betroffene Zeilenzahl prüfen — ein 0-Row-Match (fremde id) ist kein Erfolg, sonst meldet der Endpoint fälschlich `ok:true`; SSRF-Guards zusätzlich gegen numerische IPv4-Schreibweisen (dword/octal/hex) härten.
 - **S-03: Nutzer kann eine Persona anlegen (System-Prompt frei oder strukturiert nach Spec) mit Name, Beschreibung, Tags; sie im Katalog wiederfinden und für Läufe auswählen; Änderung erzeugt eine neue Kopie (Personas sind unveränderlich).** — Archived 2026-06-17 → `context/archive/2026-06-17-persona-catalog/`. Lesson: Sichtbarkeits-Default an user-scoped Tabellen muss explizit `private` sein — ein DB-Default `global` plus fehlendes `visibility` beim Insert leakt nutzerangelegte Zeilen cross-tenant (impl-review F1); globale Objekte nur per Seed/Migration.
+- **S-04: einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen.** — Archived 2026-06-18 → `context/archive/2026-06-17-oejts-measurement-run/`. Lesson: Client-orchestrierte Step-Loops (1 LLM-Call/Wiederholung) halten lange Läufe innerhalb der Cloudflare-Edge-Grenzen; das Datenmodell (`completedReps`-Zählung + unique `(run_id, rep_index)`) ist dadurch resume-fähig und idempotent gegen Doppelaufrufe.
