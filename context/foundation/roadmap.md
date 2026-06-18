@@ -41,7 +41,7 @@ lassen sich direkt vergleichen.
 | S-01 | email-auth-live          | sich registrieren, anmelden und geschützte Seiten erreichen                  | F-01          | FR-001, §Access Control                   | done |
 | S-02 | model-config-management  | ein OpenAI-kompatibles Modell anhängen und als Konfig speichern (Key verschlüsselt) | S-01    | FR-005, FR-006, NFR Key-Dichtheit         | done |
 | S-03 | persona-catalog          | eine Persona anlegen (frei/strukturiert), im Katalog finden und kopieren     | S-01          | FR-007, FR-008                            | done |
-| S-04 | oejts-measurement-run    | einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen          | S-02, S-03    | US-01, FR-010, FR-012, FR-013, NFR Resilienz/Last/Fortschritt | blocked  |
+| S-04 | oejts-measurement-run    | einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen          | S-02, S-03    | US-01, FR-010, FR-012, FR-013, NFR Resilienz/Last/Fortschritt | proposed |
 | S-05 | distribution-results     | das Ergebnis je Achse als Verteilung mit Streuung plus Typ-Stabilität sehen  | S-04          | US-01, FR-016, NFR Reproduzierbarkeit     | proposed |
 | S-06 | run-control-and-tokens   | einen laufenden Test abbrechen und den Token-Verbrauch je Lauf sehen         | S-04          | FR-014, FR-015                            | proposed |
 | S-07 | visibility-controls      | Sichtbarkeit (privat/global) eigener Personas und Ergebnisse setzen          | S-03, S-05    | FR-003, §Access Control                   | proposed |
@@ -146,10 +146,10 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Parallel with:** —
 - **Blockers:** —
 - **Unknowns:**
-  - Gemeinfreie OEJTS-Quelle (Itemtexte, Achsen-Zuordnung, Reverse-Items, Scoring-Schlüssel) — Owner: user. Block: **yes** (PRD Open Question #2: „blockiert die Implementierung des Test-Laufs").
+  - ~~OEJTS-Quelle (Itemtexte, Achsen, Reverse-Items, Scoring)~~ — **aufgelöst 2026-06-17**: OEJTS 1.2 vollständig in `context/foundation/instruments/oejts-1.2.json` (32 Items, 4 Achsen, Scoring-Formeln, Cutoff >24). Lizenz CC BY-NC-SA 4.0 — privat/MVP OK (siehe [[oejts-license-decision]]).
   - Edge-Runtime vs. lange Läufe (Lauf-Aufteilung oder Cloudflare Queues/Workers) — Owner: team (`/10x-plan`-Research). Block: no.
 - **Risk:** Der schwerste Slice (Orchestrierung + Parsing + Persistenz + Edge-Limits) — bewusst direkt nach den Bausteinen sequenziert, weil er die riskanteste Annahme des Produkts trägt: dass wiederholte, isolierte Läufe praktikabel gegen externe Endpunkte fahrbar sind.
-- **Status:** blocked
+- **Status:** proposed
 
 ### S-05: Ergebnis als Verteilung und Typ (Leitstern)
 
