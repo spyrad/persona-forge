@@ -1,0 +1,66 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import { listRuns } from "@/lib/services/runs";
+import { listPersonas } from "@/lib/services/personas";
+import { listModelConfigs } from "@/lib/services/model-configs";
+import type { ModelConfigView, PersonaView, RunView } from "@/types";
+import RunRunner from "@/components/runs/RunRunner";
+
+// /runs ist via PROTECTED_ROUTES geschuetzt — hier ist der User authentifiziert.
+const { user } = Astro.locals;
+
+// Initiale Daten server-seitig laden (RLS-gescoped: eigene + globale). Faellt
+// Supabase/Service aus, signalisiert `loadError` der Island einen sichtbaren
+// Hinweis statt einer stumm leeren Liste; die Island laedt nach Mutationen neu.
+let initialRuns: RunView[] = [];
+let personas: PersonaView[] = [];
+let modelConfigs: ModelConfigView[] = [];
+let loadError = false;
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+if (supabase && user) {
+  try {
+    [initialRuns, personas, modelConfigs] = await Promise.all([
+      listRuns(supabase, user.id),
+      listPersonas(supabase, user.id),
+      listModelConfigs(supabase),
+    ]);
+  } catch {
+    loadError = true;
+  }
+} else {
+  loadError = true;
+}
+---
+
+<Layout title="Läufe">
+  <div class="bg-cosmic min-h-screen px-4 py-10 text-white">
+    <div class="mx-auto max-w-3xl">
+      <header class="mb-8 flex items-start justify-between gap-4">
+        <div>
+          <h1 class="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+            Läufe
+          </h1>
+          <p class="mt-1 text-sm text-blue-100/60">
+            OEJTS-Messläufe für <span class="text-white">{user?.email}</span>. Jede Wiederholung ist eine isolierte
+            Sitzung; der Lauf wird im Browser Schritt für Schritt getrieben.
+          </p>
+        </div>
+        <a
+          href="/dashboard"
+          class="shrink-0 rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-sm transition-colors hover:bg-white/20"
+        >
+          ← Dashboard
+        </a>
+      </header>
+
+      <RunRunner
+        client:load
+        initialRuns={initialRuns}
+        personas={personas}
+        modelConfigs={modelConfigs}
+        loadError={loadError}
+      />
+    </div>
+  </div>
+</Layout>

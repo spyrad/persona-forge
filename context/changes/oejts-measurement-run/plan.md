@@ -480,15 +480,15 @@ Lauf-Liste in v1 (kleine Mengen), konsistent mit `models`/`personas`.
 
 #### Automated
 
-- [ ] 3.1 Lint grün: `npm run lint`
-- [ ] 3.2 Build grün: `npm run build`
-- [ ] 3.3 Typecheck grün: `npx astro check`
+- [x] 3.1 Lint grün: `npm run lint`
+- [x] 3.2 Build grün: `npm run build`
+- [x] 3.3 Typecheck grün: `npx astro check`
 
 #### Manual
 
-- [ ] 3.4 `/runs`: Lauf starten → Fortschritt zählt live bis N, dann `completed`
-- [ ] 3.5 Liste zeigt Status, Fehlquote, Token-Verbrauch korrekt
-- [ ] 3.6 Abbruch während Lauf entfernt ihn aus der Liste (gelöscht)
-- [ ] 3.7 Start deaktiviert/erklärt ohne Persona/Modellkonfig
-- [ ] 3.8 Ausgeloggt → `/runs` redirectet auf `/auth/signin`
-- [ ] 3.9 Zwei-User-RLS: B sieht A's Läufe nicht
+- [x] 3.4 `/runs`: Lauf starten → Fortschritt zählt live bis N, dann `completed`
+- [x] 3.5 Liste zeigt Status, Fehlquote, Token-Verbrauch korrekt
+- [x] 3.6 Abbruch während Lauf entfernt ihn aus der Liste (gelöscht)
+- [x] 3.7 Start deaktiviert/erklärt ohne Persona/Modellkonfig
+- [x] 3.8 Ausgeloggt → `/runs` redirectet auf `/auth/signin`
+- [x] 3.9 Zwei-User-RLS: B sieht A's Läufe nicht
