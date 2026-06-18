@@ -146,3 +146,138 @@ export interface CreateStructuredPersonaInput extends CreatePersonaBase {
  * Bei `'structured'` kompiliert der Server `systemPrompt` aus `structuredFields`.
  */
 export type CreatePersonaInput = CreateFreeformPersonaInput | CreateStructuredPersonaInput;
+
+// ─── Test-Instrument (OEJTS, S-04) ──────────────────────────────────────────
+
+/** Eine Achse/Skala eines Instruments (bei OEJTS die 4 Jung'schen Dichotomien). */
+export interface InstrumentAxis {
+  /** Achsen-Schluessel, z. B. "IE". */
+  key: string;
+  /** Scoring-Konstante (siehe OEJTS-Formeln). */
+  constant: number;
+  /** Score > cutoff → `high`-Pol, sonst `low`. */
+  cutoff: number;
+  /** Buchstabe bei Score > cutoff. */
+  high: string;
+  /** Buchstabe bei Score <= cutoff. */
+  low: string;
+  /** Menschenlesbares Label. */
+  label?: string;
+}
+
+/** Ein bipolares Item: 1 = voll `left`, 5 = voll `right`. */
+export interface InstrumentItem {
+  /** Item-Id, z. B. "Q1". */
+  id: string;
+  /** Achse, zu der das Item beitraegt. */
+  axis: string;
+  /** Vorzeichen im Achsen-Score (+1 oder -1). */
+  sign: 1 | -1;
+  /** Beschreibung am linken Pol (Antwortwert 1). */
+  left: string;
+  /** Beschreibung am rechten Pol (Antwortwert 5). */
+  right: string;
+}
+
+/** Ein psychometrisches Instrument (v1 hartkodiert, FR-011). */
+export interface Instrument {
+  id: string;
+  items: InstrumentItem[];
+  axes: InstrumentAxis[];
+  /** Ob die Item-Reihenfolge je Wiederholung permutiert wird (FR-012). */
+  permute: boolean;
+}
+
+// ─── Laeufe (runs / run_repetitions, S-04) ───────────────────────────────────
+
+/** Status eines Laufs. */
+export type RunStatus = "pending" | "running" | "completed" | "failed";
+
+/** Status einer einzelnen Wiederholung. */
+export type RepetitionStatus = "pending" | "ok" | "failed";
+
+/** Geparster Wert eines Items innerhalb einer Wiederholung (jsonb-Element). */
+export interface ItemValue {
+  id: string;
+  /** Skalenwert 1–5, oder null wenn nicht parsebar. */
+  value: number | null;
+  status: "ok" | "unparsed";
+}
+
+/**
+ * DB-Entity `public.runs`. Ein Lauf ist selbst-enthalten: der aufgeloeste
+ * Persona-System-Prompt wird als Snapshot gespeichert, damit der Lauf
+ * reproduzierbar bleibt, auch wenn Persona/Modellkonfig spaeter geloescht werden
+ * (FKs `on delete set null`). `visibility` default 'private' (Toggle = S-07).
+ */
+export interface Run {
+  id: string;
+  owner_id: string;
+  visibility: Visibility;
+  persona_id: string | null;
+  model_config_id: string | null;
+  persona_prompt_snapshot: string;
+  instrument_id: string;
+  repetition_count: number;
+  status: RunStatus;
+  prompt_tokens: number;
+  completion_tokens: number;
+  failed_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * DB-Entity `public.run_repetitions`. Eine Zeile je Wiederholung; die Roh-Response
+ * liegt hier (bei 1 Call/Wiederholung), die geparsten Item-Werte als jsonb-Array.
+ */
+export interface RunRepetition {
+  id: string;
+  run_id: string;
+  rep_index: number;
+  /** Verwendete Item-Reihenfolge (Indizes) — Reproduktions-Artefakt. */
+  item_order: number[];
+  raw_response: string | null;
+  item_values: ItemValue[] | null;
+  status: RepetitionStatus;
+  error: string | null;
+  prompt_tokens: number | null;
+  completion_tokens: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Client-sichere Projektion eines Laufs. */
+export interface RunView {
+  id: string;
+  personaId: string | null;
+  modelConfigId: string | null;
+  instrumentId: string;
+  repetitionCount: number;
+  status: RunStatus;
+  promptTokens: number;
+  completionTokens: number;
+  failedCount: number;
+  /** Anzahl bereits geschriebener Wiederholungen (aus run_repetitions gezaehlt). */
+  completedReps: number;
+  visibility: Visibility;
+  isOwn: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** Eingabe beim Starten eines Laufs. */
+export interface CreateRunInput {
+  personaId: string;
+  modelConfigId: string;
+  instrumentId: string;
+  repetitionCount: number;
+}
+
+/** Fortschritts-Antwort eines Orchestrierungs-Schritts (Phase 2). */
+export interface RunProgress {
+  status: RunStatus;
+  completedReps: number;
+  totalReps: number;
+  failedCount: number;
+}
