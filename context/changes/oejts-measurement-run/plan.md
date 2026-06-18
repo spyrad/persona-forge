@@ -469,12 +469,12 @@ Lauf-Liste in v1 (kleine Mengen), konsistent mit `models`/`personas`.
 
 #### Manual
 
-- [ ] 2.5 Echter Endpunkt: `POST /step` fährt N Wiederholungen durch; `run_repetitions` mit Roh+Werte+Order+Tokens
-- [ ] 2.6 JSON-Mode geparst; „schlechte" Antwort → Freitext-Fallback bzw. `failed` ohne Lauf-Abbruch (Fehlquote)
-- [ ] 2.7 Falscher Key/URL → alle Wiederholungen `failed`, Lauf `failed` (0 verwertbar)
-- [ ] 2.8 Token-Aggregat plausibel; Endpunkt ohne `usage` → unbekannt/0
-- [ ] 2.9 `DELETE` während Lauf löscht run + run_repetitions vollständig
-- [ ] 2.10 SSRF: private/Nicht-HTTPS-URL beim Call abgewiesen
+- [x] 2.5 Echter Endpunkt: `POST /step` fährt N Wiederholungen durch; `run_repetitions` mit Roh+Werte+Order+Tokens
+- [x] 2.6 JSON-Mode geparst; „schlechte" Antwort → Freitext-Fallback bzw. `failed` ohne Lauf-Abbruch (Fehlquote)
+- [x] 2.7 Falscher Key/URL → alle Wiederholungen `failed`, Lauf `failed` (0 verwertbar)
+- [x] 2.8 Token-Aggregat plausibel; Endpunkt ohne `usage` → unbekannt/0
+- [x] 2.9 `DELETE` während Lauf löscht run + run_repetitions vollständig
+- [x] 2.10 SSRF: private/Nicht-HTTPS-URL beim Call abgewiesen
 
 ### Phase 3: UI — `/runs`
 
