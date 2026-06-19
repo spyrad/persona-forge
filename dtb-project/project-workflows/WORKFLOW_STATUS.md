@@ -10,14 +10,13 @@
 | Kennzahl | Wert |
 |----------|------|
 | **Laufende Arbeit** | **Keine aktive Implementierung.** S-05 `distribution-results` (Leitstern) **vollständig abgeschlossen + live**: Gate 11/11, impl-review APPROVED + Hardening, archiviert, gepusht (`2eb4da5`), Deploy verifiziert. |
-| **Naechster Schritt** | **Cleanup Gate-Test-Daten** (braucht A-Login), dann **S-06 `run-control-and-tokens`** starten (`/10x-plan run-control-and-tokens`). |
+| **Naechster Schritt** | **S-06 `run-control-and-tokens`** starten (`/10x-plan run-control-and-tokens`). |
 | **Blocker** | Keine. |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] **Cleanup Gate-Test-Daten** (Prod-DB, User A): 4 Läufe (`ecad64d1`, `ba415f35`, `57404517`, `9ae9b9da`) + Config „Bad Key (Gate-Test)" — braucht A-Login im Playwright-Browser; Dev-Server läuft noch
 - [ ] S-06 `run-control-and-tokens` planen (Lauf-Abbruch + Token-Ausweis; Prerequisite S-04 ✅)
 - [ ] F6 Trigger-Idempotenz; Husky/lint-staged-Hook reparieren
 
