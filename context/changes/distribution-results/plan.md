@@ -357,7 +357,7 @@ Keine Migration. Die Auswertung liest ausschließlich die in S-04 angelegten Tab
 
 > Convention: `- [ ]` pending, `- [x]` done. Append ` — <commit sha>` when a step lands. Do not rename step titles. See `references/progress-format.md`.
 
-### Phase 1: Scoring-/Aggregations-Kern + Service + API
+### Phase 1: Scoring-/Aggregations-Kern + Service + API — `17dfcb3`
 
 #### Automated
 
@@ -373,7 +373,7 @@ Keine Migration. Die Auswertung liest ausschließlich die in S-04 angelegten Tab
 - [x] 1.7 `pending`/`running` → `state:'unfinished'`; failed/0-verwertbar → `state:'empty'` — pending-Lauf → unfinished; Bad-Key-Lauf 2/2 failed → empty
 - [x] 1.8 Zwei-User-RLS: B → `GET /api/runs/[A-id]/result` → 404 — als B (`damian.spyra@googlemail.com`) verifiziert
 
-### Phase 2: UI — Ergebnisseite `/runs/[id]` + Verlinkung
+### Phase 2: UI — Ergebnisseite `/runs/[id]` + Verlinkung — `b348988`
 
 #### Automated
 
