@@ -1,5 +1,16 @@
 import { useRef, useState } from "react";
-import { AlertCircle, Ban, CheckCircle2, CircleDashed, Hash, Loader2, Play, Trash2, XCircle } from "lucide-react";
+import {
+  AlertCircle,
+  Ban,
+  BarChart3,
+  CheckCircle2,
+  CircleDashed,
+  Hash,
+  Loader2,
+  Play,
+  Trash2,
+  XCircle,
+} from "lucide-react";
 import { ServerError } from "@/components/auth/ServerError";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -451,21 +462,34 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                     {run.completionTokens} aus
                   </p>
                 </div>
-                {/* Aktiver Lauf wird ueber das Fortschritts-Panel abgebrochen (kein doppelter Button). */}
-                {run.isOwn && run.id !== activeRunId ? (
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="destructive"
-                    disabled={busyId === run.id}
-                    onClick={() => {
-                      void remove(run.id);
-                    }}
-                  >
-                    <Trash2 className="size-3.5" />
-                    Löschen
-                  </Button>
-                ) : null}
+                <div className="flex items-center gap-2">
+                  {/* Ergebnis-Detailansicht (Verteilung je Achse). Bei noch nicht
+                      abgeschlossenen Laeufen zeigt die Seite einen Hinweis. */}
+                  {run.id !== activeRunId ? (
+                    <a
+                      href={`/runs/${run.id}`}
+                      className="inline-flex items-center gap-1 rounded-md border border-white/15 bg-white/10 px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-white/20"
+                    >
+                      <BarChart3 className="size-3.5" />
+                      Ergebnis
+                    </a>
+                  ) : null}
+                  {/* Aktiver Lauf wird ueber das Fortschritts-Panel abgebrochen (kein doppelter Button). */}
+                  {run.isOwn && run.id !== activeRunId ? (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="destructive"
+                      disabled={busyId === run.id}
+                      onClick={() => {
+                        void remove(run.id);
+                      }}
+                    >
+                      <Trash2 className="size-3.5" />
+                      Löschen
+                    </Button>
+                  ) : null}
+                </div>
               </li>
             ))}
           </ul>

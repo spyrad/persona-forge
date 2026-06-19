@@ -1,0 +1,67 @@
+---
+import Layout from "@/layouts/Layout.astro";
+import { createClient } from "@/lib/supabase";
+import { getRunResult } from "@/lib/services/runs";
+import type { RunResultView } from "@/types";
+import RunResult from "@/components/runs/RunResult";
+
+// /runs/[id] ist via PROTECTED_ROUTES (startsWith "/runs") geschuetzt.
+const { user } = Astro.locals;
+const id = Astro.params.id ?? "";
+
+// Ergebnis server-seitig RLS-gescoped laden + on-the-fly aggregieren. Nicht
+// sichtbar/vorhanden → 404. Service-Ausfall → loadError-Banner statt 500.
+let result: RunResultView | null = null;
+let loadError = false;
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+if (supabase && user) {
+  try {
+    result = await getRunResult(supabase, user.id, id);
+  } catch {
+    loadError = true;
+  }
+} else {
+  loadError = true;
+}
+
+// Nicht sichtbar/vorhanden → 404 (Status ohne Top-Level-`return` setzen; ein
+// `return` im Astro-Frontmatter crasht die getypte no-misused-promises-Regel).
+const notFound = !loadError && !result;
+if (notFound) {
+  Astro.response.status = 404;
+}
+---
+
+<Layout title="Lauf-Ergebnis">
+  <div class="bg-cosmic min-h-screen px-4 py-10 text-white">
+    <div class="mx-auto max-w-3xl">
+      <header class="mb-8">
+        <h1 class="bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-3xl font-bold text-transparent">
+          Lauf-Ergebnis
+        </h1>
+        <p class="mt-1 text-sm text-blue-100/60">
+          OEJTS-Verteilung je Achse über die Wiederholungen plus abgeleiteter Typ.
+        </p>
+      </header>
+
+      {
+        loadError ? (
+          <p class="rounded-2xl border border-red-500/30 bg-red-950/20 px-4 py-5 text-sm text-red-200">
+            Ergebnis konnte nicht geladen werden. Bitte neu laden.
+          </p>
+        ) : notFound ? (
+          <div class="space-y-4">
+            <p class="rounded-2xl border border-white/10 bg-white/5 px-4 py-5 text-sm text-blue-100/70">
+              Lauf nicht gefunden.
+            </p>
+            <a href="/runs" class="inline-flex items-center gap-1 text-sm text-blue-200 hover:text-white">
+              ← Zurück zu den Läufen
+            </a>
+          </div>
+        ) : (
+          result && <RunResult client:load result={result} />
+        )
+      }
+    </div>
+  </div>
+</Layout>
