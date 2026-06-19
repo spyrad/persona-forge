@@ -281,3 +281,54 @@ export interface RunProgress {
   totalReps: number;
   failedCount: number;
 }
+
+// ─── Ergebnis-Auswertung (Verteilung je Achse, S-05) ─────────────────────────
+
+/**
+ * Verteilung einer Achse ueber die verwertbaren Wiederholungen eines Laufs.
+ * `mean`/`sd` sind `null`, wenn keine Wiederholung zu dieser Achse beitrug
+ * (achsen-weiser Dropout). `scale` traegt die je-Achse berechneten Skalengrenzen
+ * (die Achsen-Konstanten verschieben die Skala) fuer die Visualisierung.
+ */
+export interface AxisDistribution {
+  key: string;
+  label: string;
+  /** Lage: Mittelwert des Achsen-Scores (null wenn usableCount 0). */
+  mean: number | null;
+  /** Streuung: Populations-Standardabweichung (null wenn usableCount 0). */
+  sd: number | null;
+  /** Roh-Verteilung: die einzelnen Achsen-Scores je beitragender Wiederholung. */
+  scores: number[];
+  /** Haeufigkeit je Pol-Buchstabe ueber die beitragenden Wiederholungen, z. B. {E:4, I:1}. */
+  letterCounts: Record<string, number>;
+  /** Anzahl Wiederholungen, die zu dieser Achse beitrugen (alle 8 Items geparst). */
+  usableCount: number;
+  scale: { min: number; max: number; cutoff: number };
+  /** Buchstabe bei Score > cutoff. */
+  high: string;
+  /** Buchstabe bei Score <= cutoff. */
+  low: string;
+}
+
+/** Aggregiertes Lauf-Ergebnis: Achsen-Verteilungen + Typ-Stabilitaet. */
+export interface RunAggregate {
+  axes: AxisDistribution[];
+  /** Modaltyp aus den achsenweisen Mehrheits-Buchstaben (null, wenn keine Achse beitrug). */
+  modalType: string | null;
+  /** Anteil der Wiederholungen mit vollstaendigem Typ, die exakt `modalType` ergeben (0–1; null wenn n. a.). */
+  typeConsistency: number | null;
+  /** Anzahl Wiederholungen, die zu mindestens einer Achse beitrugen. */
+  usableReps: number;
+}
+
+/**
+ * Client-sichere Ergebnis-Sicht eines Laufs. `state` kodiert die UI-Verzweigung:
+ *   - `ready`: aggregiertes Ergebnis vorhanden (≥1 verwertbare Wiederholung).
+ *   - `empty`: Lauf abgeschlossen/failed, aber 0 verwertbare Wiederholungen.
+ *   - `unfinished`: Lauf noch `pending`/`running` — kein Ergebnis.
+ */
+export interface RunResultView {
+  run: RunView;
+  aggregate: RunAggregate | null;
+  state: "ready" | "empty" | "unfinished";
+}

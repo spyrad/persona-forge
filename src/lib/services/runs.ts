@@ -13,10 +13,21 @@
  */
 import { OEJTS } from "@/lib/instruments/oejts";
 import { chatCompletion } from "@/lib/llm/openai-compatible";
+import { aggregateRun } from "@/lib/runs/oejts-aggregate";
 import { buildOejtsMessages, parseOejtsResponse, permuteItems } from "@/lib/runs/oejts-run";
 import { getDecryptedTarget } from "@/lib/services/model-configs";
 import type { createClient } from "@/lib/supabase";
-import type { CreateRunInput, ItemValue, RepetitionStatus, Run, RunProgress, RunStatus, RunView } from "@/types";
+import type {
+  CreateRunInput,
+  ItemValue,
+  RepetitionStatus,
+  Run,
+  RunProgress,
+  RunRepetition,
+  RunResultView,
+  RunStatus,
+  RunView,
+} from "@/types";
 
 type SupabaseClient = NonNullable<ReturnType<typeof createClient>>;
 
@@ -131,6 +142,41 @@ export async function deleteRun(sb: SupabaseClient, id: string): Promise<boolean
   const { data, error } = await sb.from(TABLE).delete().eq("id", id).select("id").maybeSingle();
   if (error) fail("delete", error.message);
   return data !== null;
+}
+
+// ─── Ergebnis-Auswertung (S-05) ──────────────────────────────────────────────
+
+/**
+ * Mappt eine `run_repetitions`-Zeile auf die fuer das Scoring noetigen Felder.
+ * Der typisierte Parameter launtert das `any` des untypisierten Clients (gleiches
+ * Muster wie `toView`/`toStepState`) — kein Cast + Property-Zugriff.
+ */
+function toRepForScoring(row: Pick<RunRepetition, "item_values">): Pick<RunRepetition, "item_values"> {
+  return { item_values: row.item_values };
+}
+
+/**
+ * Liest einen Lauf + seine Wiederholungen RLS-gescoped und aggregiert das Ergebnis
+ * on-the-fly (deterministisch, keine persistierten Aggregate; NFR Reproduzierbarkeit).
+ * `null` wenn der Lauf nicht sichtbar ist (Route → 404). `pending`/`running` →
+ * `state:'unfinished'`; 0 verwertbare Wiederholungen → `state:'empty'`; sonst `ready`.
+ * Die „<2 verwertbar"-Schwelle ist eine Darstellungs-Sache (UI), hier werden nur die
+ * Zahlen geliefert.
+ */
+export async function getRunResult(sb: SupabaseClient, userId: string, id: string): Promise<RunResultView | null> {
+  const run = await getRun(sb, userId, id);
+  if (!run) return null;
+
+  if (run.status === "pending" || run.status === "running") {
+    return { run, aggregate: null, state: "unfinished" };
+  }
+
+  const { data, error } = await sb.from("run_repetitions").select("item_values").eq("run_id", id);
+  if (error) fail("result:reps", error.message);
+  const reps = (data as Pick<RunRepetition, "item_values">[]).map(toRepForScoring);
+
+  const aggregate = aggregateRun(reps, OEJTS);
+  return { run, aggregate, state: aggregate.usableReps === 0 ? "empty" : "ready" };
 }
 
 // ─── Orchestrierung (Phase 2) ────────────────────────────────────────────────
