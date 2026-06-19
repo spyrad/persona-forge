@@ -3,7 +3,7 @@ project: "persona-forge"
 version: 1
 status: draft
 created: 2026-06-11
-updated: 2026-06-18
+updated: 2026-06-19
 prd_version: 1
 main_goal: learn
 top_blocker: time
@@ -42,7 +42,7 @@ lassen sich direkt vergleichen.
 | S-02 | model-config-management  | ein OpenAI-kompatibles Modell anhängen und als Konfig speichern (Key verschlüsselt) | S-01    | FR-005, FR-006, NFR Key-Dichtheit         | done |
 | S-03 | persona-catalog          | eine Persona anlegen (frei/strukturiert), im Katalog finden und kopieren     | S-01          | FR-007, FR-008                            | done |
 | S-04 | oejts-measurement-run    | einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen          | S-02, S-03    | US-01, FR-010, FR-012, FR-013, NFR Resilienz/Last/Fortschritt | done |
-| S-05 | distribution-results     | das Ergebnis je Achse als Verteilung mit Streuung plus Typ-Stabilität sehen  | S-04          | US-01, FR-016, NFR Reproduzierbarkeit     | proposed |
+| S-05 | distribution-results     | das Ergebnis je Achse als Verteilung mit Streuung plus Typ-Stabilität sehen  | S-04          | US-01, FR-016, NFR Reproduzierbarkeit     | done |
 | S-06 | run-control-and-tokens   | einen laufenden Test abbrechen und den Token-Verbrauch je Lauf sehen         | S-04          | FR-014, FR-015                            | proposed |
 | S-07 | visibility-controls      | Sichtbarkeit (privat/global) eigener Personas und Ergebnisse setzen          | S-03, S-05    | FR-003, §Access Control                   | proposed |
 | S-08 | side-by-side-comparison  | zwei abgeschlossene Läufe nebeneinander vergleichen                          | S-05          | US-02, FR-017                             | proposed |
@@ -161,7 +161,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Das deterministische Scoring (gleiche Rohantworten → identische Werte) ist die testbarste Stelle des Systems — prädestiniert für die ersten Unit-Tests (Modul 3); Darstellungstiefe (Roh-Verteilung) nicht zugunsten einer einzigen Kennzahl abkürzen.
-- **Status:** proposed
+- **Status:** done
 
 ### S-06: Lauf-Kontrolle — Abbruch und Token-Ausweis
 
@@ -238,3 +238,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-02: Nutzer kann ein OpenAI-kompatibles Modell anhängen (Base-URL, API-Key, Modellname) und als wiederverwendbare Konfiguration speichern; der Key liegt verschlüsselt at rest und verlässt den Server nie Richtung Client.** — Archived 2026-06-16 → `context/archive/2026-06-15-model-config-management/`. Lesson: DELETE/UPDATE hinter RLS müssen die betroffene Zeilenzahl prüfen — ein 0-Row-Match (fremde id) ist kein Erfolg, sonst meldet der Endpoint fälschlich `ok:true`; SSRF-Guards zusätzlich gegen numerische IPv4-Schreibweisen (dword/octal/hex) härten.
 - **S-03: Nutzer kann eine Persona anlegen (System-Prompt frei oder strukturiert nach Spec) mit Name, Beschreibung, Tags; sie im Katalog wiederfinden und für Läufe auswählen; Änderung erzeugt eine neue Kopie (Personas sind unveränderlich).** — Archived 2026-06-17 → `context/archive/2026-06-17-persona-catalog/`. Lesson: Sichtbarkeits-Default an user-scoped Tabellen muss explizit `private` sein — ein DB-Default `global` plus fehlendes `visibility` beim Insert leakt nutzerangelegte Zeilen cross-tenant (impl-review F1); globale Objekte nur per Seed/Migration.
 - **S-04: einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen.** — Archived 2026-06-18 → `context/archive/2026-06-17-oejts-measurement-run/`. Lesson: Client-orchestrierte Step-Loops (1 LLM-Call/Wiederholung) halten lange Läufe innerhalb der Cloudflare-Edge-Grenzen; das Datenmodell (`completedReps`-Zählung + unique `(run_id, rep_index)`) ist dadurch resume-fähig und idempotent gegen Doppelaufrufe.
+- **S-05: das Ergebnis je Achse als Verteilung mit Streuung plus Typ-Stabilität sehen.** — Archived 2026-06-19 → `context/archive/2026-06-18-distribution-results/`. Lesson: Auswertung on-the-fly aus den Rohantworten (kein persistiertes Aggregat, keine Migration) hält den Methodenkern deterministisch und unit-testbar; achsen-weiser Dropout bei unparsten Items wahrt Ehrlichkeit (kein erfundener Wert), und die „nicht belastbar"-Schwelle (<2) ist eine reine Darstellungs-Schicht, kein Service-State.
