@@ -1,9 +1,9 @@
 ---
 change-id: distribution-results
 title: Ergebnis als Verteilung je Achse plus Typ-Stabilität (S-05, Leitstern)
-status: implementing
+status: impl_reviewed
 created: 2026-06-18
-updated: 2026-06-18
+updated: 2026-06-19
 roadmap-ref: S-05
 prd-refs: [US-01, FR-016, NFR-Reproduzierbare-Auswertung, Guardrail-Methodenkern]
 prerequisites: [S-04 oejts-measurement-run]

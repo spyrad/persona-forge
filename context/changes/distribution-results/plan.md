@@ -183,8 +183,10 @@ ableiten. Rein und deterministisch — Eingabe sind die geparsten Wiederholungen
 **Contract**: `AxisDistribution` (`{ key; label; mean; sd; scores: number[]; letterCounts: Record<string,
 number>; usableCount; scale: { min; max; cutoff }; high; low }`), `RunAggregate` (`{ axes:
 AxisDistribution[]; modalType: string | null; typeConsistency: number | null; usableReps: number }`),
-`RunResultView` (`{ run: RunView; aggregate: RunAggregate | null; state: 'ready' | 'insufficient' | 'empty'
-| 'unfinished' }` — `state` kodiert die UI-Verzweigung; `aggregate` null bei `unfinished`).
+`RunResultView` (`{ run: RunView; aggregate: RunAggregate | null; state: 'ready' | 'empty'
+| 'unfinished' }` — `state` kodiert die UI-Verzweigung; `aggregate` null bei `unfinished`). Die
+„<2 nicht belastbar"-Schwelle ist KEIN eigener State, sondern eine Darstellungs-Schwelle, die die UI je
+Achse/laufweit aus `usableCount`/`usableReps` ableitet (siehe §4) — daher drei States, nicht vier.
 
 #### 4. Service: `getRunResult`
 

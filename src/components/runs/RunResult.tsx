@@ -1,5 +1,4 @@
 import { AlertTriangle, ArrowLeft, Clock, Sigma } from "lucide-react";
-import { cn } from "@/lib/utils";
 import type { AxisDistribution, RunResultView } from "@/types";
 
 interface Props {
@@ -37,6 +36,13 @@ function AxisChart({ axis }: { axis: AxisDistribution }) {
   for (const s of axis.scores) counts.set(s, (counts.get(s) ?? 0) + 1);
   const maxStack = Math.max(1, ...counts.values());
 
+  // Punktgröße gegen die dichteste Säule normieren, damit auch bei N=25 auf
+  // demselben Score nichts aus dem h-20-Feld (≈60px nutzbar) herausragt.
+  const STACK_PX = 60;
+  const slotPx = Math.min(10, STACK_PX / maxStack); // Höhe pro Punkt inkl. Abstand
+  const dotPx = Math.max(2, Math.round(slotPx) - 2);
+  const gapPx = Math.max(0, slotPx - dotPx);
+
   return (
     <div>
       <div className="relative h-20 rounded-lg border border-white/10 bg-white/5">
@@ -54,12 +60,16 @@ function AxisChart({ axis }: { axis: AxisDistribution }) {
           return (
             <div
               key={score}
-              className="absolute bottom-2 flex -translate-x-1/2 flex-col-reverse items-center gap-0.5"
-              style={{ left: `${String(leftPct)}%` }}
+              className="absolute bottom-2 flex -translate-x-1/2 flex-col-reverse items-center"
+              style={{ left: `${String(leftPct)}%`, gap: `${String(gapPx)}px` }}
               title={`Score ${String(score)}: ${String(count)}×`}
             >
               {Array.from({ length: count }).map((_, i) => (
-                <span key={i} className="size-2 rounded-full bg-purple-400" />
+                <span
+                  key={i}
+                  className="rounded-full bg-purple-400"
+                  style={{ width: `${String(dotPx)}px`, height: `${String(dotPx)}px` }}
+                />
               ))}
             </div>
           );
@@ -85,7 +95,7 @@ function AxisChart({ axis }: { axis: AxisDistribution }) {
           <span className="text-blue-100/40">({scale.max})</span> {axis.high}
         </span>
       </div>
-      {/* maxStack steuert nur die visuelle Höhe; explizit referenziert für klare Semantik. */}
+      {/* maxStack normiert die Säulenhöhe (s. o.) und wird hier zusätzlich für AT ausgewiesen. */}
       <span className="sr-only">Maximale Häufigkeit eines Wertes: {maxStack}</span>
     </div>
   );
@@ -215,7 +225,7 @@ export default function RunResult({ result }: Props) {
       {/* Verteilung je Achse */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold">Verteilung je Achse</h2>
-        <div className={cn("grid gap-4", "sm:grid-cols-2")}>
+        <div className="grid gap-4 sm:grid-cols-2">
           {aggregate.axes.map((axis) => (
             <AxisCard key={axis.key} axis={axis} />
           ))}
