@@ -1,6 +1,6 @@
 # Workflow-Status: persona-forge
 
-**Letztes Update:** 2026-06-20 (Session 1)
+**Letztes Update:** 2026-06-20 (Session 2)
 **Letzter Session-Log:** `dtb-project/project-changelog/2026-06/2026-06-20.md`
 
 ---
@@ -9,16 +9,16 @@
 
 | Kennzahl | Wert |
 |----------|------|
-| **Laufende Arbeit** | **Keine aktive Implementierung.** S-06 `run-control-and-tokens` **vollständig**: Live-Token-Zähler implementiert, Gate 8/8, impl-review APPROVED (0 Findings), Roadmap `done`, archiviert. **Noch nicht gepusht** (4 Commits lokal vor `origin/main`). |
-| **Naechster Schritt** | **`! git push`** (Prod-Deploy) + CI-Deploy-Job prüfen, dann **S-07** `/10x-plan visibility-controls` (oder S-08 parallel). |
+| **Laufende Arbeit** | **Keine aktive Implementierung.** S-06 `run-control-and-tokens` **vollständig + gepusht/live**: Live-Token-Zähler, Gate 8/8, impl-review APPROVED (0 Findings), Roadmap `done`, archiviert, `2eb4da5..160ee06` → `main` (Cloudflare-Auto-Deploy getriggert). |
+| **Naechster Schritt** | **S-07** `/10x-plan visibility-controls` (oder S-08 parallel). |
 | **Blocker** | Keine. |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] **Push S-06** via `! git push` (4 Commits) → CI-Deploy-Job prüfen. Keine Migration nötig.
 - [ ] S-07 `visibility-controls` planen (Sichtbarkeit privat/global; Prereq S-03 ✅ + S-05 ✅) ODER S-08 `side-by-side-comparison` (parallel, Prereq S-05 ✅)
+- [ ] Optional: S-06-Deploy bei Gelegenheit im Cloudflare-/GitHub-Actions-UI sichten (`gh` fehlt lokal; kein prod-Fingerprint, da keine neue Route/Migration)
 - [ ] F6 Trigger-Idempotenz; Husky/lint-staged-Hook reparieren
 
 ---
@@ -27,7 +27,7 @@
 
 | Datum | Meilenstein | Ergebnis | Details |
 |-------|-------------|----------|---------|
-| 2026-06-20 | **S-06 abgeschlossen** (lokal) | Live-Token-Zähler; Abbruch/Token-Ausweis (S-04-vorgebaut) verifiziert; APPROVED, archiviert | `614b4ea`, `1b71ee3`, `a1bf59e` |
+| 2026-06-20 | **S-06 abgeschlossen + gepusht** | Live-Token-Zähler; Abbruch/Token-Ausweis (S-04-vorgebaut) verifiziert; APPROVED, archiviert, `→ main` | `614b4ea`, `a1bf59e`, `160ee06` |
 | 2026-06-19 | **S-05 abgeschlossen + live** | Verteilung/Typ-Stabilität je Achse (Leitstern); Gate 11/11, archiviert, deployed | `17dfcb3`, `2eb4da5` |
 | 2026-06-18 | S-04 abgeschlossen + live | `/runs`-UI, OEJTS-Lauf end-to-end, archiviert | `2f3ba29`, `d06afbe` |
 | 2026-06-17 | S-03 abgeschlossen + deployed | Persona-Katalog, F1-Privacy-Fix, archiviert | `3d8bb4e` |
