@@ -43,7 +43,7 @@ lassen sich direkt vergleichen.
 | S-03 | persona-catalog          | eine Persona anlegen (frei/strukturiert), im Katalog finden und kopieren     | S-01          | FR-007, FR-008                            | done |
 | S-04 | oejts-measurement-run    | einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen          | S-02, S-03    | US-01, FR-010, FR-012, FR-013, NFR Resilienz/Last/Fortschritt | done |
 | S-05 | distribution-results     | das Ergebnis je Achse als Verteilung mit Streuung plus Typ-Stabilität sehen  | S-04          | US-01, FR-016, NFR Reproduzierbarkeit     | done |
-| S-06 | run-control-and-tokens   | einen laufenden Test abbrechen und den Token-Verbrauch je Lauf sehen         | S-04          | FR-014, FR-015                            | proposed |
+| S-06 | run-control-and-tokens   | einen laufenden Test abbrechen und den Token-Verbrauch je Lauf sehen         | S-04          | FR-014, FR-015                            | done |
 | S-07 | visibility-controls      | Sichtbarkeit (privat/global) eigener Personas und Ergebnisse setzen          | S-03, S-05    | FR-003, §Access Control                   | proposed |
 | S-08 | side-by-side-comparison  | zwei abgeschlossene Läufe nebeneinander vergleichen                          | S-05          | US-02, FR-017                             | proposed |
 
@@ -173,7 +173,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Abbruch-Semantik hängt an der in S-04 gewählten Lauf-Architektur (Aufteilung/Queues) — deshalb nach S-04, nicht hineingequetscht.
-- **Status:** proposed
+- **Status:** done
 
 ### S-07: Sichtbarkeit privat/global
 
@@ -239,3 +239,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-03: Nutzer kann eine Persona anlegen (System-Prompt frei oder strukturiert nach Spec) mit Name, Beschreibung, Tags; sie im Katalog wiederfinden und für Läufe auswählen; Änderung erzeugt eine neue Kopie (Personas sind unveränderlich).** — Archived 2026-06-17 → `context/archive/2026-06-17-persona-catalog/`. Lesson: Sichtbarkeits-Default an user-scoped Tabellen muss explizit `private` sein — ein DB-Default `global` plus fehlendes `visibility` beim Insert leakt nutzerangelegte Zeilen cross-tenant (impl-review F1); globale Objekte nur per Seed/Migration.
 - **S-04: einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen.** — Archived 2026-06-18 → `context/archive/2026-06-17-oejts-measurement-run/`. Lesson: Client-orchestrierte Step-Loops (1 LLM-Call/Wiederholung) halten lange Läufe innerhalb der Cloudflare-Edge-Grenzen; das Datenmodell (`completedReps`-Zählung + unique `(run_id, rep_index)`) ist dadurch resume-fähig und idempotent gegen Doppelaufrufe.
 - **S-05: das Ergebnis je Achse als Verteilung mit Streuung plus Typ-Stabilität sehen.** — Archived 2026-06-19 → `context/archive/2026-06-18-distribution-results/`. Lesson: Auswertung on-the-fly aus den Rohantworten (kein persistiertes Aggregat, keine Migration) hält den Methodenkern deterministisch und unit-testbar; achsen-weiser Dropout bei unparsten Items wahrt Ehrlichkeit (kein erfundener Wert), und die „nicht belastbar"-Schwelle (<2) ist eine reine Darstellungs-Schicht, kein Service-State.
+- **S-06: einen laufenden Test abbrechen und den Token-Verbrauch je Lauf sehen.** — impl_reviewed 2026-06-20 (APPROVED, 0 Findings). Lesson: Vor dem Planen eines Slices prüfen, was Vorgänger-Slices schon mitgeliefert haben — S-04 hatte FR-014 (Abbruch = harter DELETE + Cascade) und FR-015 (Token-Akkumulation + Anzeige in Liste/Detail) bereits vorgebaut, sodass S-06 auf einen Live-Token-Zähler (`RunProgress` um 2 Felder, an allen Service-Returns durchgereicht) plus ein Verifikations-Gate kollabierte; ein TypeScript-Pflichtfeld am DTO macht die „alle Return-Sites befüllt"-Vollständigkeit per `astro check` selbst-prüfend.

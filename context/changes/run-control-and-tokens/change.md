@@ -1,7 +1,7 @@
 ---
 change-id: run-control-and-tokens
 title: Lauf-Kontrolle — Abbruch und Token-Ausweis (S-06)
-status: implemented
+status: impl_reviewed
 created: 2026-06-20
 updated: 2026-06-20
 roadmap-ref: S-06
