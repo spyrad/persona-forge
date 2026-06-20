@@ -280,6 +280,9 @@ export interface RunProgress {
   completedReps: number;
   totalReps: number;
   failedCount: number;
+  /** Bis hierhin akkumulierter Token-Verbrauch (FR-015) — fuer den Live-Zaehler. */
+  promptTokens: number;
+  completionTokens: number;
 }
 
 // ─── Ergebnis-Auswertung (Verteilung je Achse, S-05) ─────────────────────────

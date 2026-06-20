@@ -292,6 +292,8 @@ export async function processNextRepetition(
       completedReps: await countReps(sb, runId),
       totalReps: run.repetitionCount,
       failedCount: run.failedCount,
+      promptTokens: run.promptTokens,
+      completionTokens: run.completionTokens,
     };
   }
 
@@ -306,18 +308,39 @@ export async function processNextRepetition(
   if (completedReps >= run.repetitionCount) {
     const finalStatus: RunStatus = run.failedCount >= run.repetitionCount ? "failed" : "completed";
     await patchRun(sb, runId, { status: finalStatus });
-    return { status: finalStatus, completedReps, totalReps: run.repetitionCount, failedCount: run.failedCount };
+    return {
+      status: finalStatus,
+      completedReps,
+      totalReps: run.repetitionCount,
+      failedCount: run.failedCount,
+      promptTokens: run.promptTokens,
+      completionTokens: run.completionTokens,
+    };
   }
 
   // F3: ohne Modellkonfig kann kein Call erfolgen → ganzer Lauf failed.
   if (!run.modelConfigId) {
     await patchRun(sb, runId, { status: "failed" });
-    return { status: "failed", completedReps, totalReps: run.repetitionCount, failedCount: run.failedCount };
+    return {
+      status: "failed",
+      completedReps,
+      totalReps: run.repetitionCount,
+      failedCount: run.failedCount,
+      promptTokens: run.promptTokens,
+      completionTokens: run.completionTokens,
+    };
   }
   const target = await getDecryptedTarget(sb, run.modelConfigId);
   if (!target) {
     await patchRun(sb, runId, { status: "failed" });
-    return { status: "failed", completedReps, totalReps: run.repetitionCount, failedCount: run.failedCount };
+    return {
+      status: "failed",
+      completedReps,
+      totalReps: run.repetitionCount,
+      failedCount: run.failedCount,
+      promptTokens: run.promptTokens,
+      completionTokens: run.completionTokens,
+    };
   }
 
   // Naechste Wiederholung: permutieren → Messages bauen → Call.
@@ -381,6 +404,8 @@ export async function processNextRepetition(
         completedReps: await countReps(sb, runId),
         totalReps: c.repetitionCount,
         failedCount: c.failedCount,
+        promptTokens: c.promptTokens,
+        completionTokens: c.completionTokens,
       };
     }
     fail("step:insert", insErr.message);
@@ -404,5 +429,7 @@ export async function processNextRepetition(
     completedReps: repIndex,
     totalReps: run.repetitionCount,
     failedCount: newFailedCount,
+    promptTokens: newPromptTokens,
+    completionTokens: newCompletionTokens,
   };
 }

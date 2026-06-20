@@ -229,7 +229,14 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       setRuns((prev) => [view, ...prev]);
       cancelledRef.current = false;
       setActiveRunId(view.id);
-      setProgress({ status: view.status, completedReps: 0, totalReps: view.repetitionCount, failedCount: 0 });
+      setProgress({
+        status: view.status,
+        completedReps: 0,
+        totalReps: view.repetitionCount,
+        failedCount: 0,
+        promptTokens: 0,
+        completionTokens: 0,
+      });
       void runStep(view.id);
     } catch {
       setServerError("Network error — please try again.");
@@ -424,6 +431,9 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
           <p className="text-sm text-blue-100/80">
             {progress.completedReps} von {progress.totalReps} Wiederholungen
             {progress.failedCount > 0 ? ` · ${String(progress.failedCount)} fehlgeschlagen` : ""}
+          </p>
+          <p className="text-xs text-blue-100/50">
+            Tokens: {progress.promptTokens} ein / {progress.completionTokens} aus
           </p>
           <div className="h-2 overflow-hidden rounded-full bg-white/10">
             <div
