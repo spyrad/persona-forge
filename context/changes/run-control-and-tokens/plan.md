@@ -196,14 +196,14 @@ Keine. Token-Spalten existieren seit S-04.
 
 #### Automated
 
-- [x] 1.1 Linting passes: `npm run lint`
-- [x] 1.2 Type checking passes: `npm run build` (astro check, vollständige RunProgress-Felder)
-- [x] 1.3 Bestehende Unit-Tests grün: `npm run test`
-- [x] 1.4 Production-Build erfolgreich: `npm run build`
+- [x] 1.1 Linting passes: `npm run lint` — 614b4ea
+- [x] 1.2 Type checking passes: `npm run build` (astro check, vollständige RunProgress-Felder) — 614b4ea
+- [x] 1.3 Bestehende Unit-Tests grün: `npm run test` — 614b4ea
+- [x] 1.4 Production-Build erfolgreich: `npm run build` — 614b4ea
 
 #### Manual
 
-- [x] 1.5 Live-Panel zeigt steigenden Token-Zähler; Endstand = Liste/Detail
-- [x] 1.6 Abbruch (FR-014) verwirft Lauf vollständig
-- [x] 1.7 Token-Ausweis (FR-015) in Liste + Detail; `0/0` ohne usage crasht nicht
-- [x] 1.8 Keine Regression (Balken, Fehlquote, Ergebnis-Link, Logout-Redirect)
+- [x] 1.5 Live-Panel zeigt steigenden Token-Zähler; Endstand = Liste/Detail — 614b4ea
+- [x] 1.6 Abbruch (FR-014) verwirft Lauf vollständig — 614b4ea
+- [x] 1.7 Token-Ausweis (FR-015) in Liste + Detail; `0/0` ohne usage crasht nicht — 614b4ea
+- [x] 1.8 Keine Regression (Balken, Fehlquote, Ergebnis-Link, Logout-Redirect) — 614b4ea
