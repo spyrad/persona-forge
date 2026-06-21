@@ -347,32 +347,32 @@ Keine. Kein Schema-, Policy- oder Seed-Change; reine Lese-/Darstellungs-Erweiter
 
 #### Automated
 
-- [x] 1.1 Linting passes: `npm run lint`
-- [x] 1.2 Type-/Astro-Check passes: `npx astro check`
-- [x] 1.3 Build passes: `npm run build`
+- [x] 1.1 Linting passes: `npm run lint` — b88b229
+- [x] 1.2 Type-/Astro-Check passes: `npx astro check` — b88b229
+- [x] 1.3 Build passes: `npm run build` — b88b229
 
 #### Manual
 
-- [x] 1.4 Genau zwei completed-Läufe markierbar; dritter Haken gesperrt
-- [x] 1.5 Nicht-completed Läufe zeigen keinen Vergleichs-Haken
-- [x] 1.6 „Vergleichen"-Button erscheint nur bei zwei Auswahlen und navigiert zu `/runs/compare?a=&b=` mit korrekten IDs
-- [x] 1.7 „Auswahl aufheben" leert die Markierung; bestehende Funktionen unverändert
+- [x] 1.4 Genau zwei completed-Läufe markierbar; dritter Haken gesperrt — b88b229
+- [x] 1.5 Nicht-completed Läufe zeigen keinen Vergleichs-Haken — b88b229
+- [x] 1.6 „Vergleichen"-Button erscheint nur bei zwei Auswahlen und navigiert zu `/runs/compare?a=&b=` mit korrekten IDs — b88b229
+- [x] 1.7 „Auswahl aufheben" leert die Markierung; bestehende Funktionen unverändert — b88b229
 
 ### Phase 2: Vergleichs-Seite (SSR-Load + Guards)
 
 #### Automated
 
-- [ ] 2.1 Linting passes: `npm run lint`
-- [ ] 2.2 Type-/Astro-Check passes: `npx astro check`
-- [ ] 2.3 Build passes: `npm run build`
+- [x] 2.1 Linting passes: `npm run lint`
+- [x] 2.2 Type-/Astro-Check passes: `npx astro check`
+- [x] 2.3 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 2.4 Zwei ready-IDs laden ohne Fehler, beide Labels (Persona + Modell + Datum) aufgelöst
-- [ ] 2.5 Gleiche ID (`?a=X&b=X`) → Hinweis „zwei verschiedene Läufe"
-- [ ] 2.6 Fehlender Param / unbekannte / fremde ID → 404 bzw. erklärender Zustand, kein 500
-- [ ] 2.7 Nicht-`ready` Seite → erklärender Zustand statt halb-leerer Vergleich
-- [ ] 2.8 Gelöschte Persona/Modell → Fallback-Label, kein Crash
+- [x] 2.4 Zwei ready-IDs laden ohne Fehler, beide Labels (Persona + Modell + Datum) aufgelöst
+- [x] 2.5 Gleiche ID (`?a=X&b=X`) → Hinweis „zwei verschiedene Läufe"
+- [x] 2.6 Fehlender Param / unbekannte / fremde ID → 404 bzw. erklärender Zustand, kein 500
+- [x] 2.7 Nicht-`ready` Seite → erklärender Zustand statt halb-leerer Vergleich
+- [x] 2.8 Gelöschte Persona/Modell → Fallback-Label, kein Crash
 
 ### Phase 3: Überlagerte Achsen-Darstellung + Delta
 

@@ -335,3 +335,24 @@ export interface RunResultView {
   aggregate: RunAggregate | null;
   state: "ready" | "empty" | "unfinished";
 }
+
+// ─── Zwei-Laeufe-Vergleich (side-by-side, S-08) ──────────────────────────────
+
+/**
+ * Eine Seite des Vergleichs: das aggregierte Ergebnis plus aufgeloeste
+ * Anzeige-Labels. Namen tragen bereits ihre Fallbacks (`(geloescht)`, wenn die
+ * FK auf null steht; `(unbekannt)`, wenn die ID nicht in den sichtbaren Listen
+ * auftaucht — z. B. fremde private Persona hinter einem globalen Lauf).
+ */
+export interface RunComparisonSide {
+  result: RunResultView;
+  personaName: string;
+  modelLabel: string;
+  modelName: string | null;
+}
+
+/** Vergleich genau zweier abgeschlossener Laeufe (FR-017: exakt zwei). */
+export interface RunComparisonView {
+  a: RunComparisonSide;
+  b: RunComparisonSide;
+}
