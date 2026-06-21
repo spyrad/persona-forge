@@ -6,7 +6,8 @@
  *
  * Invarianten:
  *   * `owner_id` wird beim Insert NICHT gesetzt — DB-Default `auth.uid()`.
- *   * `visibility` immer 'private' (Toggle = S-07; privacy-by-default, S-03-Lesson F1).
+ *   * `visibility` default 'global' (FR-003; explizit gesetzt, DB-Default bleibt
+ *     'private' als Defense-in-Depth). Umschalten via `updateRunVisibility` (S-07).
  *   * Ein Lauf ist selbst-enthalten: `persona_prompt_snapshot` haelt den aufgeloesten
  *     Persona-System-Prompt fest (reproduzierbar, auch wenn Persona spaeter geloescht wird).
  *   * RLS erzwingt den Scope serverseitig (select own-or-global, writes owner-only).
@@ -27,6 +28,7 @@ import type {
   RunResultView,
   RunStatus,
   RunView,
+  Visibility,
 } from "@/types";
 
 type SupabaseClient = NonNullable<ReturnType<typeof createClient>>;
@@ -124,7 +126,9 @@ export async function createRun(sb: SupabaseClient, userId: string, input: Creat
       persona_prompt_snapshot: persona.system_prompt,
       instrument_id: input.instrumentId,
       repetition_count: input.repetitionCount,
-      visibility: "private",
+      // FR-003: Default ist 'global', explizit gesetzt (DB-Default bleibt
+      // 'private' als Defense-in-Depth). Umschalten via updateRunVisibility (S-07).
+      visibility: "global",
       // owner_id via DB-Default (auth.uid())
     })
     .select(VIEW_COLUMNS)
@@ -142,6 +146,28 @@ export async function deleteRun(sb: SupabaseClient, id: string): Promise<boolean
   const { data, error } = await sb.from(TABLE).delete().eq("id", id).select("id").maybeSingle();
   if (error) fail("delete", error.message);
   return data !== null;
+}
+
+/**
+ * Schaltet die Sichtbarkeit eines EIGENEN Laufs um (privat/global, S-07).
+ * In-Place-Update nur des `visibility`-Felds (+ `updated_at`); RLS (`runs_update_own`)
+ * erzwingt owner-only. Das Ergebnis erbt die Sichtbarkeit ueber `run_repetitions`
+ * (Parent-Subquery). Eine fremde/fehlende id trifft 0 Zeilen → `null` (Route → 404).
+ */
+export async function updateRunVisibility(
+  sb: SupabaseClient,
+  userId: string,
+  id: string,
+  visibility: Visibility,
+): Promise<RunView | null> {
+  const { data, error } = await sb
+    .from(TABLE)
+    .update({ visibility, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .select(VIEW_COLUMNS)
+    .maybeSingle();
+  if (error) fail("update-visibility", error.message);
+  return data ? toView(data, userId) : null;
 }
 
 // ─── Ergebnis-Auswertung (S-05) ──────────────────────────────────────────────

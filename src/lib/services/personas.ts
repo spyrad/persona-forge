@@ -2,8 +2,10 @@
  * Service-Schicht fuer `public.personas` — kapselt das Supabase-CRUD.
  *
  * Invarianten:
- *   * Personas sind UNVERAENDERLICH (FR-008): es gibt KEIN `update`. Eine
- *     Aenderung entsteht nur als Kopie (`duplicatePersona`, neue Zeile).
+ *   * Persona-INHALT ist UNVERAENDERLICH (FR-008): Name/Beschreibung/Prompt etc.
+ *     aendern sich nur als Kopie (`duplicatePersona`, neue Zeile). Einzige
+ *     Ausnahme: die Sichtbarkeit (Metadaten, kein Inhalt) ist per
+ *     `updatePersonaVisibility` in-place umschaltbar (S-07).
  *   * `owner_id` wird beim Insert NICHT explizit gesetzt — die Spalte hat
  *     `default auth.uid()` (siehe Migration, wie `model_configs`/`_rls_probe`).
  *   * RLS erzwingt den Scope serverseitig: select sieht eigene + globale, alle
@@ -15,7 +17,7 @@
  */
 import { compilePersonaPrompt } from "@/lib/persona-compile";
 import type { createClient } from "@/lib/supabase";
-import type { CreatePersonaInput, Persona, PersonaStructuredFields, PersonaView } from "@/types";
+import type { CreatePersonaInput, Persona, PersonaStructuredFields, PersonaView, Visibility } from "@/types";
 
 type SupabaseClient = NonNullable<ReturnType<typeof createClient>>;
 
@@ -72,8 +74,8 @@ export async function listPersonas(sb: SupabaseClient, userId: string): Promise<
 }
 
 /**
- * Legt eine Persona an. owner_id via DB-Default, visibility immer 'private'
- * (globale Personas nur per Seed/Migration, FR-009).
+ * Legt eine Persona an. owner_id via DB-Default, visibility default 'global'
+ * (FR-003: Default ist global; „privat auf Wunsch" per Toggle).
  * Bei `sourceKind = 'structured'` wird der `system_prompt` serverseitig aus den
  * Feldern kompiliert und die Felder selbst in `structured_fields` abgelegt; bei
  * `'freeform'` wird der getippte Prompt direkt gespeichert.
@@ -96,10 +98,11 @@ export async function createPersona(
       system_prompt: systemPrompt,
       source_kind: input.sourceKind,
       structured_fields: structuredFields,
-      // Privacy-by-default: nutzerangelegte Personas sind privat. Globale
-      // Personas entstehen ausschliesslich per Seed/Migration (FR-009); der
-      // nutzerseitige Sichtbarkeits-Toggle ist S-07. (impl-review F1)
-      visibility: "private",
+      // FR-003: Default ist 'global'. Bewusst EXPLIZIT gesetzt (nicht ueber den
+      // DB-Default 'private', der als Defense-in-Depth gegen rohe Inserts bleibt) —
+      // das vermeidet die S-03-Leak-Ursache (vergessenes visibility-Feld bei
+      // DB-Default global). „privat auf Wunsch" via Toggle (updatePersonaVisibility).
+      visibility: "global",
     })
     .select(VIEW_COLUMNS)
     .single();
@@ -152,4 +155,27 @@ export async function deletePersona(sb: SupabaseClient, id: string): Promise<boo
   const { data, error } = await sb.from(TABLE).delete().eq("id", id).select("id").maybeSingle();
   if (error) fail("delete", error.message);
   return data !== null;
+}
+
+/**
+ * Schaltet die Sichtbarkeit einer EIGENEN Persona um (privat/global, S-07).
+ * In-Place-Update NUR des `visibility`-Felds (+ `updated_at`) — Inhalts-Immutability
+ * (FR-008) bleibt gewahrt. RLS (`personas_update_own`) erzwingt owner-only; eine
+ * fremde/fehlende id trifft 0 Zeilen → `null` (Route → 404; S-02-Lesson:
+ * 0-Row-Match ist kein Erfolg).
+ */
+export async function updatePersonaVisibility(
+  sb: SupabaseClient,
+  userId: string,
+  id: string,
+  visibility: Visibility,
+): Promise<PersonaView | null> {
+  const { data, error } = await sb
+    .from(TABLE)
+    .update({ visibility, updated_at: new Date().toISOString() })
+    .eq("id", id)
+    .select(VIEW_COLUMNS)
+    .maybeSingle();
+  if (error) fail("update-visibility", error.message);
+  return data ? toView(data, userId) : null;
 }
