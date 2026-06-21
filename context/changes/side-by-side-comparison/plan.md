@@ -378,15 +378,15 @@ Keine. Kein Schema-, Policy- oder Seed-Change; reine Lese-/Darstellungs-Erweiter
 
 #### Automated
 
-- [x] 3.1 Linting passes: `npm run lint`
-- [x] 3.2 Type-/Astro-Check passes: `npx astro check`
-- [x] 3.3 Build passes: `npm run build`
+- [x] 3.1 Linting passes: `npm run lint` — 41e63c2
+- [x] 3.2 Type-/Astro-Check passes: `npx astro check` — 41e63c2
+- [x] 3.3 Build passes: `npm run build` — 41e63c2
 
 #### Manual
 
-- [x] 3.4 Beide Verteilungen je Achse überlagert, farblich getrennt, beide Mittelwert-Marker + Legende
-- [x] 3.5 Typ-Banner korrekt „gleich"/„unterschiedlich" mit beiden Typen
-- [x] 3.6 Mittelwert-Delta je Achse stimmt mit `mean A − mean B` (Vorzeichen korrekt)
-- [x] 3.7 Achse mit `usableCount < 2` zeigt „nicht belastbar"-Warnung je betroffener Seite
-- [x] 3.8 S-05-Einzelansicht `/runs/[id]` visuell unverändert (kein Regress)
-- [x] 3.9 Überlagerung auf schmalem Viewport lesbar (einspaltig)
+- [x] 3.4 Beide Verteilungen je Achse überlagert, farblich getrennt, beide Mittelwert-Marker + Legende — 41e63c2
+- [x] 3.5 Typ-Banner korrekt „gleich"/„unterschiedlich" mit beiden Typen — 41e63c2
+- [x] 3.6 Mittelwert-Delta je Achse stimmt mit `mean A − mean B` (Vorzeichen korrekt) — 41e63c2
+- [x] 3.7 Achse mit `usableCount < 2` zeigt „nicht belastbar"-Warnung je betroffener Seite — 41e63c2
+- [x] 3.8 S-05-Einzelansicht `/runs/[id]` visuell unverändert (kein Regress) — 41e63c2
+- [x] 3.9 Überlagerung auf schmalem Viewport lesbar (einspaltig) — 41e63c2

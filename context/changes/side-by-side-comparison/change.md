@@ -1,7 +1,7 @@
 ---
 change_id: side-by-side-comparison
 title: Zwei abgeschlossene Läufe nebeneinander vergleichen
-status: implementing
+status: implemented
 created: 2026-06-21
 updated: 2026-06-21
 ---
