@@ -396,10 +396,10 @@ initplan-gecachtes `(select auth.uid())`.
 
 #### Automated
 
-- [x] 3.1 Gesamtlauf grün: `npm run lint`, `astro check`, `npm run test`, `npm run build`
+- [x] 3.1 Gesamtlauf grün: `npm run lint`, `astro check`, `npm run test`, `npm run build` — cf463cd
 
 #### Manual
 
-- [x] 3.2 Cross-Visibility-Matrix vollständig bestätigt (global sichtbar, privat unsichtbar, Fremd-Update geblockt)
-- [x] 3.3 Keine Regression in Listen + Ergebnis-Detail
-- [x] 3.4 Gate-Testdaten aufgeräumt
+- [x] 3.2 Cross-Visibility-Matrix vollständig bestätigt (global sichtbar, privat unsichtbar, Fremd-Update geblockt) — cf463cd
+- [x] 3.3 Keine Regression in Listen + Ergebnis-Detail — cf463cd
+- [x] 3.4 Gate-Testdaten aufgeräumt — cf463cd
