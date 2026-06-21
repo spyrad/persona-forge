@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase";
 import { getRunResult } from "@/lib/services/runs";
 import { listPersonas } from "@/lib/services/personas";
 import { listModelConfigs } from "@/lib/services/model-configs";
+import RunComparison from "@/components/runs/RunComparison";
 import type { ModelConfigView, PersonaView, RunComparisonSide, RunComparisonView, RunResultView } from "@/types";
 
 // /runs/compare ist via PROTECTED_ROUTES (startsWith "/runs") geschuetzt. Diese
@@ -110,20 +111,9 @@ if (pageState === "notFound") {
             vergleichen.
           </p>
         ) : view ? (
-          <div class="grid gap-4 sm:grid-cols-2">
-            {[view.a, view.b].map((side, i) => (
-              <div class="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-5">
-                <p class="text-xs text-blue-100/50">Lauf {i === 0 ? "A" : "B"}</p>
-                <p class="font-semibold">{side.personaName}</p>
-                <p class="text-sm text-blue-100/70">
-                  {side.modelLabel}
-                  {side.modelName ? ` (${side.modelName})` : ""}
-                </p>
-                <p class="text-xs text-blue-100/50">{new Date(side.result.run.createdAt).toLocaleString("de-DE")}</p>
-                <p class="font-mono text-2xl font-bold tracking-widest">{side.result.aggregate?.modalType ?? "—"}</p>
-              </div>
-            ))}
-          </div>
+          // Rein präsentational (keine Interaktivität) → statisch gerendert, kein
+          // Client-JS, keine Hydration.
+          <RunComparison view={view} />
         ) : null
       }
 

@@ -362,31 +362,31 @@ Keine. Kein Schema-, Policy- oder Seed-Change; reine Lese-/Darstellungs-Erweiter
 
 #### Automated
 
-- [x] 2.1 Linting passes: `npm run lint`
-- [x] 2.2 Type-/Astro-Check passes: `npx astro check`
-- [x] 2.3 Build passes: `npm run build`
+- [x] 2.1 Linting passes: `npm run lint` — d773386
+- [x] 2.2 Type-/Astro-Check passes: `npx astro check` — d773386
+- [x] 2.3 Build passes: `npm run build` — d773386
 
 #### Manual
 
-- [x] 2.4 Zwei ready-IDs laden ohne Fehler, beide Labels (Persona + Modell + Datum) aufgelöst
-- [x] 2.5 Gleiche ID (`?a=X&b=X`) → Hinweis „zwei verschiedene Läufe"
-- [x] 2.6 Fehlender Param / unbekannte / fremde ID → 404 bzw. erklärender Zustand, kein 500
-- [x] 2.7 Nicht-`ready` Seite → erklärender Zustand statt halb-leerer Vergleich
-- [x] 2.8 Gelöschte Persona/Modell → Fallback-Label, kein Crash
+- [x] 2.4 Zwei ready-IDs laden ohne Fehler, beide Labels (Persona + Modell + Datum) aufgelöst — d773386
+- [x] 2.5 Gleiche ID (`?a=X&b=X`) → Hinweis „zwei verschiedene Läufe" — d773386
+- [x] 2.6 Fehlender Param / unbekannte / fremde ID → 404 bzw. erklärender Zustand, kein 500 — d773386
+- [x] 2.7 Nicht-`ready` Seite → erklärender Zustand statt halb-leerer Vergleich — d773386
+- [x] 2.8 Gelöschte Persona/Modell → Fallback-Label, kein Crash — d773386
 
 ### Phase 3: Überlagerte Achsen-Darstellung + Delta
 
 #### Automated
 
-- [ ] 3.1 Linting passes: `npm run lint`
-- [ ] 3.2 Type-/Astro-Check passes: `npx astro check`
-- [ ] 3.3 Build passes: `npm run build`
+- [x] 3.1 Linting passes: `npm run lint`
+- [x] 3.2 Type-/Astro-Check passes: `npx astro check`
+- [x] 3.3 Build passes: `npm run build`
 
 #### Manual
 
-- [ ] 3.4 Beide Verteilungen je Achse überlagert, farblich getrennt, beide Mittelwert-Marker + Legende
-- [ ] 3.5 Typ-Banner korrekt „gleich"/„unterschiedlich" mit beiden Typen
-- [ ] 3.6 Mittelwert-Delta je Achse stimmt mit `mean A − mean B` (Vorzeichen korrekt)
-- [ ] 3.7 Achse mit `usableCount < 2` zeigt „nicht belastbar"-Warnung je betroffener Seite
-- [ ] 3.8 S-05-Einzelansicht `/runs/[id]` visuell unverändert (kein Regress)
-- [ ] 3.9 Überlagerung auf schmalem Viewport lesbar (einspaltig)
+- [x] 3.4 Beide Verteilungen je Achse überlagert, farblich getrennt, beide Mittelwert-Marker + Legende
+- [x] 3.5 Typ-Banner korrekt „gleich"/„unterschiedlich" mit beiden Typen
+- [x] 3.6 Mittelwert-Delta je Achse stimmt mit `mean A − mean B` (Vorzeichen korrekt)
+- [x] 3.7 Achse mit `usableCount < 2` zeigt „nicht belastbar"-Warnung je betroffener Seite
+- [x] 3.8 S-05-Einzelansicht `/runs/[id]` visuell unverändert (kein Regress)
+- [x] 3.9 Überlagerung auf schmalem Viewport lesbar (einspaltig)

@@ -1,5 +1,6 @@
 import { AlertTriangle, ArrowLeft, Clock, Globe, Lock, Sigma } from "lucide-react";
 import type { AxisDistribution, RunResultView } from "@/types";
+import { AxisChart } from "./axis-chart";
 
 interface Props {
   result: RunResultView;
@@ -8,97 +9,11 @@ interface Props {
 /** Schwelle, unter der eine Achsen-Verteilung als nicht belastbar gilt (Methodenkern-Guardrail). */
 const RELIABLE_MIN = 2;
 
-/** Position eines Scores in Prozent der Achsen-Skala (0–100, geklemmt). */
-function toPct(value: number, min: number, max: number): number {
-  if (max <= min) return 50;
-  const pct = ((value - min) / (max - min)) * 100;
-  return Math.max(0, Math.min(100, pct));
-}
-
 /** Fehlquote als Text (`failed/total (pct %)`). */
 function failureRate(failed: number, total: number): string {
   if (total <= 0) return "—";
   const pct = Math.round((failed / total) * 100);
   return `${String(failed)}/${String(total)} (${String(pct)} %)`;
-}
-
-/**
- * Roh-Verteilung einer Achse als leichtgewichtiges CSS-Histogramm: Score-Skala
- * (scale.min..max) mit gestrichelter Cutoff-Linie, je Score-Wert eine gestapelte
- * Punktsäule, plus eine Mittelwert-Markierung. Pol-Beschriftung `low ← cutoff → high`.
- */
-function AxisChart({ axis }: { axis: AxisDistribution }) {
-  const { scale } = axis;
-  const cutoffPct = toPct(scale.cutoff, scale.min, scale.max);
-
-  // Punkte je distinktem Score-Wert zählen (für gestapelte Säulen).
-  const counts = new Map<number, number>();
-  for (const s of axis.scores) counts.set(s, (counts.get(s) ?? 0) + 1);
-  const maxStack = Math.max(1, ...counts.values());
-
-  // Punktgröße gegen die dichteste Säule normieren, damit auch bei N=25 auf
-  // demselben Score nichts aus dem h-20-Feld (≈60px nutzbar) herausragt.
-  const STACK_PX = 60;
-  const slotPx = Math.min(10, STACK_PX / maxStack); // Höhe pro Punkt inkl. Abstand
-  const dotPx = Math.max(2, Math.round(slotPx) - 2);
-  const gapPx = Math.max(0, slotPx - dotPx);
-
-  return (
-    <div>
-      <div className="relative h-20 rounded-lg border border-white/10 bg-white/5">
-        {/* Cutoff-Linie */}
-        <div
-          className="absolute inset-y-0 border-l border-dashed border-amber-300/50"
-          style={{ left: `${String(cutoffPct)}%` }}
-        >
-          <span className="absolute -top-px left-1 text-[10px] text-amber-200/70">{scale.cutoff}</span>
-        </div>
-
-        {/* Punkt-Säulen je Score-Wert */}
-        {[...counts.entries()].map(([score, count]) => {
-          const leftPct = toPct(score, scale.min, scale.max);
-          return (
-            <div
-              key={score}
-              className="absolute bottom-2 flex -translate-x-1/2 flex-col-reverse items-center"
-              style={{ left: `${String(leftPct)}%`, gap: `${String(gapPx)}px` }}
-              title={`Score ${String(score)}: ${String(count)}×`}
-            >
-              {Array.from({ length: count }).map((_, i) => (
-                <span
-                  key={i}
-                  className="rounded-full bg-purple-400"
-                  style={{ width: `${String(dotPx)}px`, height: `${String(dotPx)}px` }}
-                />
-              ))}
-            </div>
-          );
-        })}
-
-        {/* Mittelwert-Markierung */}
-        {axis.mean != null ? (
-          <div
-            className="absolute inset-y-0 border-l-2 border-purple-300"
-            style={{ left: `${String(toPct(axis.mean, scale.min, scale.max))}%` }}
-            title={`Mittelwert ${axis.mean.toFixed(1)}`}
-          />
-        ) : null}
-      </div>
-
-      {/* Pol-Beschriftung + Skalen-Endpunkte */}
-      <div className="mt-1 flex items-center justify-between text-xs text-blue-100/60">
-        <span>
-          {axis.low} <span className="text-blue-100/40">({scale.min})</span>
-        </span>
-        <span className="text-blue-100/40">Cutoff {scale.cutoff}</span>
-        <span>
-          <span className="text-blue-100/40">({scale.max})</span> {axis.high}
-        </span>
-      </div>
-      {/* maxStack normiert die Säulenhöhe (s. o.) und wird hier zusätzlich für AT ausgewiesen. */}
-      <span className="sr-only">Maximale Häufigkeit eines Wertes: {maxStack}</span>
-    </div>
-  );
 }
 
 function AxisCard({ axis }: { axis: AxisDistribution }) {
@@ -114,7 +29,14 @@ function AxisCard({ axis }: { axis: AxisDistribution }) {
         <p className="text-sm text-blue-100/50">Keine verwertbare Wiederholung für diese Achse.</p>
       ) : (
         <>
-          <AxisChart axis={axis} />
+          <AxisChart
+            scale={axis.scale}
+            low={axis.low}
+            high={axis.high}
+            series={[
+              { scores: axis.scores, mean: axis.mean, dotClass: "bg-purple-400", meanClass: "border-purple-300" },
+            ]}
+          />
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-blue-100/80">
             <span>
