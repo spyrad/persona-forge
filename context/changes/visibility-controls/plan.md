@@ -364,18 +364,18 @@ initplan-gecachtes `(select auth.uid())`.
 
 #### Automated
 
-- [x] 1.1 Lint sauber: `npm run lint`
-- [x] 1.2 Typecheck/`astro check` 0 errors
-- [x] 1.3 Unit-Tests grün: `npm run test`
-- [x] 1.4 Build OK: `npm run build`
-- [x] 1.5 Migration syntaktisch valide / appliziert lokal sauber
+- [x] 1.1 Lint sauber: `npm run lint` — 6a5fd4e
+- [x] 1.2 Typecheck/`astro check` 0 errors — 6a5fd4e
+- [x] 1.3 Unit-Tests grün: `npm run test` — 6a5fd4e
+- [x] 1.4 Build OK: `npm run build` — 6a5fd4e
+- [x] 1.5 Migration syntaktisch valide / appliziert lokal sauber — 6a5fd4e
 
 #### Manual
 
-- [x] 1.6 PATCH eigene Persona → 200 + aktualisierte View
-- [x] 1.7 PATCH eigener Lauf → 200 + aktualisierte View
-- [x] 1.8 PATCH fremde id → 404 (kein stilles ok)
-- [x] 1.9 Neu angelegte Persona/Lauf trägt `visibility:"global"`
+- [x] 1.6 PATCH eigene Persona → 200 + aktualisierte View — 6a5fd4e
+- [x] 1.7 PATCH eigener Lauf → 200 + aktualisierte View — 6a5fd4e
+- [x] 1.8 PATCH fremde id → 404 (kein stilles ok) — 6a5fd4e
+- [x] 1.9 Neu angelegte Persona/Lauf trägt `visibility:"global"` — 6a5fd4e
 
 ### Phase 2: UI — Toggle + Badge
 
