@@ -1,9 +1,6 @@
 import { AlertTriangle, Equal, Scale } from "lucide-react";
 import type { AxisDistribution, RunComparisonSide, RunComparisonView } from "@/types";
-import { AxisChart } from "./axis-chart";
-
-/** Schwelle, unter der eine Achsen-Verteilung als nicht belastbar gilt (Methodenkern-Guardrail). */
-const RELIABLE_MIN = 2;
+import { AxisChart, RELIABLE_MIN } from "./axis-chart";
 
 interface ColorScheme {
   dot: string;

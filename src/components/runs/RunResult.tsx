@@ -1,13 +1,10 @@
 import { AlertTriangle, ArrowLeft, Clock, Globe, Lock, Sigma } from "lucide-react";
 import type { AxisDistribution, RunResultView } from "@/types";
-import { AxisChart } from "./axis-chart";
+import { AxisChart, RELIABLE_MIN } from "./axis-chart";
 
 interface Props {
   result: RunResultView;
 }
-
-/** Schwelle, unter der eine Achsen-Verteilung als nicht belastbar gilt (Methodenkern-Guardrail). */
-const RELIABLE_MIN = 2;
 
 /** Fehlquote als Text (`failed/total (pct %)`). */
 function failureRate(failed: number, total: number): string {

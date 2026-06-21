@@ -10,6 +10,9 @@
 
 import { cn } from "@/lib/utils";
 
+/** Schwelle, unter der eine Achsen-Verteilung als nicht belastbar gilt (Methodenkern-Guardrail). */
+export const RELIABLE_MIN = 2;
+
 /** Position eines Scores in Prozent der Achsen-Skala (0–100, geklemmt). */
 export function toPct(value: number, min: number, max: number): number {
   if (max <= min) return 50;
