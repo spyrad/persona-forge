@@ -381,16 +381,16 @@ initplan-gecachtes `(select auth.uid())`.
 
 #### Automated
 
-- [ ] 2.1 Lint sauber: `npm run lint`
-- [ ] 2.2 `astro check` 0 errors
-- [ ] 2.3 Build OK: `npm run build`
+- [x] 2.1 Lint sauber: `npm run lint`
+- [x] 2.2 `astro check` 0 errors
+- [x] 2.3 Build OK: `npm run build`
 
 #### Manual
 
-- [ ] 2.4 Eigene Persona: Toggle schaltet privat↔global, Badge folgt
-- [ ] 2.5 Globale/fremde Persona: kein Toggle, nur Badge
-- [ ] 2.6 Eigener Lauf: Toggle + Badge in Liste; RunResult zeigt korrektes Badge
-- [ ] 2.7 Loading-State sichtbar; korrekter Zustand ohne Crash
+- [x] 2.4 Eigene Persona: Toggle schaltet privat↔global, Badge folgt
+- [x] 2.5 Globale/fremde Persona: kein Toggle, nur Badge
+- [x] 2.6 Eigener Lauf: Toggle + Badge in Liste; RunResult zeigt korrektes Badge
+- [x] 2.7 Loading-State sichtbar; korrekter Zustand ohne Crash
 
 ### Phase 3: Verifikations-Gate (RLS + Cross-Visibility)
 

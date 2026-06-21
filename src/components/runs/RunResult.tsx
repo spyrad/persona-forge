@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowLeft, Clock, Sigma } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Clock, Globe, Lock, Sigma } from "lucide-react";
 import type { AxisDistribution, RunResultView } from "@/types";
 
 interface Props {
@@ -189,9 +189,22 @@ export default function RunResult({ result }: Props) {
     <div className="space-y-6">
       {/* Typ-Stabilitäts-Panel */}
       <section className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-        <h2 className="flex items-center gap-2 text-sm text-blue-100/60">
-          <Sigma className="size-4" /> Abgeleiteter Typ über {aggregate.usableReps} verwertbare Läufe
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="flex items-center gap-2 text-sm text-blue-100/60">
+            <Sigma className="size-4" /> Abgeleiteter Typ über {aggregate.usableReps} verwertbare Läufe
+          </h2>
+          {run.visibility === "global" ? (
+            <span className="inline-flex items-center gap-1 rounded-full border border-blue-400/30 bg-blue-500/20 px-2 py-0.5 text-xs text-blue-200">
+              <Globe className="size-3" />
+              Global
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-xs text-blue-100/60">
+              <Lock className="size-3" />
+              Privat
+            </span>
+          )}
+        </div>
         {aggregate.modalType ? (
           <div className="mt-2 flex flex-wrap items-baseline gap-3">
             <span className="font-mono text-4xl font-bold tracking-widest text-white">{aggregate.modalType}</span>

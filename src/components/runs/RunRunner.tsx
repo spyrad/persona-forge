@@ -5,8 +5,10 @@ import {
   BarChart3,
   CheckCircle2,
   CircleDashed,
+  Globe,
   Hash,
   Loader2,
+  Lock,
   Play,
   Trash2,
   XCircle,
@@ -283,6 +285,33 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
     await deleteRunRequest(id);
   }
 
+  /** Schaltet die Sichtbarkeit eines eigenen Laufs um (privat ↔ global, S-07). */
+  async function setVisibility(run: RunView) {
+    const next = run.visibility === "global" ? "private" : "global";
+    setBusyId(run.id);
+    setServerError(null);
+    try {
+      const res = await fetch(`/api/runs/${run.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ visibility: next }),
+      });
+      if (res.status === 401) {
+        redirectToSignin();
+        return;
+      }
+      if (!res.ok) {
+        setServerError(messageFromPayload(await res.json().catch(() => null)));
+        return;
+      }
+      await refetch();
+    } catch {
+      setServerError("Network error — please try again.");
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
     void start();
@@ -463,6 +492,17 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <StatusBadge status={run.status} />
+                    {run.visibility === "global" ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-blue-400/30 bg-blue-500/20 px-2 py-0.5 text-xs text-blue-200">
+                        <Globe className="size-3" />
+                        Global
+                      </span>
+                    ) : run.isOwn ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-xs text-blue-100/60">
+                        <Lock className="size-3" />
+                        Privat
+                      </span>
+                    ) : null}
                     <span className="text-sm text-blue-100/60">
                       {run.completedReps}/{run.repetitionCount} Wiederholungen
                     </span>
@@ -483,6 +523,27 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                       <BarChart3 className="size-3.5" />
                       Ergebnis
                     </a>
+                  ) : null}
+                  {/* Sichtbarkeits-Toggle nur fuer eigene, nicht-aktive Laeufe. */}
+                  {run.isOwn && run.id !== activeRunId ? (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      disabled={busyId === run.id}
+                      title={
+                        run.visibility === "global"
+                          ? "Auf privat schalten (nur du siehst ihn)"
+                          : "Auf global schalten (org-weit sichtbar)"
+                      }
+                      onClick={() => {
+                        void setVisibility(run);
+                      }}
+                      className="border-white/20 bg-white/5 text-white hover:bg-white/15"
+                    >
+                      {run.visibility === "global" ? <Lock className="size-3.5" /> : <Globe className="size-3.5" />}
+                      {run.visibility === "global" ? "Privat" : "Global"}
+                    </Button>
                   ) : null}
                   {/* Aktiver Lauf wird ueber das Fortschritts-Panel abgebrochen (kein doppelter Button). */}
                   {run.isOwn && run.id !== activeRunId ? (

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Copy, FileText, Globe, ListChecks, Pencil, Plus, Tag, Trash2, X } from "lucide-react";
+import { Copy, FileText, Globe, ListChecks, Lock, Pencil, Plus, Tag, Trash2, X } from "lucide-react";
 import { FormField } from "@/components/auth/FormField";
 import { ServerError } from "@/components/auth/ServerError";
 import { Button } from "@/components/ui/button";
@@ -264,6 +264,33 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
     setErrors({});
     setServerError(null);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  /** Schaltet die Sichtbarkeit einer eigenen Persona um (privat ↔ global, S-07). */
+  async function setVisibility(persona: PersonaView) {
+    const next = persona.visibility === "global" ? "private" : "global";
+    setBusyId(persona.id);
+    setServerError(null);
+    try {
+      const res = await fetch(`/api/personas/${persona.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ visibility: next }),
+      });
+      if (res.status === 401) {
+        redirectToSignin();
+        return;
+      }
+      if (!res.ok) {
+        setServerError(messageFromPayload(await res.json().catch(() => null)));
+        return;
+      }
+      await refetch();
+    } catch {
+      setServerError("Network error — please try again.");
+    } finally {
+      setBusyId(null);
+    }
   }
 
   async function remove(id: string) {
@@ -544,6 +571,11 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
                         <Globe className="size-3" />
                         Global
                       </span>
+                    ) : persona.isOwn ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-xs text-blue-100/60">
+                        <Lock className="size-3" />
+                        Privat
+                      </span>
                     ) : null}
                     {persona.sourceKind === "structured" ? (
                       <span className="inline-flex items-center gap-1 rounded-full border border-purple-400/30 bg-purple-500/20 px-2 py-0.5 text-xs text-purple-200">
@@ -594,6 +626,26 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
                     <Pencil className="size-3.5" />
                     Anpassen
                   </Button>
+                  {persona.isOwn ? (
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="outline"
+                      disabled={busyId === persona.id}
+                      title={
+                        persona.visibility === "global"
+                          ? "Auf privat schalten (nur du siehst sie)"
+                          : "Auf global schalten (org-weit sichtbar)"
+                      }
+                      onClick={() => {
+                        void setVisibility(persona);
+                      }}
+                      className="border-white/20 bg-white/5 text-white hover:bg-white/15"
+                    >
+                      {persona.visibility === "global" ? <Lock className="size-3.5" /> : <Globe className="size-3.5" />}
+                      {persona.visibility === "global" ? "Privat" : "Global"}
+                    </Button>
+                  ) : null}
                   {persona.isOwn ? (
                     <Button
                       type="button"
