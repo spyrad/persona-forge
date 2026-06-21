@@ -44,7 +44,7 @@ lassen sich direkt vergleichen.
 | S-04 | oejts-measurement-run    | einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen          | S-02, S-03    | US-01, FR-010, FR-012, FR-013, NFR Resilienz/Last/Fortschritt | done |
 | S-05 | distribution-results     | das Ergebnis je Achse als Verteilung mit Streuung plus Typ-Stabilität sehen  | S-04          | US-01, FR-016, NFR Reproduzierbarkeit     | done |
 | S-06 | run-control-and-tokens   | einen laufenden Test abbrechen und den Token-Verbrauch je Lauf sehen         | S-04          | FR-014, FR-015                            | done |
-| S-07 | visibility-controls      | Sichtbarkeit (privat/global) eigener Personas und Ergebnisse setzen          | S-03, S-05    | FR-003, §Access Control                   | proposed |
+| S-07 | visibility-controls      | Sichtbarkeit (privat/global) eigener Personas und Ergebnisse setzen          | S-03, S-05    | FR-003, §Access Control                   | done |
 | S-08 | side-by-side-comparison  | zwei abgeschlossene Läufe nebeneinander vergleichen                          | S-05          | US-02, FR-017                             | proposed |
 
 ## Streams
@@ -185,7 +185,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Das Zugriffs-Grundgerüst kommt aus F-01 — dieser Slice liefert nur die nutzerseitige Umschaltung; nach hinten sequenziert, weil im Solo-Betrieb (v1) der Default global verlustfrei trägt.
-- **Status:** proposed
+- **Status:** done
 
 ### S-08: Zwei Läufe vergleichen
 
@@ -240,3 +240,4 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-04: einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen.** — Archived 2026-06-18 → `context/archive/2026-06-17-oejts-measurement-run/`. Lesson: Client-orchestrierte Step-Loops (1 LLM-Call/Wiederholung) halten lange Läufe innerhalb der Cloudflare-Edge-Grenzen; das Datenmodell (`completedReps`-Zählung + unique `(run_id, rep_index)`) ist dadurch resume-fähig und idempotent gegen Doppelaufrufe.
 - **S-05: das Ergebnis je Achse als Verteilung mit Streuung plus Typ-Stabilität sehen.** — Archived 2026-06-19 → `context/archive/2026-06-18-distribution-results/`. Lesson: Auswertung on-the-fly aus den Rohantworten (kein persistiertes Aggregat, keine Migration) hält den Methodenkern deterministisch und unit-testbar; achsen-weiser Dropout bei unparsten Items wahrt Ehrlichkeit (kein erfundener Wert), und die „nicht belastbar"-Schwelle (<2) ist eine reine Darstellungs-Schicht, kein Service-State.
 - **S-06: einen laufenden Test abbrechen und den Token-Verbrauch je Lauf sehen.** — Archived 2026-06-20 → `context/archive/2026-06-20-run-control-and-tokens/` (impl-review APPROVED, 0 Findings). Lesson: Vor dem Planen eines Slices prüfen, was Vorgänger-Slices schon mitgeliefert haben — S-04 hatte FR-014 (Abbruch = harter DELETE + Cascade) und FR-015 (Token-Akkumulation + Anzeige in Liste/Detail) bereits vorgebaut, sodass S-06 auf einen Live-Token-Zähler (`RunProgress` um 2 Felder, an allen Service-Returns durchgereicht) plus ein Verifikations-Gate kollabierte; ein TypeScript-Pflichtfeld am DTO macht die „alle Return-Sites befüllt"-Vollständigkeit per `astro check` selbst-prüfend.
+- **S-07: Sichtbarkeit (privat/global) eigener Personas und Ergebnisse setzen.** — Archived 2026-06-21 → `context/archive/2026-06-20-visibility-controls/` (impl-review APPROVED, 0 critical/warning, 4 Observations). Lesson: Den Create-Default auf `global` umzustellen ist sicher, *wenn* die App den Wert explizit beim Insert setzt — die S-03-Leak-Ursache war ein *vergessenes* Feld bei DB-Default `global`, nicht der Wert; der DB-Default bleibt `private` (Defense-in-Depth). Owner-gescopte RLS-Update-Policies (`using` + `with check` auf `owner_id = (select auth.uid())`) blocken dank SQL-NULL-Semantik (`NULL = uid` → nicht `true`) automatisch auch globale Seed-Objekte (owner_id NULL), nicht nur fremde; Inhalts-Immutability (FR-008) bleibt app-seitig, indem der Service ausschließlich `{visibility, updated_at}` patcht.
