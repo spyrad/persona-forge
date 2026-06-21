@@ -1,6 +1,6 @@
 # Workflow-Status: persona-forge
 
-**Letztes Update:** 2026-06-21 (Session 1)
+**Letztes Update:** 2026-06-21 (Session 2)
 **Letzter Session-Log:** `dtb-project/project-changelog/2026-06/2026-06-21.md`
 
 ---
@@ -9,16 +9,16 @@
 
 | Kennzahl | Wert |
 |----------|------|
-| **Laufende Arbeit** | **Keine — S-07 `visibility-controls` vollständig abgeschlossen + archiviert.** Sichtbarkeits-Toggle privat/global für Personas+Läufe, Default global; impl-review APPROVED (0 critical/warning), Zwei-Account-Gate grün. 10 Commits lokal vor `origin/main` (noch nicht gepusht). |
-| **Naechster Schritt** | **Push** der 10 Commits (`! git push` → Prod-Deploy), danach CI-Deploy-Job prüfen. Dann **S-08 `side-by-side-comparison`** starten (`/10x-plan side-by-side-comparison`). |
+| **Laufende Arbeit** | **Keine — S-07 `visibility-controls` abgeschlossen, archiviert + gepusht/live.** Sichtbarkeits-Toggle privat/global für Personas+Läufe, Default global; impl-review APPROVED (0 critical/warning), Zwei-Account-Gate grün. `→ main` (`5c2b5f8`), Cloudflare-Auto-Deploy getriggert. |
+| **Naechster Schritt** | **S-08 `side-by-side-comparison`** starten (`/10x-plan side-by-side-comparison`; Prereq S-05 ✅) — letzter geplanter MVP-Slice. |
 | **Blocker** | Keine. |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] Push der 10 Commits (`! git push`), danach Deploy-Job sichten (CI-Lint skippt Deploy lautlos). Migration ist bereits auf Prod-DB.
 - [ ] S-08 `side-by-side-comparison` (Zwei-Läufe-Vergleich nebeneinander; Prereq S-05 ✅) — letzter geplanter MVP-Slice
+- [ ] Optional: S-07-Deploy-Erfolg im Cloudflare-/Actions-UI sichten (`gh` fehlt lokal; CI-Lint skippt Deploy lautlos)
 - [ ] Optional: S-06/S-07-Deploy bei Gelegenheit im Cloudflare-/Actions-UI sichten (`gh` fehlt lokal)
 - [ ] F6 Trigger-Idempotenz; Husky/lint-staged-Hook reparieren
 
@@ -28,7 +28,7 @@
 
 | Datum | Meilenstein | Ergebnis | Details |
 |-------|-------------|----------|---------|
-| 2026-06-21 | **S-07 abgeschlossen + archiviert** | Sichtbarkeit privat/global (Toggle+Default+UI+Gate); impl-review APPROVED; Zwei-Account-Matrix grün | `context/archive/2026-06-20-visibility-controls/`, `4d662dd` |
+| 2026-06-21 | **S-07 abgeschlossen + archiviert + gepusht/live** | Sichtbarkeit privat/global (Toggle+Default+UI+Gate); impl-review APPROVED; Zwei-Account-Matrix grün; `→ main` | `context/archive/2026-06-20-visibility-controls/`, `5c2b5f8` |
 | 2026-06-20 | **S-06 abgeschlossen + gepusht/live** | Live-Token-Zähler; APPROVED, archiviert, `→ main` | `614b4ea`, `a1bf59e`, `160ee06` |
 | 2026-06-19 | S-05 abgeschlossen + live | Verteilung/Typ-Stabilität je Achse (Leitstern); Gate 11/11 | `17dfcb3`, `2eb4da5` |
 | 2026-06-18 | S-04 abgeschlossen + live | `/runs`-UI, OEJTS-Lauf end-to-end | `2f3ba29`, `d06afbe` |
