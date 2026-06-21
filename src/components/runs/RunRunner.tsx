@@ -5,6 +5,7 @@ import {
   BarChart3,
   CheckCircle2,
   CircleDashed,
+  GitCompare,
   Globe,
   Hash,
   Loader2,
@@ -39,6 +40,16 @@ const DEFAULT_REPS = 5;
  */
 function redirectToSignin() {
   window.location.href = "/auth/signin";
+}
+
+/**
+ * Navigiert zur Vergleichsseite (S-08). Wie `redirectToSignin` bewusst auf
+ * Modul-Ebene: das Setzen von `window.location.href` ist eine Mutation eines
+ * globalen Werts, die der React-Compiler innerhalb von Komponenten/Hooks
+ * verbietet (`react-hooks/immutability`).
+ */
+function navigateToCompare(a: string, b: string) {
+  window.location.href = `/runs/compare?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`;
 }
 
 /** Liest eine API-Fehler-Antwort ({ error: string | zod-flattenError }) zu Text. */
@@ -119,6 +130,20 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
   const [starting, setStarting] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
 
+  // Vergleichs-Auswahl (S-08): geordnete Liste von max. zwei Lauf-IDs. Die
+  // "verwertbar"-Garantie liegt bewusst auf der Vergleichsseite — hier wird nur
+  // an `status === "completed"` festgemacht (RunView traegt kein usableReps).
+  const [compareIds, setCompareIds] = useState<string[]>([]);
+
+  /** Schaltet einen Lauf in der Vergleichs-Auswahl an/aus (Cap 2). */
+  function toggleCompare(id: string) {
+    setCompareIds((prev) => {
+      if (prev.includes(id)) return prev.filter((x) => x !== id);
+      if (prev.length >= 2) return prev;
+      return [...prev, id];
+    });
+  }
+
   // Aktiver Step-Loop: welcher Lauf gerade getrieben wird + sein Live-Fortschritt.
   const [activeRunId, setActiveRunId] = useState<string | null>(null);
   const [progress, setProgress] = useState<RunProgress | null>(null);
@@ -152,7 +177,10 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       return;
     }
     if (res.ok) {
-      setRuns((await res.json()) as RunView[]);
+      const fresh = (await res.json()) as RunView[];
+      setRuns(fresh);
+      // Geloeschte/verschwundene Laeufe aus der Vergleichs-Auswahl entfernen.
+      setCompareIds((prev) => prev.filter((id) => fresh.some((r) => r.id === id)));
     } else {
       setServerError("Couldn't load runs. Please reload.");
     }
@@ -513,6 +541,26 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* Vergleichs-Haken (S-08): nur abgeschlossene, nicht-aktive
+                      Laeufe; max. zwei. Gesperrt, sobald zwei andere gewaehlt sind. */}
+                  {run.status === "completed" && run.id !== activeRunId ? (
+                    <label
+                      className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-white/15 bg-white/10 px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-white/20 has-disabled:cursor-not-allowed has-disabled:opacity-40"
+                      title="Für Vergleich auswählen (max. 2)"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={compareIds.includes(run.id)}
+                        disabled={compareIds.length >= 2 && !compareIds.includes(run.id)}
+                        onChange={() => {
+                          toggleCompare(run.id);
+                        }}
+                        className="size-3.5 accent-purple-500"
+                      />
+                      <GitCompare className="size-3.5" />
+                      Vergleichen
+                    </label>
+                  ) : null}
                   {/* Ergebnis-Detailansicht (Verteilung je Achse). Bei noch nicht
                       abgeschlossenen Laeufen zeigt die Seite einen Hinweis. */}
                   {run.id !== activeRunId ? (
@@ -566,6 +614,44 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
           </ul>
         )}
       </section>
+
+      {/* Sticky Vergleichs-Leiste (S-08): erscheint ab einer Auswahl, der
+          "Vergleichen"-Button aktiviert sich bei genau zwei Laeufen. */}
+      {compareIds.length > 0 ? (
+        <div className="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-purple-400/30 bg-purple-950/40 px-4 py-3 backdrop-blur-xl">
+          <span className="text-sm text-blue-100/80">
+            {compareIds.length === 2
+              ? "Zwei Läufe gewählt — bereit zum Vergleich."
+              : "Ein Lauf gewählt — wähle einen zweiten zum Vergleichen."}
+          </span>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setCompareIds([]);
+              }}
+              className="border-white/20 bg-white/5 text-white hover:bg-white/15"
+            >
+              Auswahl aufheben
+            </Button>
+            <Button
+              type="button"
+              size="sm"
+              disabled={compareIds.length !== 2}
+              onClick={() => {
+                const [a, b] = compareIds;
+                if (a && b) navigateToCompare(a, b);
+              }}
+              className="bg-purple-600 text-white hover:bg-purple-500"
+            >
+              <GitCompare className="size-3.5" />
+              Vergleichen
+            </Button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
