@@ -3,7 +3,7 @@ project: "persona-forge"
 version: 1
 status: draft
 created: 2026-06-11
-updated: 2026-06-19
+updated: 2026-06-22
 prd_version: 1
 main_goal: learn
 top_blocker: time
@@ -34,29 +34,29 @@ lassen sich direkt vergleichen.
 
 ## At a glance
 
-| ID   | Change ID                | Outcome (user can …)                                                        | Prerequisites | PRD refs                                  | Status   |
-| ---- | ------------------------ | --------------------------------------------------------------------------- | ------------- | ----------------------------------------- | -------- |
-| F-01 | connect-supabase         | (foundation) Supabase-Projekt verbunden; Datenzugriffs-Grundgerüst steht     | —             | FR-001, §Access Control                   | done     |
-| F-02 | deploy-skeleton-live     | (foundation) Auto-Deploy auf main liefert eine Live-URL                      | —             | tech-stack.md (cloudflare-workers, CI)    | done     |
-| S-01 | email-auth-live          | sich registrieren, anmelden und geschützte Seiten erreichen                  | F-01          | FR-001, §Access Control                   | done |
-| S-02 | model-config-management  | ein OpenAI-kompatibles Modell anhängen und als Konfig speichern (Key verschlüsselt) | S-01    | FR-005, FR-006, NFR Key-Dichtheit         | done |
-| S-03 | persona-catalog          | eine Persona anlegen (frei/strukturiert), im Katalog finden und kopieren     | S-01          | FR-007, FR-008                            | done |
-| S-04 | oejts-measurement-run    | einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen          | S-02, S-03    | US-01, FR-010, FR-012, FR-013, NFR Resilienz/Last/Fortschritt | done |
-| S-05 | distribution-results     | das Ergebnis je Achse als Verteilung mit Streuung plus Typ-Stabilität sehen  | S-04          | US-01, FR-016, NFR Reproduzierbarkeit     | done |
-| S-06 | run-control-and-tokens   | einen laufenden Test abbrechen und den Token-Verbrauch je Lauf sehen         | S-04          | FR-014, FR-015                            | done |
-| S-07 | visibility-controls      | Sichtbarkeit (privat/global) eigener Personas und Ergebnisse setzen          | S-03, S-05    | FR-003, §Access Control                   | done |
-| S-08 | side-by-side-comparison  | zwei abgeschlossene Läufe nebeneinander vergleichen                          | S-05          | US-02, FR-017                             | proposed |
+| ID   | Change ID               | Outcome (user can …)                                                                | Prerequisites | PRD refs                                                      | Status |
+| ---- | ----------------------- | ----------------------------------------------------------------------------------- | ------------- | ------------------------------------------------------------- | ------ |
+| F-01 | connect-supabase        | (foundation) Supabase-Projekt verbunden; Datenzugriffs-Grundgerüst steht            | —             | FR-001, §Access Control                                       | done   |
+| F-02 | deploy-skeleton-live    | (foundation) Auto-Deploy auf main liefert eine Live-URL                             | —             | tech-stack.md (cloudflare-workers, CI)                        | done   |
+| S-01 | email-auth-live         | sich registrieren, anmelden und geschützte Seiten erreichen                         | F-01          | FR-001, §Access Control                                       | done   |
+| S-02 | model-config-management | ein OpenAI-kompatibles Modell anhängen und als Konfig speichern (Key verschlüsselt) | S-01          | FR-005, FR-006, NFR Key-Dichtheit                             | done   |
+| S-03 | persona-catalog         | eine Persona anlegen (frei/strukturiert), im Katalog finden und kopieren            | S-01          | FR-007, FR-008                                                | done   |
+| S-04 | oejts-measurement-run   | einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen                 | S-02, S-03    | US-01, FR-010, FR-012, FR-013, NFR Resilienz/Last/Fortschritt | done   |
+| S-05 | distribution-results    | das Ergebnis je Achse als Verteilung mit Streuung plus Typ-Stabilität sehen         | S-04          | US-01, FR-016, NFR Reproduzierbarkeit                         | done   |
+| S-06 | run-control-and-tokens  | einen laufenden Test abbrechen und den Token-Verbrauch je Lauf sehen                | S-04          | FR-014, FR-015                                                | done   |
+| S-07 | visibility-controls     | Sichtbarkeit (privat/global) eigener Personas und Ergebnisse setzen                 | S-03, S-05    | FR-003, §Access Control                                       | done   |
+| S-08 | side-by-side-comparison | zwei abgeschlossene Läufe nebeneinander vergleichen                                 | S-05          | US-02, FR-017                                                 | done   |
 
 ## Streams
 
 Navigation aid — groups items that share a Prerequisites chain. Canonical ordering still lives in the dependency graph below; this table is the proposed reading order across parallel tracks.
 
-| Stream | Theme                      | Chain                              | Note                                                                  |
-| ------ | -------------------------- | ---------------------------------- | --------------------------------------------------------------------- |
-| A      | Zugang & Bausteine         | `F-01` → `S-01` → `S-02` / `S-03`  | Konto, Modellkonfig und Persona — die drei Eingaben des Leitsterns.    |
-| B      | Methodenkern (Leitstern)   | `S-04` → `S-05`, parallel `S-06`   | Joins Stream A nach `S-02`/`S-03`; hier sitzt der Lernwert (main_goal: learn). |
-| C      | Teilen & Vergleichen       | `S-07` / `S-08`                    | Joins Stream B at `S-05`; abschließende Vergleichs-/Sichtbarkeits-Schicht. |
-| D      | Deploy-Skeleton            | `F-02`                             | Standalone; schafft den Verifikationspfad „auf Produktion prüfen" für alle Slices. |
+| Stream | Theme                    | Chain                             | Note                                                                               |
+| ------ | ------------------------ | --------------------------------- | ---------------------------------------------------------------------------------- |
+| A      | Zugang & Bausteine       | `F-01` → `S-01` → `S-02` / `S-03` | Konto, Modellkonfig und Persona — die drei Eingaben des Leitsterns.                |
+| B      | Methodenkern (Leitstern) | `S-04` → `S-05`, parallel `S-06`  | Joins Stream A nach `S-02`/`S-03`; hier sitzt der Lernwert (main_goal: learn).     |
+| C      | Teilen & Vergleichen     | `S-07` / `S-08`                   | Joins Stream B at `S-05`; abschließende Vergleichs-/Sichtbarkeits-Schicht.         |
+| D      | Deploy-Skeleton          | `F-02`                            | Standalone; schafft den Verifikationspfad „auf Produktion prüfen" für alle Slices. |
 
 ## Baseline
 
@@ -197,22 +197,22 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Blockers:** —
 - **Unknowns:** —
 - **Risk:** Bewusst exakt zwei Konfigurationen (Socrates-Resolution); die Versuchung, hier N-Wege-Vergleich „mitzunehmen", ist geparkt — siehe Parked.
-- **Status:** proposed
+- **Status:** done
 
 ## Backlog Handoff
 
-| Roadmap ID | Change ID               | Suggested issue title                                   | Ready for `/10x-plan` | Notes                                  |
-| ---------- | ----------------------- | -------------------------------------------------------- | --------------------- | -------------------------------------- |
-| F-01       | connect-supabase        | Supabase-Projekt anbinden + RLS-Grundgerüst              | yes                   | Run `/10x-plan connect-supabase`       |
-| F-02       | deploy-skeleton-live    | CI-Fix + Cloudflare-Workers-Deploy mit Live-URL          | yes                   | Run `/10x-plan deploy-skeleton-live`   |
-| S-01       | email-auth-live         | E-Mail-Auth end-to-end verdrahten und verifizieren        | no                    | Wartet auf F-01                        |
-| S-02       | model-config-management | Modellkonfiguration mit verschlüsseltem API-Key          | no                    | Wartet auf S-01                        |
-| S-03       | persona-catalog         | Persona anlegen, Katalog, Kopie-statt-Änderung           | no                    | Wartet auf S-01                        |
-| S-04       | oejts-measurement-run   | OEJTS-Lauf-Engine (N Wiederholungen, isoliert, Parsing)  | no                    | Blocked: OEJTS-Quelle (Owner: user)    |
-| S-05       | distribution-results    | Verteilungs- und Typ-Ansicht je Achse                    | no                    | Leitstern; wartet auf S-04             |
-| S-06       | run-control-and-tokens  | Lauf-Abbruch + Token-Ausweis                             | no                    | Wartet auf S-04                        |
-| S-07       | visibility-controls     | Sichtbarkeit privat/global für Personas & Ergebnisse     | no                    | Wartet auf S-03, S-05                  |
-| S-08       | side-by-side-comparison | Zwei-Läufe-Vergleich nebeneinander                       | no                    | Wartet auf S-05                        |
+| Roadmap ID | Change ID               | Suggested issue title                                   | Ready for `/10x-plan` | Notes                                |
+| ---------- | ----------------------- | ------------------------------------------------------- | --------------------- | ------------------------------------ |
+| F-01       | connect-supabase        | Supabase-Projekt anbinden + RLS-Grundgerüst             | yes                   | Run `/10x-plan connect-supabase`     |
+| F-02       | deploy-skeleton-live    | CI-Fix + Cloudflare-Workers-Deploy mit Live-URL         | yes                   | Run `/10x-plan deploy-skeleton-live` |
+| S-01       | email-auth-live         | E-Mail-Auth end-to-end verdrahten und verifizieren      | no                    | Wartet auf F-01                      |
+| S-02       | model-config-management | Modellkonfiguration mit verschlüsseltem API-Key         | no                    | Wartet auf S-01                      |
+| S-03       | persona-catalog         | Persona anlegen, Katalog, Kopie-statt-Änderung          | no                    | Wartet auf S-01                      |
+| S-04       | oejts-measurement-run   | OEJTS-Lauf-Engine (N Wiederholungen, isoliert, Parsing) | no                    | Blocked: OEJTS-Quelle (Owner: user)  |
+| S-05       | distribution-results    | Verteilungs- und Typ-Ansicht je Achse                   | no                    | Leitstern; wartet auf S-04           |
+| S-06       | run-control-and-tokens  | Lauf-Abbruch + Token-Ausweis                            | no                    | Wartet auf S-04                      |
+| S-07       | visibility-controls     | Sichtbarkeit privat/global für Personas & Ergebnisse    | no                    | Wartet auf S-03, S-05                |
+| S-08       | side-by-side-comparison | Zwei-Läufe-Vergleich nebeneinander                      | no                    | Wartet auf S-05                      |
 
 ## Open Roadmap Questions
 
@@ -240,4 +240,5 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **S-04: einen OEJTS-Lauf mit N Wiederholungen starten und Fortschritt sehen.** — Archived 2026-06-18 → `context/archive/2026-06-17-oejts-measurement-run/`. Lesson: Client-orchestrierte Step-Loops (1 LLM-Call/Wiederholung) halten lange Läufe innerhalb der Cloudflare-Edge-Grenzen; das Datenmodell (`completedReps`-Zählung + unique `(run_id, rep_index)`) ist dadurch resume-fähig und idempotent gegen Doppelaufrufe.
 - **S-05: das Ergebnis je Achse als Verteilung mit Streuung plus Typ-Stabilität sehen.** — Archived 2026-06-19 → `context/archive/2026-06-18-distribution-results/`. Lesson: Auswertung on-the-fly aus den Rohantworten (kein persistiertes Aggregat, keine Migration) hält den Methodenkern deterministisch und unit-testbar; achsen-weiser Dropout bei unparsten Items wahrt Ehrlichkeit (kein erfundener Wert), und die „nicht belastbar"-Schwelle (<2) ist eine reine Darstellungs-Schicht, kein Service-State.
 - **S-06: einen laufenden Test abbrechen und den Token-Verbrauch je Lauf sehen.** — Archived 2026-06-20 → `context/archive/2026-06-20-run-control-and-tokens/` (impl-review APPROVED, 0 Findings). Lesson: Vor dem Planen eines Slices prüfen, was Vorgänger-Slices schon mitgeliefert haben — S-04 hatte FR-014 (Abbruch = harter DELETE + Cascade) und FR-015 (Token-Akkumulation + Anzeige in Liste/Detail) bereits vorgebaut, sodass S-06 auf einen Live-Token-Zähler (`RunProgress` um 2 Felder, an allen Service-Returns durchgereicht) plus ein Verifikations-Gate kollabierte; ein TypeScript-Pflichtfeld am DTO macht die „alle Return-Sites befüllt"-Vollständigkeit per `astro check` selbst-prüfend.
-- **S-07: Sichtbarkeit (privat/global) eigener Personas und Ergebnisse setzen.** — Archived 2026-06-21 → `context/archive/2026-06-20-visibility-controls/` (impl-review APPROVED, 0 critical/warning, 4 Observations). Lesson: Den Create-Default auf `global` umzustellen ist sicher, *wenn* die App den Wert explizit beim Insert setzt — die S-03-Leak-Ursache war ein *vergessenes* Feld bei DB-Default `global`, nicht der Wert; der DB-Default bleibt `private` (Defense-in-Depth). Owner-gescopte RLS-Update-Policies (`using` + `with check` auf `owner_id = (select auth.uid())`) blocken dank SQL-NULL-Semantik (`NULL = uid` → nicht `true`) automatisch auch globale Seed-Objekte (owner_id NULL), nicht nur fremde; Inhalts-Immutability (FR-008) bleibt app-seitig, indem der Service ausschließlich `{visibility, updated_at}` patcht.
+- **S-07: Sichtbarkeit (privat/global) eigener Personas und Ergebnisse setzen.** — Archived 2026-06-21 → `context/archive/2026-06-20-visibility-controls/` (impl-review APPROVED, 0 critical/warning, 4 Observations). Lesson: Den Create-Default auf `global` umzustellen ist sicher, _wenn_ die App den Wert explizit beim Insert setzt — die S-03-Leak-Ursache war ein _vergessenes_ Feld bei DB-Default `global`, nicht der Wert; der DB-Default bleibt `private` (Defense-in-Depth). Owner-gescopte RLS-Update-Policies (`using` + `with check` auf `owner_id = (select auth.uid())`) blocken dank SQL-NULL-Semantik (`NULL = uid` → nicht `true`) automatisch auch globale Seed-Objekte (owner_id NULL), nicht nur fremde; Inhalts-Immutability (FR-008) bleibt app-seitig, indem der Service ausschließlich `{visibility, updated_at}` patcht.
+- **S-08: zwei abgeschlossene Läufe nebeneinander vergleichen.** — Archived 2026-06-22 → `context/archive/2026-06-21-side-by-side-comparison/` (impl-review APPROVED, 0 critical/warning, 3 Observations). Schließt den OEJTS-MVP (S-01–S-08) funktional ab. Lesson: Rein präsentationale Astro-Inseln **ohne** `client:load` statisch rendern — eine neue lucide-Import-Welle triggert sonst eine Vite-Dep-Re-Optimierung, deren ausgelieferter `?v=`-Hash 404t und die Insel-Hydration scheitern lässt (F1, in `lessons.md`). Wie S-06/S-07 kollabierte der Slice durch Vorarbeit: S-05 lieferte `getRunResult`/`RunAggregate` + Achsen-Visualisierung bereits, sodass S-08 ohne neues Datenmodell, Migration oder API auskam — nur Auswahl-UI, eine SSR-Vergleichsseite und die überlagerte Darstellung (geteilte `axis-chart.tsx`-Primitive mit zentralem `RELIABLE_MIN`).

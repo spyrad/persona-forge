@@ -1,9 +1,10 @@
 ---
 change_id: side-by-side-comparison
 title: Zwei abgeschlossene Läufe nebeneinander vergleichen
-status: impl_reviewed
+status: archived
 created: 2026-06-21
-updated: 2026-06-21
+updated: 2026-06-22
+archived_at: 2026-06-22T03:15:06Z
 ---
 
 ## Notes
