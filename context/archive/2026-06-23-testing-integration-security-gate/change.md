@@ -1,10 +1,10 @@
 ---
 change_id: testing-integration-security-gate
 title: Test-Rollout Phase 1 — Integration-Security-Gate
-status: impl_reviewed
+status: archived
 created: 2026-06-23
 updated: 2026-06-23
-archived_at: null
+archived_at: 2026-06-23T16:00:56Z
 ---
 
 ## Notes
