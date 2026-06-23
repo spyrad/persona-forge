@@ -149,7 +149,7 @@ Netz, während der reale SSRF-Guard in `chatCompletion` mitläuft.
 
 **Contract**:
 
-- `mockLlmOnce(itemValues?): void` / `mockLlmJson(content): void` — setzt
+- `mockLlmContent(content?, usage?): void` — setzt
   `vi.stubGlobal("fetch", ...)`, liefert `200` + JSON-Body mit
   `choices[0].message.content` = OEJTS-konformes JSON (alle Instrument-Items) und
   einer `usage`-Sektion (prompt/completion tokens) für die Token-Akkumulation.

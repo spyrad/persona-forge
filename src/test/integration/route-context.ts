@@ -79,8 +79,14 @@ export async function authedCookieHeader(account: TestAccount): Promise<string> 
   } = await account.client.auth.getSession();
   if (!session) throw new Error("authedCookieHeader: TestAccount hat keine Session");
 
+  const requireEnv = (name: string): string => {
+    const value = process.env[name];
+    if (!value) throw new Error(`authedCookieHeader: ${name} fehlt (siehe setup.ts).`);
+    return value;
+  };
+
   const jar = new Map<string, string>();
-  const ssr = createServerClient(process.env.SUPABASE_URL ?? "", process.env.SUPABASE_KEY ?? "", {
+  const ssr = createServerClient(requireEnv("SUPABASE_URL"), requireEnv("SUPABASE_KEY"), {
     cookies: {
       getAll: () => [...jar].map(([name, value]) => ({ name, value })),
       setAll: (toSet) => {

@@ -27,6 +27,17 @@ function urlOf(input: RequestInfo | URL): string {
   return input.url;
 }
 
+/** Lokaler Supabase-Host? Hostname-Vergleich (nicht Substring) — sonst würde z. B. eine
+ *  LLM-URL mit "localhost" im Pfad/Query fälschlich durchgereicht. */
+function isLocalHost(url: string): boolean {
+  try {
+    const host = new URL(url).hostname;
+    return host === "127.0.0.1" || host === "localhost";
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Installiert einen fetch-Stub, der lokale Supabase-Calls durchreicht und für die
  * ausgehende (nicht-lokale) Kante `makeResponse()` liefert.
@@ -36,8 +47,7 @@ function installLlmStub(makeResponse: () => Response): void {
   vi.stubGlobal(
     "fetch",
     vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
-      const url = urlOf(input);
-      if (url.includes("127.0.0.1") || url.includes("localhost")) return realFetch(input, init);
+      if (isLocalHost(urlOf(input))) return realFetch(input, init);
       return Promise.resolve(makeResponse());
     }),
   );
