@@ -490,26 +490,26 @@ pausieren; danach ist der Change archivierbar.
 
 #### Automated
 
-- [x] 2.1 Alle RLS-Matrix-Fälle grün (`npm run test:integration`)
-- [x] 2.2 Lint/Typecheck grün (`npm run lint`, `npx astro check`)
+- [x] 2.1 Alle RLS-Matrix-Fälle grün (`npm run test:integration`) — a41a90f
+- [x] 2.2 Lint/Typecheck grün (`npm run lint`, `npx astro check`) — a41a90f
 
 #### Manual
 
-- [x] 2.3 Stichprobe liefert 404/null statt leerem 200/Array (S-02)
-- [x] 2.4 Positiv-Kontrolle würde bei gelockertem RLS fehlschlagen
+- [x] 2.3 Stichprobe liefert 404/null statt leerem 200/Array (S-02) — a41a90f
+- [x] 2.4 Positiv-Kontrolle würde bei gelockertem RLS fehlschlagen — a41a90f
 
 ### Phase 3: Risk #2 — Key-Dichtheit
 
 #### Automated
 
-- [ ] 3.1 Key-Dichtheits-Tests grün (`npm run test:integration`)
-- [ ] 3.2 Typ-Guard greift (Key-Feld in `ModelConfigView` bricht Typcheck)
-- [ ] 3.3 Lint grün (`npm run lint`)
+- [x] 3.1 Key-Dichtheits-Tests grün (`npm run test:integration`)
+- [x] 3.2 Typ-Guard greift (Key-Feld in `ModelConfigView` bricht Typcheck)
+- [x] 3.3 Lint grün (`npm run lint`)
 
 #### Manual
 
-- [ ] 3.4 SSR-HTML der `/models`-Seite enthält kein Key-Material im Prop
-- [ ] 3.5 `test-connection`-Response enthält keinen Key/Upstream-Echo
+- [x] 3.4 SSR-HTML der `/models`-Seite enthält kein Key-Material im Prop
+- [x] 3.5 `test-connection`-Response enthält keinen Key/Upstream-Echo
 
 ### Phase 4: Risk #5 — API-Auth-Gates + Doku-Closeout
 
