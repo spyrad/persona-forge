@@ -75,7 +75,7 @@ orchestrator updates Status as artifacts appear on disk.
 | #   | Phase name                    | Goal (one line)                                                                                                  | Risks covered | Test types                                    | Status      | Change folder                                        |
 | --- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------- | ----------- | ---------------------------------------------------- |
 | 1   | Integration security gate     | Prove key-tightness, cross-tenant tightness, and route protection; bootstrap the two-account integration harness | #1, #2, #5    | integration (API/service, two accounts)       | complete    | `context/changes/testing-integration-security-gate/` |
-| 2   | Run integrity + SSRF boundary | Prove abort discards fully, step is idempotent, and the SSRF guard fires at the request site                     | #4, #3        | integration (run/step/abort, test-connection) | not started | —                                                    |
+| 2   | Run integrity + SSRF boundary | Prove abort discards fully, step is idempotent, and the SSRF guard fires at the request site                     | #4, #3        | integration (run/step/abort, test-connection) | complete    | `context/changes/testing-run-integrity-ssrf/`        |
 | 3   | Quality-gates wiring          | Wire `npm run test` as a CI pre-deploy gate; optionally consolidate the two-account Playwright smoke             | cross-cutting | gates, optional e2e                           | not started | —                                                    |
 
 **Status vocabulary** (fixed): `not started` → `change opened` →
@@ -162,7 +162,20 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.5 Adding a test for the run engine
 
-- TBD — see §3 Phase 2 (assert abort = no partial aggregate, step idempotency against duplicate rep_index, failure-quota surfacing).
+- **Ausgangslage bauen**: `makePendingRun` / `makeRunningRun(writtenReps, totalReps)` /
+  `makeFailedRun(okReps, failedReps)` aus `fixtures.ts` — Repetitions werden direkt
+  per Client eingefügt (kein LLM-Call). Die Builder geben den `createRun`-Snapshot
+  (`status='pending'`) zurück; den wirksamen DB-Status frisch lesen.
+- **LLM-Kante mocken**: `mockLlmContent()` / `mockLlmRedirect()` aus `llm-mock.ts`
+  stubben `globalThis.fetch`, reichen aber lokale Supabase-Calls (`127.0.0.1`)
+  durch — sonst bekämen die DB-Queries die OEJTS-Antwort. IMMER `restoreLlm()` in
+  `afterEach`.
+- **Beobachtbaren Effekt asserten, nicht die Mechanik** (§2-Anti-Pattern): Abort →
+  `deleteRun` → `rowExists(run)`/`rowExists(rep)` false (Cascade-Gegenprobe) +
+  `getRunResult` null. Idempotenz → `Promise.all([step, step])` auf einem `running`
+  Run mit 0 Reps → genau 1 Repetition (23505-Catch). Failure-Quote → `getRunResult`
+  `state`/`usableReps`/`failedCount`.
+- **Reference test**: `src/test/integration/run-integrity.itest.ts` (Risk #4).
 
 ### 6.6 Per-rollout-phase notes
 
@@ -175,6 +188,16 @@ here capturing anything surprising the rollout phase taught.)
   Mock-`APIContext`. Feiner RLS-Fall „Seed owner=NULL" ist mangels `seed.sql`
   nicht testbar (per anon-key nicht erzeugbar) und in den global-Objekt-Fällen
   mit abgedeckt. Repetitions werden direkt per Client eingefügt (kein LLM-Call).
+- **Phase 2 (Run integrity + SSRF boundary, 2026-06-23):** (a) `vi.stubGlobal("fetch")`
+  trifft AUCH supabase-js (nutzt intern global fetch) — der LLM-Mock muss lokale
+  Calls (`127.0.0.1`) durchreichen und nur die Outbound-Kante mocken. (b) Der
+  SSRF-Guard ist an ZWEI unabhängigen Sites verdrahtet (kein gemeinsamer Wrapper) —
+  jede separat getestet; im Run-Step wirft er VOR dem fetch, daher braucht der
+  SSRF-Fall dort keinen Mock. (c) test-connection sitzt hinter `requireUser`;
+  `authedCookieHeader` erzeugt mit `@supabase/ssr` selbst einen echten Session-Cookie
+  → erster authentifizierter In-Process-Route-Aufruf (schließt §6.4-„manuell").
+  (d) Der 23505-Nebenläufigkeitspfad braucht `completedReps=0`, sonst verschiebt
+  sich `rep_index` und der Catch wird verfehlt.
 
 ## 7. What We Deliberately Don't Test
 

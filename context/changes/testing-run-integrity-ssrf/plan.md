@@ -431,22 +431,22 @@ Keine. Reine Test-/Doku-Änderung, kein Produktcode, keine DB-Migration.
 
 #### Automated
 
-- [x] 3.1 Neue Suite grün: `npm run test:integration`
-- [x] 3.2 Linting passt: `npm run lint`
-- [x] 3.3 Typecheck passt: `npx astro check`
-- [x] 3.4 Keine Regression in bestehenden itests
+- [x] 3.1 Neue Suite grün: `npm run test:integration` — 1b02edb
+- [x] 3.2 Linting passt: `npm run lint` — 1b02edb
+- [x] 3.3 Typecheck passt: `npx astro check` — 1b02edb
+- [x] 3.4 Keine Regression in bestehenden itests — 1b02edb
 
 #### Manual
 
-- [x] 3.5 Guard-Entfernungs-Probe: beide Site-Tests werden rot ohne Guard
+- [x] 3.5 Guard-Entfernungs-Probe: beide Site-Tests werden rot ohne Guard — 1b02edb
 
 ### Phase 4: Closeout
 
 #### Automated
 
-- [ ] 4.1 Voller Lauf grün: `npm run test:integration` + `npm run test`
-- [ ] 4.2 Linting/Format passt: `npm run lint`
+- [x] 4.1 Voller Lauf grün: `npm run test:integration` + `npm run test`
+- [x] 4.2 Linting/Format passt: `npm run lint`
 
 #### Manual
 
-- [ ] 4.3 test-plan §3/§6.5/§6.6 konsistent mit implementiertem Stand
+- [x] 4.3 test-plan §3/§6.5/§6.6 konsistent mit implementiertem Stand
