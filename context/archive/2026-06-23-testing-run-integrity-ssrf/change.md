@@ -1,10 +1,10 @@
 ---
 change_id: testing-run-integrity-ssrf
 title: Test-Rollout Phase 2 — Lauf-Integrität (R4) und SSRF (R3) absichern
-status: impl_reviewed
+status: archived
 created: 2026-06-23
 updated: 2026-06-23
-archived_at: null
+archived_at: 2026-06-23T20:06:52Z
 ---
 
 ## Notes
