@@ -515,12 +515,12 @@ pausieren; danach ist der Change archivierbar.
 
 #### Automated
 
-- [x] 4.1 Alle Auth-Gate-Tests grün (`npm run test:integration`)
-- [x] 4.2 Jede der 13 Routes liefert unauth 401 (tabellengetrieben)
-- [x] 4.3 Lint/Typecheck grün (`npm run lint`, `npx astro check`)
+- [x] 4.1 Alle Auth-Gate-Tests grün (`npm run test:integration`) — 8103330
+- [x] 4.2 Jede der 13 Routes liefert unauth 401 (tabellengetrieben) — 8103330
+- [x] 4.3 Lint/Typecheck grün (`npm run lint`, `npx astro check`) — 8103330
 
 #### Manual
 
-- [x] 4.4 Geschützte Route mit gültigem Cookie liefert nicht 401 (Positiv-Kontrolle)
-- [x] 4.5 test-plan §6.2/§6.4 gefüllt, §3 P1 = `complete`, §8 aktualisiert
-- [x] 4.6 CLAUDE.md „kein Test-Runner"-Satz korrigiert
+- [x] 4.4 Geschützte Route mit gültigem Cookie liefert nicht 401 (Positiv-Kontrolle) — 8103330
+- [x] 4.5 test-plan §6.2/§6.4 gefüllt, §3 P1 = `complete`, §8 aktualisiert — 8103330
+- [x] 4.6 CLAUDE.md „kein Test-Runner"-Satz korrigiert — 8103330
