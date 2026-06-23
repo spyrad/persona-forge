@@ -403,29 +403,29 @@ Keine. Reine Test-/Doku-Änderung, kein Produktcode, keine DB-Migration.
 
 #### Automated
 
-- [x] 1.1 Typecheck passt: `npx astro check`
-- [x] 1.2 Linting passt: `npm run lint`
-- [x] 1.3 Bestehende Suites bleiben grün: `npm run test:integration`
-- [x] 1.4 Neue Helper sind importierbar (Smoke-Assert je Builder)
+- [x] 1.1 Typecheck passt: `npx astro check` — d23c477
+- [x] 1.2 Linting passt: `npm run lint` — d23c477
+- [x] 1.3 Bestehende Suites bleiben grün: `npm run test:integration` — d23c477
+- [x] 1.4 Neue Helper sind importierbar (Smoke-Assert je Builder) — d23c477
 
 #### Manual
 
-- [x] 1.5 `makeRunningRun` erzeugt genau `writtenReps` Repetition-Zeilen
-- [x] 1.6 fetch-Mock leckt nicht in Folge-Tests
+- [x] 1.5 `makeRunningRun` erzeugt genau `writtenReps` Repetition-Zeilen — d23c477
+- [x] 1.6 fetch-Mock leckt nicht in Folge-Tests — d23c477
 
 ### Phase 2: R4 — Lauf-Integrität
 
 #### Automated
 
-- [ ] 2.1 Neue Suite grün: `npm run test:integration`
-- [ ] 2.2 Linting passt: `npm run lint`
-- [ ] 2.3 Typecheck passt: `npx astro check`
-- [ ] 2.4 Keine Regression in bestehenden 54 itests
+- [x] 2.1 Neue Suite grün: `npm run test:integration`
+- [x] 2.2 Linting passt: `npm run lint`
+- [x] 2.3 Typecheck passt: `npx astro check`
+- [x] 2.4 Keine Regression in bestehenden 54 itests
 
 #### Manual
 
-- [ ] 2.5 Nebenläufigkeits-Test über 5 Läufe stabil (kein Flake)
-- [ ] 2.6 Cleanup hinterlässt keine Test-User-Daten
+- [x] 2.5 Nebenläufigkeits-Test über 5 Läufe stabil (kein Flake)
+- [x] 2.6 Cleanup hinterlässt keine Test-User-Daten
 
 ### Phase 3: R3 — SSRF-Boundary
 

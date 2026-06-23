@@ -4,7 +4,12 @@
  * Stubbt `globalThis.fetch`, sodass ein Chat-Completion-Call eine valide,
  * deterministische OEJTS-Antwort liefert — der ECHTE SSRF-Guard in
  * `chatCompletion` (`openai-compatible.ts:107`) läuft dabei MIT: wir mocken die
- * HTTP-Kante, nicht die Funktion. `restoreLlm()` muss in `afterEach` laufen, sonst
+ * HTTP-Kante, nicht die Funktion.
+ *
+ * WICHTIG: supabase-js nutzt INTERN denselben globalen `fetch`. Der Stub reicht
+ * deshalb lokale Supabase-Aufrufe (127.0.0.1/localhost) an das echte `fetch`
+ * durch und mockt NUR die ausgehende (nicht-lokale) LLM-Kante — sonst bekämen die
+ * DB-Queries die OEJTS-Antwort. `restoreLlm()` muss in `afterEach` laufen, sonst
  * leckt der Stub in andere, sequenziell laufende itests (`fileParallelism: false`).
  */
 import { vi } from "vitest";
@@ -15,8 +20,31 @@ export function oejtsAnswersJson(value = 3): string {
   return JSON.stringify({ answers: OEJTS.items.map((it) => ({ id: it.id, value })) });
 }
 
+/** URL aus einem fetch-Input extrahieren (string | URL | Request). */
+function urlOf(input: RequestInfo | URL): string {
+  if (typeof input === "string") return input;
+  if (input instanceof URL) return input.href;
+  return input.url;
+}
+
 /**
- * Stubbt `fetch` auf eine 200-Antwort im OpenAI-kompatiblen Shape
+ * Installiert einen fetch-Stub, der lokale Supabase-Calls durchreicht und für die
+ * ausgehende (nicht-lokale) Kante `makeResponse()` liefert.
+ */
+function installLlmStub(makeResponse: () => Response): void {
+  const realFetch = globalThis.fetch.bind(globalThis);
+  vi.stubGlobal(
+    "fetch",
+    vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+      const url = urlOf(input);
+      if (url.includes("127.0.0.1") || url.includes("localhost")) return realFetch(input, init);
+      return Promise.resolve(makeResponse());
+    }),
+  );
+}
+
+/**
+ * Mockt die LLM-Kante auf eine 200-Antwort im OpenAI-kompatiblen Shape
  * (`choices[0].message.content` + `usage`). Default-Content ist eine vollständige,
  * parsebare OEJTS-Antwort → `processNextRepetition` produziert eine `ok`-Repetition.
  */
@@ -24,29 +52,22 @@ export function mockLlmContent(
   content: string = oejtsAnswersJson(),
   usage: { prompt_tokens: number; completion_tokens: number } = { prompt_tokens: 100, completion_tokens: 50 },
 ): void {
-  vi.stubGlobal(
-    "fetch",
-    vi.fn(() =>
-      Promise.resolve(
-        new Response(JSON.stringify({ choices: [{ message: { content } }], usage }), {
-          status: 200,
-          headers: { "content-type": "application/json" },
-        }),
-      ),
-    ),
+  installLlmStub(
+    () =>
+      new Response(JSON.stringify({ choices: [{ message: { content } }], usage }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      }),
   );
 }
 
 /**
- * Stubbt `fetch` auf eine 3xx-Antwort → triggert den Redirect-Block
- * (`redirect:"manual"`) an der Outbound-Kante. Beweist, dass ein guard-passender
- * Endpoint, der intern weiterleiten will, abgewiesen wird.
+ * Mockt die LLM-Kante auf eine 3xx-Antwort → triggert den Redirect-Block
+ * (`redirect:"manual"`). Beweist, dass ein guard-passender Endpoint, der intern
+ * weiterleiten will, abgewiesen wird.
  */
 export function mockLlmRedirect(status = 302): void {
-  vi.stubGlobal(
-    "fetch",
-    vi.fn(() => Promise.resolve(new Response(null, { status }))),
-  );
+  installLlmStub(() => new Response(null, { status }));
 }
 
 /** Setzt alle fetch-Stubs zurück — IMMER in `afterEach` rufen. */
