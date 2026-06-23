@@ -6,7 +6,7 @@
 >
 > Refresh: re-run `/10x-test-plan --refresh` when stale (see §8).
 >
-> Last updated: 2026-06-22
+> Last updated: 2026-06-23
 
 ## 1. Strategy
 
@@ -72,11 +72,11 @@ Each row is a discrete rollout phase that will open its own change folder
 via `/10x-new`. Status moves left-to-right through the values below; the
 orchestrator updates Status as artifacts appear on disk.
 
-| #   | Phase name                    | Goal (one line)                                                                                                  | Risks covered | Test types                                    | Status        | Change folder                                        |
-| --- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------- | ------------- | ---------------------------------------------------- |
-| 1   | Integration security gate     | Prove key-tightness, cross-tenant tightness, and route protection; bootstrap the two-account integration harness | #1, #2, #5    | integration (API/service, two accounts)       | change opened | `context/changes/testing-integration-security-gate/` |
-| 2   | Run integrity + SSRF boundary | Prove abort discards fully, step is idempotent, and the SSRF guard fires at the request site                     | #4, #3        | integration (run/step/abort, test-connection) | not started   | —                                                    |
-| 3   | Quality-gates wiring          | Wire `npm run test` as a CI pre-deploy gate; optionally consolidate the two-account Playwright smoke             | cross-cutting | gates, optional e2e                           | not started   | —                                                    |
+| #   | Phase name                    | Goal (one line)                                                                                                  | Risks covered | Test types                                    | Status      | Change folder                                        |
+| --- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------- | ----------- | ---------------------------------------------------- |
+| 1   | Integration security gate     | Prove key-tightness, cross-tenant tightness, and route protection; bootstrap the two-account integration harness | #1, #2, #5    | integration (API/service, two accounts)       | complete    | `context/changes/testing-integration-security-gate/` |
+| 2   | Run integrity + SSRF boundary | Prove abort discards fully, step is idempotent, and the SSRF guard fires at the request site                     | #4, #3        | integration (run/step/abort, test-connection) | not started | —                                                    |
+| 3   | Quality-gates wiring          | Wire `npm run test` as a CI pre-deploy gate; optionally consolidate the two-account Playwright smoke             | cross-cutting | gates, optional e2e                           | not started | —                                                    |
 
 **Status vocabulary** (fixed): `not started` → `change opened` →
 `researched` → `planned` → `implementing` → `complete`.
@@ -143,7 +143,12 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.2 Adding an integration test
 
-- TBD — see §3 Phase 1 (two-account harness against API routes/services; mock only the outbound LLM HTTP edge, never Supabase/RLS).
+- **Location**: `src/test/integration/<name>.itest.ts` (eigenes Pattern, getrennt von Unit `*.test.ts`).
+- **Config**: `vitest.integration.config.ts` (sequenziell, `setupFiles` lädt `.env.test`, aliast `astro:env/server` auf einen process.env-Stub).
+- **Run**: `npm run test:integration` — braucht lokales Supabase (`npx supabase start`, Docker) + `.env.test` (siehe `.env.test.example`). Der Safety-Guard in `setup.ts` verweigert nicht-lokale `SUPABASE_URL`.
+- **Two-account harness**: `createTestAccount()` / `cleanupTestAccount()` aus `accounts.ts` (programmatischer `signUp` mit Timestamp-Mail, kein `service_role`); Domänen-Fixtures in `fixtures.ts` (`makePersona`/`makeModelConfig`/`makeCompletedRun`/`rowExists`).
+- **Mock-Grenze**: nur die ausgehende LLM-HTTP-Kante mocken — NIE Supabase/RLS. Repetitions direkt per Client einfügen (kein echter `processNextRepetition`-Call).
+- **Reference test**: `src/test/integration/rls-cross-tenant.itest.ts` (Risk #1, zwei Sessions, DB-Gegenproben).
 
 ### 6.3 Adding an e2e test
 
@@ -151,7 +156,9 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.4 Adding a test for a new API endpoint
 
-- TBD — see §3 Phase 1 (integration preferred: drive the route with an authenticated session, assert response shape AND the persisted side-effect / RLS scoping; for Risk #2, assert the secret is absent from the response).
+- **Auth-Gate**: Handler direkt importieren (`import { GET } from "@/pages/api/.../index"`) und mit `makeApiContext()` (aus `route-context.ts`) ohne Session aufrufen → erwarte **401**. Tabellengetrieben über alle Methoden×Routes; kein Dev-Server, kein Astro-Container nötig (der `astro:env/server`-Stub-Alias löst die einzige Kopplung). Reference: `src/test/integration/auth-gates.itest.ts`.
+- **Verhalten/RLS**: bevorzugt über die Service-Schicht mit zwei echten Sessions (siehe §6.2) — Response-Shape UND persistierten Side-Effect/RLS-Scope asserten; 0-Row-Match → 404/null, NIE leeres 200 (S-02-Lesson).
+- **Key-Dichtheit (Risk #2)**: assert, dass der Klartext-/Ciphertext-Key in keiner Response/keinem View auftaucht (Sentinel-Key + Feldnamen-Check). Reference: `src/test/integration/key-boundary.itest.ts`.
 
 ### 6.5 Adding a test for the run engine
 
@@ -161,6 +168,13 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 (Optional. After each phase lands, `/10x-implement` appends a 2-3 line note
 here capturing anything surprising the rollout phase taught.)
+
+- **Phase 1 (Integration security gate, 2026-06-23):** Service-Level reicht für
+  #1/#2; Route-Level für #5 brauchte KEINE Astro-Container-API — der
+  `astro:env/server`-Stub-Alias erlaubt direkten In-Process-Handler-Aufruf mit
+  Mock-`APIContext`. Feiner RLS-Fall „Seed owner=NULL" ist mangels `seed.sql`
+  nicht testbar (per anon-key nicht erzeugbar) und in den global-Objekt-Fällen
+  mit abgedeckt. Repetitions werden direkt per Client eingefügt (kein LLM-Call).
 
 ## 7. What We Deliberately Don't Test
 

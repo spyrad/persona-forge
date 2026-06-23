@@ -65,8 +65,12 @@ persona-forge/
 - `npm run format` — Prettier
 - Pre-Commit-Hooks (husky + lint-staged): `eslint --fix` auf `*.{ts,tsx,astro}`,
   `prettier --write` auf `*.{json,css,md}`
-- Kein Test-Runner eingerichtet — `test_command` in `workflow.config.yaml`
-  nachziehen sobald vorhanden (z. B. Vitest)
+- `npm run test` — Unit-Tests (Vitest, Node-Env, Docker-frei; `src/**/*.test.ts`)
+- `npm run test:integration` — Integration-Tests (Vitest, `src/**/*.itest.ts`)
+  gegen lokales Supabase: `npx supabase start` (Docker) + `.env.test` aus
+  `npx supabase status` befüllen (siehe `.env.test.example`). Setup verweigert
+  Nicht-lokale `SUPABASE_URL` (Safety-Guard). Noch KEIN CI-Gate (test-plan §3
+  Phase 3). `test_command` in `workflow.config.yaml` ist `npm run test`.
 
 ## Architecture Overview
 

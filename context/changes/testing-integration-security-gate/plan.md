@@ -502,25 +502,25 @@ pausieren; danach ist der Change archivierbar.
 
 #### Automated
 
-- [x] 3.1 Key-Dichtheits-Tests grün (`npm run test:integration`)
-- [x] 3.2 Typ-Guard greift (Key-Feld in `ModelConfigView` bricht Typcheck)
-- [x] 3.3 Lint grün (`npm run lint`)
+- [x] 3.1 Key-Dichtheits-Tests grün (`npm run test:integration`) — 3c600c4
+- [x] 3.2 Typ-Guard greift (Key-Feld in `ModelConfigView` bricht Typcheck) — 3c600c4
+- [x] 3.3 Lint grün (`npm run lint`) — 3c600c4
 
 #### Manual
 
-- [x] 3.4 SSR-HTML der `/models`-Seite enthält kein Key-Material im Prop
-- [x] 3.5 `test-connection`-Response enthält keinen Key/Upstream-Echo
+- [x] 3.4 SSR-HTML der `/models`-Seite enthält kein Key-Material im Prop — 3c600c4
+- [x] 3.5 `test-connection`-Response enthält keinen Key/Upstream-Echo — 3c600c4
 
 ### Phase 4: Risk #5 — API-Auth-Gates + Doku-Closeout
 
 #### Automated
 
-- [ ] 4.1 Alle Auth-Gate-Tests grün (`npm run test:integration`)
-- [ ] 4.2 Jede der 13 Routes liefert unauth 401 (tabellengetrieben)
-- [ ] 4.3 Lint/Typecheck grün (`npm run lint`, `npx astro check`)
+- [x] 4.1 Alle Auth-Gate-Tests grün (`npm run test:integration`)
+- [x] 4.2 Jede der 13 Routes liefert unauth 401 (tabellengetrieben)
+- [x] 4.3 Lint/Typecheck grün (`npm run lint`, `npx astro check`)
 
 #### Manual
 
-- [ ] 4.4 Geschützte Route mit gültigem Cookie liefert nicht 401 (Positiv-Kontrolle)
-- [ ] 4.5 test-plan §6.2/§6.4 gefüllt, §3 P1 = `complete`, §8 aktualisiert
-- [ ] 4.6 CLAUDE.md „kein Test-Runner"-Satz korrigiert
+- [x] 4.4 Geschützte Route mit gültigem Cookie liefert nicht 401 (Positiv-Kontrolle)
+- [x] 4.5 test-plan §6.2/§6.4 gefüllt, §3 P1 = `complete`, §8 aktualisiert
+- [x] 4.6 CLAUDE.md „kein Test-Runner"-Satz korrigiert
