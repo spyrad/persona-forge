@@ -444,9 +444,9 @@ Keine. Reine Test-/Doku-Änderung, kein Produktcode, keine DB-Migration.
 
 #### Automated
 
-- [x] 4.1 Voller Lauf grün: `npm run test:integration` + `npm run test`
-- [x] 4.2 Linting/Format passt: `npm run lint`
+- [x] 4.1 Voller Lauf grün: `npm run test:integration` + `npm run test` — cb563e8
+- [x] 4.2 Linting/Format passt: `npm run lint` — cb563e8
 
 #### Manual
 
-- [x] 4.3 test-plan §3/§6.5/§6.6 konsistent mit implementiertem Stand
+- [x] 4.3 test-plan §3/§6.5/§6.6 konsistent mit implementiertem Stand — cb563e8
