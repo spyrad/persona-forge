@@ -8,7 +8,9 @@
  * Dev-Server und OHNE die schwerere Astro-Container-API (vom Plan als
  * In-Process-Fallback ausdrücklich erlaubt).
  */
+import { createServerClient } from "@supabase/ssr";
 import type { APIContext } from "astro";
+import type { TestAccount } from "./accounts";
 
 interface MockContextOpts {
   method?: string;
@@ -61,4 +63,32 @@ export function makeApiContext(opts: MockContextOpts = {}): APIContext {
       new Response(null, { status: status ?? 302, headers: { Location: location } }),
   };
   return context as unknown as APIContext;
+}
+
+/**
+ * Baut einen Cookie-Header mit der echten Session eines TestAccounts, sodass
+ * `requireUser(context)` den User auflöst (`createClient` liest die Cookies aus
+ * dem Request-`Cookie`-Header via `parseCookieHeader`, NICHT aus dem
+ * cookies-Adapter). Die Cookies werden von `@supabase/ssr` selbst erzeugt — so
+ * trifft das exakt erwartete, ggf. gechunkte Format. Damit lässt sich ein
+ * auth-gated Handler (z. B. test-connection) authentifiziert in-process aufrufen.
+ */
+export async function authedCookieHeader(account: TestAccount): Promise<string> {
+  const {
+    data: { session },
+  } = await account.client.auth.getSession();
+  if (!session) throw new Error("authedCookieHeader: TestAccount hat keine Session");
+
+  const jar = new Map<string, string>();
+  const ssr = createServerClient(process.env.SUPABASE_URL ?? "", process.env.SUPABASE_KEY ?? "", {
+    cookies: {
+      getAll: () => [...jar].map(([name, value]) => ({ name, value })),
+      setAll: (toSet) => {
+        toSet.forEach(({ name, value }) => jar.set(name, value));
+      },
+    },
+  });
+  await ssr.auth.setSession({ access_token: session.access_token, refresh_token: session.refresh_token });
+
+  return [...jar].map(([name, value]) => `${name}=${value}`).join("; ");
 }

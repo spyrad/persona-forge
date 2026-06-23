@@ -417,28 +417,28 @@ Keine. Reine Test-/Doku-Änderung, kein Produktcode, keine DB-Migration.
 
 #### Automated
 
-- [x] 2.1 Neue Suite grün: `npm run test:integration`
-- [x] 2.2 Linting passt: `npm run lint`
-- [x] 2.3 Typecheck passt: `npx astro check`
-- [x] 2.4 Keine Regression in bestehenden 54 itests
+- [x] 2.1 Neue Suite grün: `npm run test:integration` — efbc8c3
+- [x] 2.2 Linting passt: `npm run lint` — efbc8c3
+- [x] 2.3 Typecheck passt: `npx astro check` — efbc8c3
+- [x] 2.4 Keine Regression in bestehenden 54 itests — efbc8c3
 
 #### Manual
 
-- [x] 2.5 Nebenläufigkeits-Test über 5 Läufe stabil (kein Flake)
-- [x] 2.6 Cleanup hinterlässt keine Test-User-Daten
+- [x] 2.5 Nebenläufigkeits-Test über 5 Läufe stabil (kein Flake) — efbc8c3
+- [x] 2.6 Cleanup hinterlässt keine Test-User-Daten — efbc8c3
 
 ### Phase 3: R3 — SSRF-Boundary
 
 #### Automated
 
-- [ ] 3.1 Neue Suite grün: `npm run test:integration`
-- [ ] 3.2 Linting passt: `npm run lint`
-- [ ] 3.3 Typecheck passt: `npx astro check`
-- [ ] 3.4 Keine Regression in bestehenden itests
+- [x] 3.1 Neue Suite grün: `npm run test:integration`
+- [x] 3.2 Linting passt: `npm run lint`
+- [x] 3.3 Typecheck passt: `npx astro check`
+- [x] 3.4 Keine Regression in bestehenden itests
 
 #### Manual
 
-- [ ] 3.5 Guard-Entfernungs-Probe: beide Site-Tests werden rot ohne Guard
+- [x] 3.5 Guard-Entfernungs-Probe: beide Site-Tests werden rot ohne Guard
 
 ### Phase 4: Closeout
 
