@@ -11,7 +11,7 @@ import { OEJTS } from "@/lib/instruments/oejts";
 import { createModelConfig } from "@/lib/services/model-configs";
 import { createPersona, updatePersonaVisibility } from "@/lib/services/personas";
 import { createRun, updateRunVisibility } from "@/lib/services/runs";
-import type { ModelConfigView, PersonaView, RunView, Visibility } from "@/types";
+import type { ItemValue, ModelConfigView, PersonaView, RunView, Visibility } from "@/types";
 import type { TestAccount } from "./accounts";
 
 /** Legt eine Persona an und schaltet sie bei Bedarf auf privat (Default-Insert ist global). */
@@ -78,6 +78,94 @@ export async function makeCompletedRun(
   const { error: statusError } = await account.client.from("runs").update({ status: "completed" }).eq("id", run.id);
   if (statusError) throw new Error(`makeCompletedRun: Status-Update schlug fehl: ${statusError.message}`);
 
+  return run;
+}
+
+/** Volle OEJTS-Item-Werte (alle 32 Items) mit gegebenem Skalenwert — eine „verwertbare" Repetition. */
+function fullItemValues(value = 3): ItemValue[] {
+  return OEJTS.items.map((it) => ({ id: it.id, value, status: "ok" }));
+}
+
+/**
+ * Fügt eine Repetition DIREKT per Client ein (umgeht `processNextRepetition` →
+ * kein LLM-Call). `ok`-Reps tragen volle Item-Werte (zählen als `usableReps`),
+ * `failed`-Reps tragen `item_values: null` + Fehlertext.
+ */
+async function insertRepetition(
+  account: TestAccount,
+  runId: string,
+  repIndex: number,
+  status: "ok" | "failed",
+): Promise<void> {
+  const { error } = await account.client.from("run_repetitions").insert({
+    run_id: runId,
+    rep_index: repIndex,
+    item_order: OEJTS.items.map((_, i) => i),
+    raw_response: status === "ok" ? "{}" : null,
+    item_values: status === "ok" ? fullItemValues() : null,
+    status,
+    error: status === "failed" ? "itest: simulierter Fehlschlag" : null,
+  });
+  if (error) throw new Error(`insertRepetition(${repIndex}): ${error.message}`);
+}
+
+/** Legt einen Lauf an und lässt ihn `pending` (0 Repetitions) — Ausgangslage für Abort/Result-Tests. */
+export async function makePendingRun(
+  account: TestAccount,
+  personaId: string,
+  modelConfigId: string,
+  repetitionCount = 3,
+): Promise<RunView> {
+  const run = await createRun(account.client, account.userId, {
+    personaId,
+    modelConfigId,
+    instrumentId: OEJTS.id,
+    repetitionCount,
+  });
+  if (!run) throw new Error("makePendingRun: createRun lieferte null (Persona/Modellkonfig nicht sichtbar?)");
+  return run;
+}
+
+/**
+ * Legt einen `running` Lauf an und schreibt `writtenReps` `ok`-Repetitions direkt
+ * ein (rep_index 1..writtenReps, gap-frei). Mit `writtenReps=0` bleibt der Lauf
+ * `running` ohne Repetition — die Ausgangslage für den 23505-Nebenläufigkeitstest.
+ */
+export async function makeRunningRun(
+  account: TestAccount,
+  personaId: string,
+  modelConfigId: string,
+  writtenReps = 1,
+  totalReps = 3,
+): Promise<RunView> {
+  const run = await makePendingRun(account, personaId, modelConfigId, totalReps);
+  for (let i = 1; i <= writtenReps; i++) await insertRepetition(account, run.id, i, "ok");
+  const { error } = await account.client.from("runs").update({ status: "running" }).eq("id", run.id);
+  if (error) throw new Error(`makeRunningRun: Status-Update schlug fehl: ${error.message}`);
+  return run;
+}
+
+/**
+ * Legt einen terminalen Lauf mit `okReps` erfolgreichen + `failedReps`
+ * fehlgeschlagenen Repetitions an. Status & `failed_count` folgen der
+ * Service-Logik: `completed` sobald ≥1 ok, sonst `failed`.
+ */
+export async function makeFailedRun(
+  account: TestAccount,
+  personaId: string,
+  modelConfigId: string,
+  okReps: number,
+  failedReps: number,
+): Promise<RunView> {
+  const run = await makePendingRun(account, personaId, modelConfigId, okReps + failedReps);
+  let idx = 1;
+  for (let i = 0; i < okReps; i++) await insertRepetition(account, run.id, idx++, "ok");
+  for (let i = 0; i < failedReps; i++) await insertRepetition(account, run.id, idx++, "failed");
+  const { error } = await account.client
+    .from("runs")
+    .update({ status: okReps > 0 ? "completed" : "failed", failed_count: failedReps })
+    .eq("id", run.id);
+  if (error) throw new Error(`makeFailedRun: Status-Update schlug fehl: ${error.message}`);
   return run;
 }
 
