@@ -38,7 +38,13 @@ if (!url) {
       "oder übernimm die Werte aus `npx supabase status`.",
   );
 }
-if (!/127\.0\.0\.1|localhost/.test(url)) {
+let hostname: string;
+try {
+  hostname = new URL(url).hostname;
+} catch {
+  throw new Error(`Integration-Setup: SUPABASE_URL ist keine gültige URL: ${url}`);
+}
+if (hostname !== "127.0.0.1" && hostname !== "localhost") {
   throw new Error(
     `Integration-Setup: SUPABASE_URL muss auf lokales Supabase zeigen (127.0.0.1/localhost), ` +
       `war aber: ${url}. Integration-Tests laufen NICHT gegen eine Remote-/Prod-DB.`,
