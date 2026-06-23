@@ -475,28 +475,28 @@ pausieren; danach ist der Change archivierbar.
 
 #### Automated
 
-- [x] 1.1 Lokales Supabase läuft (`npx supabase status` API auf 54321)
-- [x] 1.2 `npm run test:integration` startet ohne Config-Fehler
-- [x] 1.3 Smoke-Test grün (`smoke.itest.ts` PASS)
-- [x] 1.4 `npm run test` (Unit) unverändert grün und Docker-frei
-- [x] 1.5 Lint/Typecheck grün (`npm run lint`, `npx astro check`)
+- [x] 1.1 Lokales Supabase läuft (`npx supabase status` API auf 54321) — 834a3d4
+- [x] 1.2 `npm run test:integration` startet ohne Config-Fehler — 834a3d4
+- [x] 1.3 Smoke-Test grün (`smoke.itest.ts` PASS) — 834a3d4
+- [x] 1.4 `npm run test` (Unit) unverändert grün und Docker-frei — 834a3d4
+- [x] 1.5 Lint/Typecheck grün (`npm run lint`, `npx astro check`) — 834a3d4
 
 #### Manual
 
-- [x] 1.6 `.env.test` zeigt auf lokale (nicht Remote-) Supabase-Werte
-- [x] 1.7 Re-run kollidiert nicht; keine Test-User-Reste nach Cleanup
+- [x] 1.6 `.env.test` zeigt auf lokale (nicht Remote-) Supabase-Werte — 834a3d4
+- [x] 1.7 Re-run kollidiert nicht; keine Test-User-Reste nach Cleanup — 834a3d4
 
 ### Phase 2: Risk #1 — Cross-Tenant-RLS-Matrix
 
 #### Automated
 
-- [ ] 2.1 Alle RLS-Matrix-Fälle grün (`npm run test:integration`)
-- [ ] 2.2 Lint/Typecheck grün (`npm run lint`, `npx astro check`)
+- [x] 2.1 Alle RLS-Matrix-Fälle grün (`npm run test:integration`)
+- [x] 2.2 Lint/Typecheck grün (`npm run lint`, `npx astro check`)
 
 #### Manual
 
-- [ ] 2.3 Stichprobe liefert 404/null statt leerem 200/Array (S-02)
-- [ ] 2.4 Positiv-Kontrolle würde bei gelockertem RLS fehlschlagen
+- [x] 2.3 Stichprobe liefert 404/null statt leerem 200/Array (S-02)
+- [x] 2.4 Positiv-Kontrolle würde bei gelockertem RLS fehlschlagen
 
 ### Phase 3: Risk #2 — Key-Dichtheit
 
