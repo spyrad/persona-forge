@@ -72,11 +72,11 @@ Each row is a discrete rollout phase that will open its own change folder
 via `/10x-new`. Status moves left-to-right through the values below; the
 orchestrator updates Status as artifacts appear on disk.
 
-| #   | Phase name                    | Goal (one line)                                                                                                  | Risks covered | Test types                                    | Status      | Change folder                                        |
-| --- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------- | ----------- | ---------------------------------------------------- |
-| 1   | Integration security gate     | Prove key-tightness, cross-tenant tightness, and route protection; bootstrap the two-account integration harness | #1, #2, #5    | integration (API/service, two accounts)       | complete    | `context/changes/testing-integration-security-gate/` |
-| 2   | Run integrity + SSRF boundary | Prove abort discards fully, step is idempotent, and the SSRF guard fires at the request site                     | #4, #3        | integration (run/step/abort, test-connection) | complete    | `context/changes/testing-run-integrity-ssrf/`        |
-| 3   | Quality-gates wiring          | Wire `npm run test` as a CI pre-deploy gate; optionally consolidate the two-account Playwright smoke             | cross-cutting | gates, optional e2e                           | not started | —                                                    |
+| #   | Phase name                    | Goal (one line)                                                                                                  | Risks covered | Test types                                    | Status   | Change folder                                        |
+| --- | ----------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------- | --------------------------------------------- | -------- | ---------------------------------------------------- |
+| 1   | Integration security gate     | Prove key-tightness, cross-tenant tightness, and route protection; bootstrap the two-account integration harness | #1, #2, #5    | integration (API/service, two accounts)       | complete | `context/changes/testing-integration-security-gate/` |
+| 2   | Run integrity + SSRF boundary | Prove abort discards fully, step is idempotent, and the SSRF guard fires at the request site                     | #4, #3        | integration (run/step/abort, test-connection) | complete | `context/changes/testing-run-integrity-ssrf/`        |
+| 3   | Quality-gates wiring          | Wire `npm run test` as a CI pre-deploy gate; optionally consolidate the two-account Playwright smoke             | cross-cutting | gates (e2e deliberately skipped)              | complete | `context/changes/testing-quality-gates-wiring/`      |
 
 **Status vocabulary** (fixed): `not started` → `change opened` →
 `researched` → `planned` → `implementing` → `complete`.
@@ -117,16 +117,25 @@ The full set of gates that must pass before a change reaches production.
 "Required for §3 Phase N" means the gate is enforced once that rollout
 phase lands; before that, the gate is `planned`.
 
-| Gate                                             | Where                   | Required?                 | Catches                                                           |
-| ------------------------------------------------ | ----------------------- | ------------------------- | ----------------------------------------------------------------- |
-| lint + typecheck (`npm run lint`, `astro check`) | local (pre-commit) + CI | required                  | syntactic / type drift; already wired (husky + lint-staged)       |
-| unit + integration (`npm run test`)              | local + CI              | required after §3 Phase 1 | logic + boundary regressions (key leak, RLS, run integrity, SSRF) |
-| e2e on critical flows                            | CI on PR                | optional after §3 Phase 3 | broken cross-tenant visibility / auth-redirect path               |
-| pre-prod smoke                                   | between merge + prod    | optional                  | Cloudflare-edge-specific failures (lucide re-opt, route manifest) |
+| Gate                                             | Where                   | Required?                         | Catches                                                           |
+| ------------------------------------------------ | ----------------------- | --------------------------------- | ----------------------------------------------------------------- |
+| lint + typecheck (`npm run lint`, `astro check`) | local (pre-commit) + CI | required                          | syntactic / type drift; already wired (husky + lint-staged)       |
+| unit + integration                               | local + CI              | required (wired §3 Phase 3)       | logic + boundary regressions (key leak, RLS, run integrity, SSRF) |
+| e2e on critical flows                            | CI on PR                | deferred (covered by integration) | broken cross-tenant visibility / auth-redirect path               |
+| pre-prod smoke                                   | between merge + prod    | optional                          | Cloudflare-edge-specific failures (lucide re-opt, route manifest) |
 
-The `npm run test` gate is the load-bearing addition: today CI can go green
-on a lint pass while no test ever runs, and a lint failure silently skips
-the deploy (archive S-01 lesson). §3 Phase 3 wires the test run explicitly.
+The `npm run test` gate was the load-bearing addition. As of §3 Phase 3 it
+is wired in CI: the `ci` job runs `npm run test` (unit) and a separate
+`integration` job runs `npm run test:integration` against `supabase start`;
+`deploy` has `needs: [ci, integration]`, so a red test blocks the deploy.
+The earlier "lint-fail silently skips deploy" gap (archive S-01) is closed
+by making `ci` + `integration` _required status checks_ on `main` — an
+in-YAML `needs:` gate blocks the deploy job within a run but does NOT make a
+skipped deploy visible; only branch protection does. The e2e row is
+deliberately deferred: the two-account RLS matrix is already covered by the
+integration test `src/test/integration/rls-cross-tenant.itest.ts`; a browser
+smoke would only add the middleware-302 + cookie-roundtrip path (low
+regression) at high cost. Revisit on an Astro/@supabase/ssr major upgrade.
 
 ## 6. Cookbook Patterns
 
@@ -152,7 +161,15 @@ the relevant rollout phase ships; before that, the sub-section reads
 
 ### 6.3 Adding an e2e test
 
-- TBD — see §3 Phase 3 (Playwright; the two-account RLS matrix in WORKFLOW_STATUS gotchas is the seed pattern).
+- **Deliberately not wired (decision, §3 Phase 3).** No Playwright/e2e layer
+  exists. The "two-account RLS matrix" seed pattern is already implemented as the
+  integration test `src/test/integration/rls-cross-tenant.itest.ts` (two real
+  sessions, DB counter-probes) — a browser smoke would only add the middleware-302
+  redirect + cookie-roundtrip path, which is framework-level (Astro + `@supabase/ssr`)
+  and low-regression, at high cost/brittleness. Cost×signal (§1) does not justify it.
+- **When to revisit**: an Astro or `@supabase/ssr` major upgrade, or a page gaining
+  interactive, data-dependent auth behavior. Then add a light Playwright smoke driving
+  the middleware redirect + cookie lifecycle (not the RLS logic, which integration owns).
 
 ### 6.4 Adding a test for a new API endpoint
 
@@ -198,6 +215,17 @@ here capturing anything surprising the rollout phase taught.)
   → erster authentifizierter In-Process-Route-Aufruf (schließt §6.4-„manuell").
   (d) Der 23505-Nebenläufigkeitspfad braucht `completedReps=0`, sonst verschiebt
   sich `rep_index` und der Catch wird verfehlt.
+- **Phase 3 (Quality-gates wiring, 2026-06-24):** (a) Unit-Gate ist trivial — ein
+  `npm run test`-Step im `ci`-Job, Docker-frei. (b) Integration in CI über einen
+  eigenen `integration`-Job: `supabase/setup-cli@v2` + `supabase start -x <slim set>`
+  (nur Postgres/GoTrue/PostgREST/Kong), Connection-Export via `supabase status -o env`
+  nach `$GITHUB_ENV` (`API_URL`→`SUPABASE_URL`, `ANON_KEY`→`SUPABASE_KEY`), Wegwerf-
+  `ENCRYPTION_KEY` per `node -e randomBytes(32).base64`. Das Repo war vorverdrahtet
+  (`setup.ts` lässt CI-`process.env` gewinnen, Guard akzeptiert `127.0.0.1`,
+  `enable_confirmations=false`) → kein `.env.test`-Write nötig. (c) CLI-Pin an die
+  Lockfile (`2.98.2`), nicht an den package.json-Range. (d) Der entscheidende Teil ist
+  KEIN YAML: ein `needs:`-Gate blockt den Deploy-Job im Run, aber nur ein GitHub
+  _Required Status Check_ (Branch-Protection) macht einen geskippten Deploy sichtbar.
 
 ## 7. What We Deliberately Don't Test
 

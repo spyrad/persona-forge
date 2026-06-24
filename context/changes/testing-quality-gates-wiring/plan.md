@@ -319,19 +319,19 @@ per-run DB — no key management needed.
 
 #### Manual
 
-- [ ] 1.4 A pushed branch / PR shows the `ci` job running `npm run test` and going green
+- [x] 1.4 A pushed branch / PR shows the `ci` job running `npm run test` and going green
 
 ### Phase 2: Supabase-backed `integration` job + deploy gate
 
 #### Automated
 
-- [ ] 2.1 Integration suite passes locally: `npx supabase start` then `npm run test:integration`
-- [x] 2.2 Workflow valid YAML and `deploy` lists `needs: [ci, integration]`
-- [x] 2.3 CLI version pin matches lockfile: `supabase` `2.23.4` in `package-lock.json`
+- [x] 2.1 Integration suite passes locally: `npx supabase start` then `npm run test:integration`
+- [x] 2.2 Workflow valid YAML and `deploy` lists `needs: [ci, integration]` — 236a0a3
+- [x] 2.3 CLI version pin matches lockfile: `supabase` `2.23.4` in `package-lock.json` — 236a0a3
 
 #### Manual
 
-- [ ] 2.4 PR shows `integration` job: `supabase start` + migrations + `npm run test:integration` green
+- [x] 2.4 PR shows `integration` job: `supabase start` + migrations + `npm run test:integration` green
 - [ ] 2.5 On main-push, `deploy` runs only after both `ci` and `integration` succeed
 - [ ] 2.6 A deliberately failing integration test keeps `deploy` from running
 
@@ -340,7 +340,7 @@ per-run DB — no key management needed.
 #### Automated
 
 - [ ] 3.1 Branch protection active: `gh api .../branches/main/protection` shows `ci` + `integration` required checks
-- [ ] 3.2 Docs updated: `test-plan.md` Phase 3 row `complete`; `lessons.md` has the new entry
+- [x] 3.2 Docs updated: `test-plan.md` Phase 3 row `complete`; `lessons.md` has the new entry
 
 #### Manual
 
