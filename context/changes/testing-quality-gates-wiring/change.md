@@ -1,7 +1,7 @@
 ---
 change_id: testing-quality-gates-wiring
 title: Test-Rollout Phase 3 — Quality-gates wiring (CI test-gate before deploy)
-status: implementing
+status: implemented
 created: 2026-06-24
 updated: 2026-06-24
 archived_at: null

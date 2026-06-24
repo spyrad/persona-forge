@@ -319,30 +319,30 @@ per-run DB — no key management needed.
 
 #### Manual
 
-- [x] 1.4 A pushed branch / PR shows the `ci` job running `npm run test` and going green
+- [x] 1.4 A pushed branch / PR shows the `ci` job running `npm run test` and going green — 8db7c4d
 
 ### Phase 2: Supabase-backed `integration` job + deploy gate
 
 #### Automated
 
-- [x] 2.1 Integration suite passes locally: `npx supabase start` then `npm run test:integration`
+- [x] 2.1 Integration suite passes locally: `npx supabase start` then `npm run test:integration` — 8db7c4d
 - [x] 2.2 Workflow valid YAML and `deploy` lists `needs: [ci, integration]` — 236a0a3
 - [x] 2.3 CLI version pin matches lockfile: `supabase` `2.23.4` in `package-lock.json` — 236a0a3
 
 #### Manual
 
-- [x] 2.4 PR shows `integration` job: `supabase start` + migrations + `npm run test:integration` green
-- [ ] 2.5 On main-push, `deploy` runs only after both `ci` and `integration` succeed
-- [ ] 2.6 A deliberately failing integration test keeps `deploy` from running
+- [x] 2.4 PR shows `integration` job: `supabase start` + migrations + `npm run test:integration` green — 8db7c4d
+- [x] 2.5 On main-push, `deploy` runs only after both `ci` and `integration` succeed
+- [x] 2.6 A deliberately failing integration test keeps `deploy` from running
 
 ### Phase 3: Branch-protection (required checks) + documentation closeout
 
 #### Automated
 
 - [ ] 3.1 Branch protection active: `gh api .../branches/main/protection` shows `ci` + `integration` required checks
-- [x] 3.2 Docs updated: `test-plan.md` Phase 3 row `complete`; `lessons.md` has the new entry
+- [x] 3.2 Docs updated: `test-plan.md` Phase 3 row `complete`; `lessons.md` has the new entry — 8db7c4d
 
 #### Manual
 
-- [ ] 3.3 Failing-check experiment blocks the PR and `deploy`; revert → green → deploy proceeds
-- [ ] 3.4 Test-plan §3/§5/§6.3 read coherently and match the shipped pipeline
+- [x] 3.3 Failing-check experiment blocks the PR and `deploy`; revert → green → deploy proceeds
+- [x] 3.4 Test-plan §3/§5/§6.3 read coherently and match the shipped pipeline
