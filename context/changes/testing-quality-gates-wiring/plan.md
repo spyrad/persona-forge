@@ -339,7 +339,7 @@ per-run DB — no key management needed.
 
 #### Automated
 
-- [ ] 3.1 Branch protection active: `gh api .../branches/main/protection` shows `ci` + `integration` required checks
+- [x] 3.1 Branch protection active: `gh api .../branches/main/protection` shows `ci` + `integration` required checks
 - [x] 3.2 Docs updated: `test-plan.md` Phase 3 row `complete`; `lessons.md` has the new entry — 8db7c4d
 
 #### Manual
