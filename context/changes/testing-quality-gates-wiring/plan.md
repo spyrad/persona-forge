@@ -313,9 +313,9 @@ per-run DB — no key management needed.
 
 #### Automated
 
-- [x] 1.1 Unit suite passes: `npm run test`
-- [x] 1.2 Lint passes: `npm run lint`
-- [x] 1.3 The step is present: `ci.yml` contains a `npm run test` run line in the `ci` job
+- [x] 1.1 Unit suite passes: `npm run test` — 99f6e52
+- [x] 1.2 Lint passes: `npm run lint` — 99f6e52
+- [x] 1.3 The step is present: `ci.yml` contains a `npm run test` run line in the `ci` job — 99f6e52
 
 #### Manual
 
@@ -326,8 +326,8 @@ per-run DB — no key management needed.
 #### Automated
 
 - [ ] 2.1 Integration suite passes locally: `npx supabase start` then `npm run test:integration`
-- [ ] 2.2 Workflow valid YAML and `deploy` lists `needs: [ci, integration]`
-- [ ] 2.3 CLI version pin matches lockfile: `supabase` `2.23.4` in `package-lock.json`
+- [x] 2.2 Workflow valid YAML and `deploy` lists `needs: [ci, integration]`
+- [x] 2.3 CLI version pin matches lockfile: `supabase` `2.23.4` in `package-lock.json`
 
 #### Manual
 

@@ -24,8 +24,34 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
 
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: supabase/setup-cli@v2
+        with:
+          version: 2.98.2
+          github-token: ${{ github.token }}
+      - name: Start local Supabase (slim service set)
+        run: supabase start -x imgproxy,storage-api,realtime,studio,edge-runtime,logflare,vector,supavisor,postgres-meta,mailpit
+      - name: Export Supabase env + throwaway encryption key
+        run: |
+          supabase status -o env >> /tmp/sb.env
+          echo "SUPABASE_URL=$(grep '^API_URL=' /tmp/sb.env | cut -d= -f2- | tr -d '"')" >> "$GITHUB_ENV"
+          echo "SUPABASE_KEY=$(grep '^ANON_KEY=' /tmp/sb.env | cut -d= -f2- | tr -d '"')" >> "$GITHUB_ENV"
+          echo "ENCRYPTION_KEY=$(node -e "console.log(require('crypto').randomBytes(32).toString('base64'))")" >> "$GITHUB_ENV"
+      - run: npm run test:integration
+      - name: Stop local Supabase
+        if: always()
+        run: supabase stop --no-backup
+
   deploy:
-    needs: ci
+    needs: [ci, integration]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
