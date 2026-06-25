@@ -17,6 +17,7 @@ Thumbs.db
 .env.*
 !.env.example
 !.env.test.example
+!.env.e2e.example
 *.key
 *.pem
 secrets/
@@ -56,3 +57,9 @@ pnpm-debug.log*
 
 # Kurs-Inhalte (10xDevs) - nicht ins Remote-Repo pushen
 .ressources/
+
+# Playwright-E2E
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/playwright/.auth/
