@@ -362,29 +362,29 @@ neu deployen.
 
 #### Automated
 
-- [x] 1.1 Typecheck/Build passt: `npx astro sync && npm run build` — 055a155
-- [x] 1.2 Linting passt: `npm run lint` — 055a155
-- [x] 1.3 Unit-Tests grün: `npm run test` — 055a155
-- [x] 1.4 E2E-Build/-Lauf unberührt: `npm run test:e2e` — 055a155
+- [x] 1.1 Typecheck/Build passt: `npx astro sync && npm run build` — c068c87
+- [x] 1.2 Linting passt: `npm run lint` — c068c87
+- [x] 1.3 Unit-Tests grün: `npm run test` — c068c87
+- [x] 1.4 E2E-Build/-Lauf unberührt: `npm run test:e2e` — c068c87
 
 #### Manual
 
-- [x] 1.5 `astro dev` startet ohne Sentry-Fehler; App ohne DSN funktional (no-op) — 055a155
-- [x] 1.6 Kein zusätzliches Client-JS in den Islands (Network-Tab) — 055a155
-- [x] 1.7 Worker-Bundle baut mit `main = ./sentry.server.config.ts` ohne Bundling-Fehler — 055a155
+- [x] 1.5 `astro dev` startet ohne Sentry-Fehler; App ohne DSN funktional (no-op) — c068c87
+- [x] 1.6 Kein zusätzliches Client-JS in den Islands (Network-Tab) — c068c87
+- [x] 1.7 Worker-Bundle baut mit `main = ./sentry.server.config.ts` ohne Bundling-Fehler — c068c87
 
 ### Phase 2: Secret-Sync (CI/Prod)
 
 #### Automated
 
-- [ ] 2.1 CI-Lauf grün: `ci` + `integration` + `deploy` (REST-API-Check)
-- [x] 2.2 `build`-Step bricht nicht, wenn `SENTRY_AUTH_TOKEN` fehlt
+- [x] 2.1 CI-Lauf grün: `ci` + `integration` + `deploy` (REST-API-Check) — 89a835a
+- [x] 2.2 `build`-Step bricht nicht, wenn `SENTRY_AUTH_TOKEN` fehlt — 89a835a
 
 #### Manual
 
-- [ ] 2.3 Worker-Secret `SENTRY_DSN` nach Deploy gesetzt (`wrangler secret list`)
-- [ ] 2.4 Deploy-Log zeigt erfolgreichen/übersprungenen Source-Map-Upload
-- [ ] 2.5 Prod-`/` lädt unverändert (kein Entry-Point-Regress)
+- [x] 2.3 Worker-Secret `SENTRY_DSN` nach Deploy gesetzt (`wrangler secret list`) — 89a835a
+- [x] 2.4 Deploy-Log zeigt erfolgreichen/übersprungenen Source-Map-Upload — 89a835a
+- [x] 2.5 Prod-`/` lädt unverändert (kein Entry-Point-Regress) — 89a835a
 
 ### Phase 3: End-to-end-Verifikation (temporärer Test-Trigger)
 
