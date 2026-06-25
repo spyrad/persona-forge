@@ -1,10 +1,11 @@
 # Playwright-E2E-Setup Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> Umsetzungs-Hinweis: Die Env-Isolation wurde bei der Implementierung auf einen E2E-gated Node-Adapter (@astrojs/node, nur bei process.env.E2E) + Port 4329 umgestellt (Commit b089265). Abschnitte, die astro dev (cloudflare) / Port 4321 / webServer.env als alleinigen Mechanismus beschreiben, sind dadurch überholt — .dev.vars/.env werden nie angefasst.
 
 **Goal:** Eine minimale, saubere Playwright-E2E-Lernschicht (Kurslektion s03e04) aufsetzen, die genau den Risk-#5-Auth-Redirect-Flow im echten Browser prüft.
 
-**Architecture:** Playwright startet per `webServer` den Astro-Dev-Server (`astro dev --mode e2e`, workerd-Runtime) gegen lokales Docker-Supabase. Ein `setup`-Projekt loggt sich einmal über das echte Formular ein und speichert `storageState`; alle authentifizierten Tests erben die Session. Env wird isoliert über `.env.e2e` geladen, die normale `.dev.vars`/`.env` bleibt unberührt.
+**Architecture:** Playwright startet per `webServer` den Astro-Dev-Server (`astro dev --mode e2e`, Node-Adapter) gegen lokales Docker-Supabase auf Port 4329. Ein `setup`-Projekt loggt sich einmal über das echte Formular ein und speichert `storageState`; alle authentifizierten Tests erben die Session. Env wird isoliert über `.env.e2e` geladen, die normale `.dev.vars`/`.env` bleibt unberührt.
 
 **Tech Stack:** `@playwright/test` (Chromium), Astro 6 SSR (`astro dev`), `@supabase/supabase-js` (Test-User-Anlage), lokales Supabase (`npx supabase start`).
 

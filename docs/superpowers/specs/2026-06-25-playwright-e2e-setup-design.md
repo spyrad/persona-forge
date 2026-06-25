@@ -3,6 +3,7 @@
 > Status: approved (Brainstorming 2026-06-25)
 > Kontext: Kurslektion 10xDevs s03e04 (E2E mit Playwright). Lern-/Demo-Schicht,
 > keine Umkehr der test-plan.md-Entscheidung „E2E deliberately deferred".
+> Umsetzungs-Hinweis: Die Env-Isolation wurde bei der Implementierung auf einen E2E-gated Node-Adapter (@astrojs/node, nur bei process.env.E2E) + Port 4329 umgestellt (Commit b089265). Abschnitte, die astro dev (cloudflare) / Port 4321 / webServer.env als alleinigen Mechanismus beschreiben, sind dadurch überholt — .dev.vars/.env werden nie angefasst.
 
 ## 1. Ziel & Rahmen
 

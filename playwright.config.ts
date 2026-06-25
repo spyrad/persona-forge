@@ -31,7 +31,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
-  timeout: 60_000,
+  timeout: 60_000, // großzügiger Deckel für Dev-Server-Cold-Start beim ersten Lauf
   reporter: [["list"], ["html", { open: "never" }]],
   use: {
     baseURL,

@@ -11,7 +11,7 @@ test.describe("auth redirect (Risk #5)", () => {
 
     test("redirects /dashboard to sign-in", async ({ page }) => {
       await page.goto("/dashboard");
-      await expect(page).toHaveURL(/\/auth\/signin/);
+      await expect(page).toHaveURL(/\/auth\/signin(\/|\?|$)/);
       await expect(page.getByRole("heading", { name: "Sign in" })).toBeVisible();
     });
   });
@@ -19,7 +19,7 @@ test.describe("auth redirect (Risk #5)", () => {
   // Test B — mit Session (storageState aus dem chromium-Projekt): kein Redirect.
   test("authenticated user reaches /dashboard", async ({ page }) => {
     await page.goto("/dashboard");
-    await expect(page).toHaveURL(/\/dashboard/);
+    await expect(page).toHaveURL(/\/dashboard(\/|\?|$)/);
     await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
   });
 });

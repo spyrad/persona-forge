@@ -32,6 +32,11 @@ Achse liefert. PRD: `context/foundation/prd.md`.
 - Lokale TLS-Interception: npm-Downloads in postinstall-Scripts brauchen
   `NODE_OPTIONS=--use-system-ca` (sonst `UNABLE_TO_VERIFY_LEAF_SIGNATURE`).
 - Supabase RLS frueh konfigurieren, sonst entstehen Auth-Luecken.
+- E2E (Playwright) nutzt einen **E2E-gated Node-Adapter** (`@astrojs/node`, nur aktiv
+  wenn `process.env.E2E` gesetzt ist — gesetzt via `playwright.config.ts` webServer.env).
+  Er ist an Astro 6 gepinnt (`^10.1.4`); bei einem Astro-Major-Upgrade in lockstep auf
+  `@11` bumpen, sonst bricht `npm run test:e2e`. Normaler `npm run dev`/`npm run build`
+  nutzt weiter den Cloudflare-Adapter. Zweck: E2E fasst die Prod-`.dev.vars`/`.env` nie an.
 
 ## Tech Stack
 
