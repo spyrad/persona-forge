@@ -69,7 +69,7 @@
     "vite": "^7.3.2"
   },
   "lint-staged": {
-    "*.{ts,tsx,astro}": [
+    "*.{ts,tsx,astro,mjs}": [
       "eslint --fix"
     ],
     "*.{json,css,md}": [
