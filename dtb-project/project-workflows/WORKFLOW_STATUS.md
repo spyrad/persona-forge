@@ -7,11 +7,11 @@
 
 ## Aktueller Stand
 
-| Kennzahl              | Wert                                                                                                                                                                                                                                                                                                               |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Laufende Arbeit**   | **Keine offene Implementierung.** Test-Rollout KOMPLETT (alle 3 Phasen). Phase 3 (`testing-quality-gates-wiring`) implementiert + archiviert; der `integration`-CI-Blocker ist GELÖST (PR #1 → merge `b6c7589`). `main` lokal = remote = `b6c7589` + lokale Doc-Commits (`bb18dee` Archiv, Status) noch ungepusht. |
-| **Naechster Schritt** | **Test-Rollout abgeschlossen** — kein aktives Feature. Neues Feature via `/dtb:feature-start`, oder Backlog-Ideen (`BACKLOG.md`: Cross-Device E-Mail-Confirm, Custom SMTP). Vorher: lokale Doc-Commits auf `main` pushen (= Prod-Deploy).                                                                          |
-| **Blocker**           | Keine. (Integration-Tests brauchen lokales Docker-Supabase: `npx supabase start` + `.env.test`.)                                                                                                                                                                                                                   |
+| Kennzahl              | Wert                                                                                                                                                                                                                                                                                      |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Laufende Arbeit**   | **Keine offene Implementierung.** Test-Rollout KOMPLETT (alle 3 Phasen). Phase 3 (`testing-quality-gates-wiring`) implementiert + archiviert; der `integration`-CI-Blocker ist GELÖST (PR #1 → merge `b6c7589`). `main` lokal = remote = `08b74cc`, working tree clean, Prod-Deploy grün. |
+| **Naechster Schritt** | **Test-Rollout abgeschlossen** — kein aktives Feature. Neues Feature via `/dtb:feature-start`, oder Backlog-Ideen (`BACKLOG.md`: Cross-Device E-Mail-Confirm, Custom SMTP).                                                                                                               |
+| **Blocker**           | Keine. (Integration-Tests brauchen lokales Docker-Supabase: `npx supabase start` + `.env.test`.)                                                                                                                                                                                          |
 
 ---
 
