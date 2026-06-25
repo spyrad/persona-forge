@@ -69,8 +69,10 @@ persona-forge/
 - `npm run test:integration` — Integration-Tests (Vitest, `src/**/*.itest.ts`)
   gegen lokales Supabase: `npx supabase start` (Docker) + `.env.test` aus
   `npx supabase status` befüllen (siehe `.env.test.example`). Setup verweigert
-  Nicht-lokale `SUPABASE_URL` (Safety-Guard). Noch KEIN CI-Gate (test-plan §3
-  Phase 3). `test_command` in `workflow.config.yaml` ist `npm run test`.
+  Nicht-lokale `SUPABASE_URL` (Safety-Guard). CI-Gate seit test-plan §3 Phase 3
+  AKTIV: eigener `integration`-Job (slim Service-Set), `deploy` braucht `ci` +
+  `integration`, plus Branch-Protection Required Checks. `test_command` in
+  `workflow.config.yaml` ist `npm run test`.
 
 ## Architecture Overview
 
