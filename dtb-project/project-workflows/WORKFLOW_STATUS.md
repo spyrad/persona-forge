@@ -17,9 +17,8 @@
 
 ## Offene Aufgaben
 
-- [x] ~~**Rollout-Phase 3** (CI-Test-Gate)~~ — erledigt + archiviert; `integration`-Blocker gelöst (2026-06-25).
-- [ ] **Lokale Doc-Commits pushen** — `bb18dee` (Archiv) + Status-Update auf `main` (= Prod-Deploy, braucht User-`!`).
-- [ ] **Stale Root-`WORKFLOW_STATUS.md` (06-13) auflösen** — canonical ist diese Datei; das Duplikat hat einen früheren Resume fehlgeleitet.
+- [ ] **OEJTS-Items als gemeinfreie Quelle fixieren/dokumentieren** — Owner: Damian. Der frühere „blockt S-04/S-05/S-06/S-08"-Teil ist obsolet (alle live); offen bleibt die Quellen-/Lizenz-Dokumentation. (Aus Root-Status übernommen 2026-06-25.)
+- [ ] **Repo-Description + Topics auf GitHub setzen** — manueller Schritt. (Aus Root-Status übernommen 2026-06-25.)
 
 ---
 
