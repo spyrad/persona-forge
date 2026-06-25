@@ -1,7 +1,7 @@
 ---
 change_id: sentry-monitoring
 title: Sentry-Produktions-Monitoring (Astro 6 + Cloudflare Workers)
-status: implementing
+status: implemented
 created: 2026-06-25
 updated: 2026-06-25
 archived_at: null

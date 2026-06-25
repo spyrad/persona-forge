@@ -391,7 +391,7 @@ neu deployen.
 #### Automated
 
 - [x] 3.1 Vor Revert: Deploy mit Trigger grün (`ci`+`integration`+`deploy`) — 9bb4b66
-- [x] 3.2 Nach Revert: `npm run build` + `npm run lint` grün; Endpoint-Datei entfernt
+- [x] 3.2 Nach Revert: `npm run build` + `npm run lint` grün; Endpoint-Datei entfernt — 18f853f
 
 #### Manual
 
@@ -399,4 +399,4 @@ neu deployen.
 - [x] 3.4 Stack-Trace ist source-gemappt (echte Datei/Zeile) — 9bb4b66
 - [x] 3.5 `console.error` erscheint als Issue (captureConsoleIntegration bestätigt) — 9bb4b66
 - [x] 3.6 Issue enthält keine PII (Cookies/Header/User/Keys) — 9bb4b66 (SDK-seitig; IP via Sentry-Server-Inferenz, optional via Projekt-Toggle scrubben)
-- [ ] 3.7 Nach Revert: `_debug-sentry`-Endpoint in Prod 404; Ergebnis im Changelog dokumentiert
+- [x] 3.7 Nach Revert: `_debug-sentry`-Endpoint in Prod 404; Ergebnis im Changelog dokumentiert — 18f853f
