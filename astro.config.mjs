@@ -9,20 +9,23 @@ import cloudflare from "@astrojs/cloudflare";
 import node from "@astrojs/node";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 
-// Source-Map-Upload nur, wenn ein Auth-Token gesetzt ist (CI/Build-Zeit). Lokal
-// und unter E2E ist der Token nicht gesetzt → Plugin wird NICHT eingehängt, der
-// Build bleibt unberührt. EU-Region: SENTRY_URL default https://de.sentry.io/.
-const sentrySourceMaps = process.env.SENTRY_AUTH_TOKEN
-  ? [
-      sentryVitePlugin({
-        org: process.env.SENTRY_ORG,
-        project: process.env.SENTRY_PROJECT,
-        authToken: process.env.SENTRY_AUTH_TOKEN,
-        url: process.env.SENTRY_URL ?? "https://de.sentry.io/",
-        telemetry: false,
-      }),
-    ]
-  : [];
+// Source-Map-Upload nur, wenn Auth-Token, Org UND Projekt alle gesetzt sind
+// (CI-Deploy-Build). Lokal und unter E2E ist nichts davon gesetzt → Plugin wird
+// NICHT eingehängt, der Build bleibt unberührt. Fehlt eines der drei (Halb-
+// Konfiguration), bleibt der Build ebenfalls heil. EU-Region: SENTRY_URL default
+// https://de.sentry.io/.
+const sentrySourceMaps =
+  process.env.SENTRY_AUTH_TOKEN && process.env.SENTRY_ORG && process.env.SENTRY_PROJECT
+    ? [
+        sentryVitePlugin({
+          org: process.env.SENTRY_ORG,
+          project: process.env.SENTRY_PROJECT,
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+          url: process.env.SENTRY_URL ?? "https://de.sentry.io/",
+          telemetry: false,
+        }),
+      ]
+    : [];
 
 // https://astro.build/config
 export default defineConfig({

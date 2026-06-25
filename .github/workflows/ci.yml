@@ -65,13 +65,23 @@ jobs:
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          # Source-Map-Upload NUR im Deploy-Build (nicht im ci-Check-Build oben).
+          # Der @sentry/vite-plugin aktiviert sich nur, wenn AUTH_TOKEN+ORG+PROJECT
+          # alle gesetzt sind; fehlt eines, bleibt der Build unberührt.
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
       - uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          # SENTRY_DSN als Laufzeit-Worker-Secret synchronisieren (withSentry liest es
+          # per Request aus env.SENTRY_DSN). GitHub-Secrets = Single Source of Truth.
           secrets: |
             SUPABASE_URL
             SUPABASE_KEY
+            SENTRY_DSN
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SENTRY_DSN: ${{ secrets.SENTRY_DSN }}

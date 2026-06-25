@@ -362,23 +362,23 @@ neu deployen.
 
 #### Automated
 
-- [x] 1.1 Typecheck/Build passt: `npx astro sync && npm run build`
-- [x] 1.2 Linting passt: `npm run lint`
-- [x] 1.3 Unit-Tests grün: `npm run test`
-- [x] 1.4 E2E-Build/-Lauf unberührt: `npm run test:e2e`
+- [x] 1.1 Typecheck/Build passt: `npx astro sync && npm run build` — 055a155
+- [x] 1.2 Linting passt: `npm run lint` — 055a155
+- [x] 1.3 Unit-Tests grün: `npm run test` — 055a155
+- [x] 1.4 E2E-Build/-Lauf unberührt: `npm run test:e2e` — 055a155
 
 #### Manual
 
-- [x] 1.5 `astro dev` startet ohne Sentry-Fehler; App ohne DSN funktional (no-op)
-- [x] 1.6 Kein zusätzliches Client-JS in den Islands (Network-Tab)
-- [x] 1.7 Worker-Bundle baut mit `main = ./sentry.server.config.ts` ohne Bundling-Fehler
+- [x] 1.5 `astro dev` startet ohne Sentry-Fehler; App ohne DSN funktional (no-op) — 055a155
+- [x] 1.6 Kein zusätzliches Client-JS in den Islands (Network-Tab) — 055a155
+- [x] 1.7 Worker-Bundle baut mit `main = ./sentry.server.config.ts` ohne Bundling-Fehler — 055a155
 
 ### Phase 2: Secret-Sync (CI/Prod)
 
 #### Automated
 
 - [ ] 2.1 CI-Lauf grün: `ci` + `integration` + `deploy` (REST-API-Check)
-- [ ] 2.2 `build`-Step bricht nicht, wenn `SENTRY_AUTH_TOKEN` fehlt
+- [x] 2.2 `build`-Step bricht nicht, wenn `SENTRY_AUTH_TOKEN` fehlt
 
 #### Manual
 
