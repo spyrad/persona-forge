@@ -5,6 +5,7 @@ import react from "@astrojs/react";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import cloudflare from "@astrojs/cloudflare";
+import node from "@astrojs/node";
 
 // https://astro.build/config
 export default defineConfig({
@@ -13,7 +14,10 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
   },
-  adapter: cloudflare(),
+  // E2E-gated: unter E2E läuft der Node-Adapter (Standalone), damit der
+  // Cloudflare-Adapter NICHT startet und process.env nicht aus .dev.vars
+  // überschreibt. Normales dev/build (ohne E2E) nutzt weiter Cloudflare.
+  adapter: process.env.E2E ? node({ mode: "standalone" }) : cloudflare(),
   env: {
     schema: {
       SUPABASE_URL: envField.string({ context: "server", access: "secret", optional: true }),

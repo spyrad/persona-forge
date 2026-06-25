@@ -20,7 +20,10 @@ if (existsSync(envPath)) {
   }
 }
 
-const PORT = 4321;
+// Port 4329 (distinkt vom normalen Dev-Server 4321): verhindert, dass
+// reuseExistingServer einen laufenden Prod-Dev-Server (Cloudflare-Adapter)
+// wiederverwendet.
+const PORT = 4329;
 const baseURL = `http://localhost:${PORT}`;
 
 export default defineConfig({
@@ -49,6 +52,10 @@ export default defineConfig({
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
     env: {
+      // E2E → astro.config.mjs schaltet auf den Node-Adapter (kein Cloudflare,
+      // kein .dev.vars-Override). astro:env/server liest SUPABASE_URL/KEY direkt
+      // aus process.env (diesem env-Block).
+      E2E: "1",
       SUPABASE_URL: process.env.SUPABASE_URL ?? "",
       SUPABASE_KEY: process.env.SUPABASE_KEY ?? "",
     },

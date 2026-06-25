@@ -14,7 +14,7 @@
     "test:watch": "vitest",
     "test:integration": "vitest run --config vitest.integration.config.ts",
     "test:integration:watch": "vitest --config vitest.integration.config.ts",
-    "test:e2e": "node scripts/e2e-runner.mjs",
+    "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "prepare": "husky"
   },
@@ -42,6 +42,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@astrojs/node": "^10.1.4",
     "@eslint/compat": "^2.0.3",
     "@eslint/js": "^9.29.0",
     "@playwright/test": "^1.61.1",
