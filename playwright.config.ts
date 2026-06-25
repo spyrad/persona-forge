@@ -46,9 +46,13 @@ export default defineConfig({
     },
   ],
   webServer: {
-    // --mode e2e → Astro lädt .env.e2e nativ für astro:env/server.
+    // E2E-Isolation (drei Schichten, alle nötig — der User hat .dev.vars UND .env auf Prod):
+    // 1) env.E2E=1 (unten) schaltet astro.config auf den Node-Adapter → der cloudflare-Adapter
+    //    liest NIE die Prod-.dev.vars. 2) --mode e2e lässt Astro .env.e2e (lokal) laden und die
+    //    Prod-.env überschreiben. 3) env (unten) setzt lokale SUPABASE_URL/KEY in process.env (astro:env/server).
     command: `npm run dev -- --port ${PORT} --mode e2e`,
     url: baseURL,
+    // Port 4329 ≠ normaler Dev-Port 4321 → reused nie einen laufenden (cloudflare/prod) Dev-Server.
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
     env: {
