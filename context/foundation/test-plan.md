@@ -170,6 +170,11 @@ the relevant rollout phase ships; before that, the sub-section reads
 - **When to revisit**: an Astro or `@supabase/ssr` major upgrade, or a page gaining
   interactive, data-dependent auth behavior. Then add a light Playwright smoke driving
   the middleware redirect + cookie lifecycle (not the RLS logic, which integration owns).
+- **Lern-Smoke existiert seit 2026-06-25 (s03e04, NICHT gate-relevant):** Unter
+  `tests/e2e/` liegt eine minimale Playwright-Schicht (Seed + `auth-redirect.spec.ts`),
+  die genau den Risk-#5-Browser-Pfad (Middleware-302 + Cookie-Roundtrip) demonstriert.
+  Sie ist bewusst KEIN Deploy-Gate — die Cost×Signal-Defer-Entscheidung oben bleibt
+  gültig. Setup/Run: siehe `tests/e2e/README.md`.
 
 ### 6.4 Adding a test for a new API endpoint
 
