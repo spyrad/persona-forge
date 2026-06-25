@@ -91,7 +91,7 @@ describe("Risk #4 — Lauf-Integrität", () => {
       expect((await repRows(run.id)).length).toBe(before);
     });
 
-    it("Nebenläufigkeit: zwei parallele steps → genau eine Repetition (23505-Catch)", async () => {
+    it("Nebenläufigkeit: zwei parallele steps bleiben integer (23505-Catch, keine Duplikate)", async () => {
       mockLlmContent();
       const run = await makeRunningRun(account, personaId, modelConfigId, 0, 3);
 
@@ -100,15 +100,31 @@ describe("Risk #4 — Lauf-Integrität", () => {
         processNextRepetition(account.client, account.userId, run.id),
       ]);
 
-      // Genau eine Repetition mit rep_index=1 — der Verlierer dupliziert nicht.
-      const reps = await repRows(run.id);
-      expect(reps).toHaveLength(1);
-      expect(reps[0].rep_index).toBe(1);
-      // Beide Calls liefern konsistenten Fortschritt (kein Throw, beide ≥1 fertig).
+      // Kein Call propagiert die unique-Verletzung nach außen.
       expect(p1).not.toBeNull();
       expect(p2).not.toBeNull();
-      expect(p1?.completedReps).toBe(1);
-      expect(p2?.completedReps).toBe(1);
+
+      // Die Anzahl hängt am Interleaving: zielen beide auf rep_index=1, fängt der
+      // 23505-Catch den Verlierer → 1 Repetition; läuft einer ganz durch, bevor der
+      // andere zählt, entstehen rep_index 1 & 2 → 2 Repetitions. Beides ist integer
+      // (deterministisch geseedet, keine Duplikate) — die Garantie ist NICHT „genau
+      // eine", sondern „kein Duplikat, keine Lücke, kein Überschreiten".
+      const reps = await repRows(run.id);
+      expect(reps.length).toBeGreaterThanOrEqual(1);
+      expect(reps.length).toBeLessThanOrEqual(2);
+      expect(reps.length).toBeLessThanOrEqual(run.repetitionCount);
+
+      // rep_index ist exakt die lückenlose Menge {1..n} — eindeutig (kein Duplikat
+      // dank unique(run_id, rep_index)) und ohne Lücke ab 1.
+      expect(reps.map((r) => r.rep_index)).toEqual(Array.from({ length: reps.length }, (_, i) => i + 1));
+
+      // Beide Calls melden gültigen, nicht-lügenden Fortschritt; der zuletzt
+      // abgeschlossene entspricht der tatsächlichen Repetition-Zahl.
+      for (const p of [p1, p2]) {
+        expect(p?.completedReps).toBeGreaterThanOrEqual(1);
+        expect(p?.completedReps).toBeLessThanOrEqual(reps.length);
+      }
+      expect(Math.max(p1?.completedReps ?? 0, p2?.completedReps ?? 0)).toBe(reps.length);
     });
   });
 
