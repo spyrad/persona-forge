@@ -40,7 +40,7 @@
 
 ## Gotchas (Referenz)
 
-- **Integration-Tests:** `npm run test:integration` braucht `npx supabase start` (Docker) + `.env.test` (aus `npx supabase status`; siehe `.env.test.example`). Safety-Guard (Host-Parse) verweigert nicht-lokale `SUPABASE_URL`. Noch KEIN CI-Gate (Phase 3).
+- **Integration-Tests:** `npm run test:integration` braucht `npx supabase start` (Docker) + `.env.test` (aus `npx supabase status`; siehe `.env.test.example`). Safety-Guard (Host-Parse) verweigert nicht-lokale `SUPABASE_URL`. **CI-Gate seit Phase 3 aktiv** — eigener `integration`-Job (slim Service-Set) + `deploy: needs: [ci, integration]` + Branch-Protection Required Checks.
 - **Integration-Harness:** Code in `src/test/integration/`. Zwei-Account-Fixture (`accounts.ts`), Domänen-Builder + Run-Builder (`fixtures.ts`: `makeCompletedRun`/`makePendingRun`/`makeRunningRun`/`makeFailedRun`), In-Process-Route-Aufrufe (`route-context.ts`: `makeApiContext`, **`authedCookieHeader`** für auth-gated Handler).
 - **LLM-Mock (`llm-mock.ts`):** `vi.stubGlobal("fetch")` trifft AUCH supabase-js — der Mock reicht lokale Calls (Host `127.0.0.1`/`localhost`) durch, mockt nur die Outbound-Kante. IMMER `restoreLlm()` in `afterEach`.
 - **SSRF-Guard an 2 Sites:** test-connection (Route) + `chatCompletion` (Run-Step), kein gemeinsamer Wrapper; im Run-Step wirft er VOR dem fetch (dort kein Mock nötig).
