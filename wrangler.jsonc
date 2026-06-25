@@ -1,7 +1,10 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "persona-forge",
-  "main": "@astrojs/cloudflare/entrypoints/server",
+  // Sentry-Worker-Entry (umschließt den Adapter-Entrypoint mit withSentry).
+  // Siehe sentry.server.config.ts. Rollback: zurück auf
+  // "@astrojs/cloudflare/entrypoints/server".
+  "main": "./sentry.server.config.ts",
   "compatibility_date": "2026-05-08",
   "compatibility_flags": ["nodejs_compat"],
   "assets": {

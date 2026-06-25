@@ -4,3 +4,7 @@
 # NIEMALS den service_role/Secret-Key verwenden (hebelt RLS aus).
 SUPABASE_URL=###
 SUPABASE_KEY=###
+
+# SENTRY_DSN = Sentry-Projekt-DSN (EU). Leer lassen = no-op. Greift ohnehin nur im
+# deployten Worker (withSentry am Worker-Entry); lokaler Dev nutzt es praktisch nicht.
+SENTRY_DSN=
