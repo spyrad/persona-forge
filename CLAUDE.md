@@ -37,6 +37,10 @@ Achse liefert. PRD: `context/foundation/prd.md`.
   Er ist an Astro 6 gepinnt (`^10.1.4`); bei einem Astro-Major-Upgrade in lockstep auf
   `@11` bumpen, sonst bricht `npm run test:e2e`. Normaler `npm run dev`/`npm run build`
   nutzt weiter den Cloudflare-Adapter. Zweck: E2E fasst die Prod-`.dev.vars`/`.env` nie an.
+- Sentry-Worker-Entry (`sentry.server.config.ts`, von `wrangler.jsonc` `main`) importiert
+  den **internen** Adapter-Pfad `@astrojs/cloudflare/entrypoints/server`. Heute korrekt,
+  ist aber kein offizielles API; bei einem `@astrojs/cloudflare`-Major-Bump in lockstep
+  verifizieren/anpassen (analog zum `@astrojs/node`-Pin oben), sonst bricht der Deploy.
 
 ## Tech Stack
 
