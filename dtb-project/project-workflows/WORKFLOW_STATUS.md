@@ -1,6 +1,6 @@
 # Workflow-Status: persona-forge
 
-**Letztes Update:** 2026-06-26 (Session 1)
+**Letztes Update:** 2026-06-26 (Session 2)
 **Letzter Session-Log:** `dtb-project/project-changelog/2026-06/2026-06-26.md`
 
 ---
@@ -10,8 +10,8 @@
 | Kennzahl              | Wert                                                                                                                                                                                |
 | --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Laufende Arbeit**   | Kein aktiver Change. `sentry-monitoring` **vollständig geschlossen** (implementiert → reviewt APPROVED → Triage → live → **archiviert**). Sentry-IP-Storage-Toggle (3.6) aktiviert. |
-| **Naechster Schritt** | Kein aktives Feature. Neues via `/dtb:feature-start` oder Backlog-Ideen. Archiv-Commit `66a36f0` ist lokal (`ahead 1`) — optional pushen.                                           |
-| **Blocker**           | Keine. (Archiv-Commit `66a36f0` lokal — `ahead 1` — noch nicht gepusht; ändert nur Doku-Pfade.)                                                                                     |
+| **Naechster Schritt** | Kein aktives Feature. Neues via `/dtb:feature-start` oder Backlog-Ideen (Cross-Device E-Mail-Confirm, Custom SMTP).                                                                 |
+| **Blocker**           | Keine. `origin/main = b085a1c`, lokal = remote, CI grün, working tree clean.                                                                                                        |
 
 ---
 
