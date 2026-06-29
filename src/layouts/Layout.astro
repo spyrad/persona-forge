@@ -7,7 +7,7 @@ interface Props {
   title?: string;
 }
 
-const { title = "10x Astro Starter" } = Astro.props;
+const { title = "persona-forge" } = Astro.props;
 ---
 
 <!doctype html>
@@ -17,6 +17,14 @@ const { title = "10x Astro Starter" } = Astro.props;
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <title>{title}</title>
+    <script is:inline>
+      // No-Flash: Theme synchron vor dem Render setzen (vor <body>), damit kein
+      // weisser Blitz beim Dark-Reload entsteht. Quelle: localStorage.theme,
+      // Fallback prefers-color-scheme.
+      const t = localStorage.getItem("theme");
+      const dark = t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+      document.documentElement.classList.toggle("dark", dark);
+    </script>
   </head>
   <body>
     {
