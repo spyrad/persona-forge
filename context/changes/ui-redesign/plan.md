@@ -470,15 +470,15 @@ Standard-Mapping-Tabelle (konsistent über alle Phasen anwenden):
 
 #### Automated
 
-- [x] 6.1 Grep nach Farb-Literalen über `src/` leer
-- [x] 6.2 `npm run build` erfolgreich
-- [x] 6.3 `npm run test` grün
+- [x] 6.1 Grep nach Farb-Literalen über `src/` leer — d5122cd
+- [x] 6.2 `npm run build` erfolgreich — d5122cd
+- [x] 6.3 `npm run test` grün — d5122cd
 - [x] 6.4 `npm run test:integration` grün — CI-gated (Docker lokal n/a; via Push-Run)
 - [x] 6.5 `npm run test:e2e` grün — CI-gated (Docker lokal n/a; via Push-Run)
-- [x] 6.6 `npm run lint` sauber
+- [x] 6.6 `npm run lint` sauber — d5122cd
 
 #### Manual
 
-- [x] 6.7 Alle Sichten in Hell und Dunkel durchgeklickt, konsistent
-- [x] 6.8 Theme-Wahl persistiert über Reloads/Seitenwechsel
-- [x] 6.9 Keine funktionalen Regressionen
+- [x] 6.7 Alle Sichten in Hell und Dunkel durchgeklickt, konsistent — d5122cd
+- [x] 6.8 Theme-Wahl persistiert über Reloads/Seitenwechsel — d5122cd
+- [x] 6.9 Keine funktionalen Regressionen — d5122cd
