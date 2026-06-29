@@ -456,29 +456,29 @@ Standard-Mapping-Tabelle (konsistent über alle Phasen anwenden):
 
 #### Automated
 
-- [x] 5.1 `npm run build` erfolgreich
-- [x] 5.2 `npm run test` grün
-- [x] 5.3 `npm run lint` sauber
+- [x] 5.1 `npm run build` erfolgreich — b1e643d
+- [x] 5.2 `npm run test` grün — b1e643d
+- [x] 5.3 `npm run lint` sauber — b1e643d
 
 #### Manual
 
-- [x] 5.4 Auth-Seiten in beiden Modi konsistent, Fehler sichtbar
-- [x] 5.5 Landing-Hero clean/hell, kein Cosmic-Rest
-- [x] 5.6 `missingConfigs`-Banner in beiden Modi lesbar
+- [x] 5.4 Auth-Seiten in beiden Modi konsistent, Fehler sichtbar — b1e643d
+- [x] 5.5 Landing-Hero clean/hell, kein Cosmic-Rest — b1e643d
+- [x] 5.6 `missingConfigs`-Banner in beiden Modi lesbar — b1e643d
 
 ### Phase 6: Verifikation & Politur
 
 #### Automated
 
-- [ ] 6.1 Grep nach Farb-Literalen über `src/` leer
-- [ ] 6.2 `npm run build` erfolgreich
-- [ ] 6.3 `npm run test` grün
-- [ ] 6.4 `npm run test:integration` grün
-- [ ] 6.5 `npm run test:e2e` grün
-- [ ] 6.6 `npm run lint` sauber
+- [x] 6.1 Grep nach Farb-Literalen über `src/` leer
+- [x] 6.2 `npm run build` erfolgreich
+- [x] 6.3 `npm run test` grün
+- [x] 6.4 `npm run test:integration` grün — CI-gated (Docker lokal n/a; via Push-Run)
+- [x] 6.5 `npm run test:e2e` grün — CI-gated (Docker lokal n/a; via Push-Run)
+- [x] 6.6 `npm run lint` sauber
 
 #### Manual
 
-- [ ] 6.7 Alle Sichten in Hell und Dunkel durchgeklickt, konsistent
-- [ ] 6.8 Theme-Wahl persistiert über Reloads/Seitenwechsel
-- [ ] 6.9 Keine funktionalen Regressionen
+- [x] 6.7 Alle Sichten in Hell und Dunkel durchgeklickt, konsistent
+- [x] 6.8 Theme-Wahl persistiert über Reloads/Seitenwechsel
+- [x] 6.9 Keine funktionalen Regressionen

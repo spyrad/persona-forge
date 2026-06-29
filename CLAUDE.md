@@ -108,6 +108,14 @@ GitHub Actions (live, Secrets-Sync siehe Gotchas).
   konkatenieren
 - shadcn/ui in `src/components/ui/` (Variante "new-york"); neue Komponenten via
   `npx shadcn@latest add [name]`
+- UI-Farben **nur** über semantische Tokens (`bg-background`/`bg-card`/`bg-muted`,
+  `text-foreground`/`text-muted-foreground`, `border-border`, `text-primary` =
+  Teal-Akzent, `text-destructive`, `text-success`; Charts: `--chart-1` Teal /
+  `--chart-2` Amber) — **keine** Farb-Literale (`text-white`, `bg-white/10`,
+  `*-blue-*`, Gradient-Headlines, `bg-cosmic`). Tokens leben in
+  `src/styles/global.css` (`:root`/`.dark` + `@theme inline`). Dark Mode via
+  `.dark` auf `<html>`: No-Flash-Inline-Script im `Layout.astro`-`<head>` +
+  `ThemeToggle`-Insel, persistiert in `localStorage.theme`.
 - API-Routes: uppercase `GET`/`POST`-Exports, Input mit zod validieren
 - Migrationen: `supabase/migrations/YYYYMMDDHHmmss_kurzbeschreibung.sql`; auf
   jeder neuen Tabelle RLS aktivieren mit granularen Policies je Operation+Rolle
