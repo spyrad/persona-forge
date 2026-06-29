@@ -443,28 +443,28 @@ Standard-Mapping-Tabelle (konsistent über alle Phasen anwenden):
 
 #### Automated
 
-- [x] 4.1 `npm run build` erfolgreich
-- [x] 4.2 `npm run test` grün
+- [x] 4.1 `npm run build` erfolgreich — cd57918
+- [x] 4.2 `npm run test` grün — cd57918
 
 #### Manual
 
-- [x] 4.3 Einzel-Chart: Teal-Punkte + neutrale gestrichelte Cutoff-Linie
-- [x] 4.4 Vergleich: zwei trennbare Serien (Teal/Amber), Legende stimmt
-- [x] 4.5 Cutoff nicht mehr mit Serie B verwechselbar
+- [x] 4.3 Einzel-Chart: Teal-Punkte + neutrale gestrichelte Cutoff-Linie — cd57918
+- [x] 4.4 Vergleich: zwei trennbare Serien (Teal/Amber), Legende stimmt — cd57918
+- [x] 4.5 Cutoff nicht mehr mit Serie B verwechselbar — cd57918
 
 ### Phase 5: Auth + Landing
 
 #### Automated
 
-- [ ] 5.1 `npm run build` erfolgreich
-- [ ] 5.2 `npm run test` grün
-- [ ] 5.3 `npm run lint` sauber
+- [x] 5.1 `npm run build` erfolgreich
+- [x] 5.2 `npm run test` grün
+- [x] 5.3 `npm run lint` sauber
 
 #### Manual
 
-- [ ] 5.4 Auth-Seiten in beiden Modi konsistent, Fehler sichtbar
-- [ ] 5.5 Landing-Hero clean/hell, kein Cosmic-Rest
-- [ ] 5.6 `missingConfigs`-Banner in beiden Modi lesbar
+- [x] 5.4 Auth-Seiten in beiden Modi konsistent, Fehler sichtbar
+- [x] 5.5 Landing-Hero clean/hell, kein Cosmic-Rest
+- [x] 5.6 `missingConfigs`-Banner in beiden Modi lesbar
 
 ### Phase 6: Verifikation & Politur
 
