@@ -8,10 +8,10 @@ interface ColorScheme {
   text: string;
 }
 
-// Farbzuordnung: Lauf A = purple (wie Einzelansicht), Lauf B = cyan (Kontrast,
-// kollidiert nicht mit der amberfarbenen Cutoff-Linie).
-const A: ColorScheme = { dot: "bg-purple-400", mean: "border-purple-300", text: "text-purple-200" };
-const B: ColorScheme = { dot: "bg-cyan-300", mean: "border-cyan-200", text: "text-cyan-200" };
+// Farbzuordnung: Lauf A = Teal (chart-1, wie Einzelansicht), Lauf B = Amber
+// (chart-2, Kontrast). Die Cutoff-Linie ist neutral/gestrichelt — keine Kollision.
+const A: ColorScheme = { dot: "bg-chart-1", mean: "border-chart-1", text: "text-chart-1" };
+const B: ColorScheme = { dot: "bg-chart-2", mean: "border-chart-2", text: "text-chart-2" };
 
 /** Mittelwert-Delta mit explizitem Vorzeichen, oder „—" wenn eine Seite leer ist. */
 function deltaLabel(a: number | null, b: number | null): string {

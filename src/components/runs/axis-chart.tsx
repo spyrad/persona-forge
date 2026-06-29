@@ -57,13 +57,13 @@ export function AxisChart({ scale, low, high, series }: Props) {
 
   return (
     <div>
-      <div className="relative h-20 rounded-lg border border-white/10 bg-white/5">
+      <div className="border-border bg-muted/30 relative h-20 rounded-lg border">
         {/* Cutoff-Linie */}
         <div
-          className="absolute inset-y-0 border-l border-dashed border-amber-300/50"
+          className="border-muted-foreground/40 absolute inset-y-0 border-l border-dashed"
           style={{ left: `${String(cutoffPct)}%` }}
         >
-          <span className="absolute -top-px left-1 text-[10px] text-amber-200/70">{scale.cutoff}</span>
+          <span className="text-muted-foreground absolute -top-px left-1 text-[10px]">{scale.cutoff}</span>
         </div>
 
         {series.map((s, si) => {
@@ -124,13 +124,13 @@ export function AxisChart({ scale, low, high, series }: Props) {
       </div>
 
       {/* Pol-Beschriftung + Skalen-Endpunkte */}
-      <div className="mt-1 flex items-center justify-between text-xs text-blue-100/60">
+      <div className="text-muted-foreground mt-1 flex items-center justify-between text-xs">
         <span>
-          {low} <span className="text-blue-100/40">({scale.min})</span>
+          {low} <span className="text-muted-foreground">({scale.min})</span>
         </span>
-        <span className="text-blue-100/40">Cutoff {scale.cutoff}</span>
+        <span className="text-muted-foreground">Cutoff {scale.cutoff}</span>
         <span>
-          <span className="text-blue-100/40">({scale.max})</span> {high}
+          <span className="text-muted-foreground">({scale.max})</span> {high}
         </span>
       </div>
       {/* overallMaxStack normiert die Säulenhöhe (s. o.) und wird hier für AT ausgewiesen. */}

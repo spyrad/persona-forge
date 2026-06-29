@@ -30,9 +30,7 @@ function AxisCard({ axis }: { axis: AxisDistribution }) {
             scale={axis.scale}
             low={axis.low}
             high={axis.high}
-            series={[
-              { scores: axis.scores, mean: axis.mean, dotClass: "bg-purple-400", meanClass: "border-purple-300" },
-            ]}
+            series={[{ scores: axis.scores, mean: axis.mean, dotClass: "bg-chart-1", meanClass: "border-chart-1" }]}
           />
 
           <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">

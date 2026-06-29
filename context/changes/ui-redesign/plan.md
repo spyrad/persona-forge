@@ -429,28 +429,28 @@ Standard-Mapping-Tabelle (konsistent über alle Phasen anwenden):
 
 #### Automated
 
-- [x] 3.1 `npm run build` erfolgreich
-- [x] 3.2 `npm run test` grün
-- [x] 3.3 `npm run lint` sauber
+- [x] 3.1 `npm run build` erfolgreich — ce6845e
+- [x] 3.2 `npm run test` grün — ce6845e
+- [x] 3.3 `npm run lint` sauber — ce6845e
 
 #### Manual
 
-- [x] 3.4 Fünf Sichten in beiden Modi ohne Alt-Look-Reste
-- [x] 3.5 RunRunner funktional unverändert, Zustände klar
-- [x] 3.6 Personas-Suche/-Auswahl + Model-CRUD konsistent/bedienbar
+- [x] 3.4 Fünf Sichten in beiden Modi ohne Alt-Look-Reste — ce6845e
+- [x] 3.5 RunRunner funktional unverändert, Zustände klar — ce6845e
+- [x] 3.6 Personas-Suche/-Auswahl + Model-CRUD konsistent/bedienbar — ce6845e
 
 ### Phase 4: Charts auf Tokens
 
 #### Automated
 
-- [ ] 4.1 `npm run build` erfolgreich
-- [ ] 4.2 `npm run test` grün
+- [x] 4.1 `npm run build` erfolgreich
+- [x] 4.2 `npm run test` grün
 
 #### Manual
 
-- [ ] 4.3 Einzel-Chart: Teal-Punkte + neutrale gestrichelte Cutoff-Linie
-- [ ] 4.4 Vergleich: zwei trennbare Serien (Teal/Amber), Legende stimmt
-- [ ] 4.5 Cutoff nicht mehr mit Serie B verwechselbar
+- [x] 4.3 Einzel-Chart: Teal-Punkte + neutrale gestrichelte Cutoff-Linie
+- [x] 4.4 Vergleich: zwei trennbare Serien (Teal/Amber), Legende stimmt
+- [x] 4.5 Cutoff nicht mehr mit Serie B verwechselbar
 
 ### Phase 5: Auth + Landing
 
