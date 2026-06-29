@@ -415,29 +415,29 @@ Standard-Mapping-Tabelle (konsistent über alle Phasen anwenden):
 
 #### Automated
 
-- [x] 2.1 `npm run build` erfolgreich
-- [x] 2.2 `npm run lint` sauber
+- [x] 2.1 `npm run build` erfolgreich — 8b36859
+- [x] 2.2 `npm run lint` sauber — 8b36859
 
 #### Manual
 
-- [x] 2.3 Topbar auf allen Seiten; Logo → Dashboard
-- [x] 2.4 Theme-Toggle von jeder Seite aus funktional
-- [x] 2.5 Dashboard-Kacheln navigieren korrekt, stimmig in beiden Modi
-- [x] 2.6 Kein doppeltes „← Dashboard" mehr
+- [x] 2.3 Topbar auf allen Seiten; Logo → Dashboard — 8b36859
+- [x] 2.4 Theme-Toggle von jeder Seite aus funktional — 8b36859
+- [x] 2.5 Dashboard-Kacheln navigieren korrekt, stimmig in beiden Modi — 8b36859
+- [x] 2.6 Kein doppeltes „← Dashboard" mehr — 8b36859
 
 ### Phase 3: App-Sichten-Sweep
 
 #### Automated
 
-- [ ] 3.1 `npm run build` erfolgreich
-- [ ] 3.2 `npm run test` grün
-- [ ] 3.3 `npm run lint` sauber
+- [x] 3.1 `npm run build` erfolgreich
+- [x] 3.2 `npm run test` grün
+- [x] 3.3 `npm run lint` sauber
 
 #### Manual
 
-- [ ] 3.4 Fünf Sichten in beiden Modi ohne Alt-Look-Reste
-- [ ] 3.5 RunRunner funktional unverändert, Zustände klar
-- [ ] 3.6 Personas-Suche/-Auswahl + Model-CRUD konsistent/bedienbar
+- [x] 3.4 Fünf Sichten in beiden Modi ohne Alt-Look-Reste
+- [x] 3.5 RunRunner funktional unverändert, Zustände klar
+- [x] 3.6 Personas-Suche/-Auswahl + Model-CRUD konsistent/bedienbar
 
 ### Phase 4: Charts auf Tokens
 

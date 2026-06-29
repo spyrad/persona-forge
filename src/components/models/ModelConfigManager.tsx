@@ -215,11 +215,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
   return (
     <div className="space-y-8">
       {/* Formular */}
-      <form
-        onSubmit={handleSubmit}
-        noValidate
-        className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
-      >
+      <form onSubmit={handleSubmit} noValidate className="border-border bg-card space-y-4 rounded-2xl border p-6">
         <h2 className="flex items-center gap-2 text-lg font-semibold">
           {isEditing ? <Pencil className="size-4" /> : <Plus className="size-4" />}
           {isEditing ? "Konfiguration bearbeiten" : "Neue Konfiguration"}
@@ -277,8 +273,8 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
           <p
             className={
               testResult.ok
-                ? "flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-900/30 px-3 py-2 text-sm text-emerald-200"
-                : "flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-900/30 px-3 py-2 text-sm text-red-300"
+                ? "border-success/30 bg-success/10 text-success flex items-center gap-2 rounded-lg border px-3 py-2 text-sm"
+                : "border-destructive/30 bg-destructive/10 text-destructive flex items-center gap-2 rounded-lg border px-3 py-2 text-sm"
             }
           >
             <PlugZap className="size-4 shrink-0" />
@@ -287,7 +283,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
         ) : null}
 
         <div className="flex flex-wrap gap-2">
-          <Button type="submit" disabled={pending} className="bg-purple-600 text-white hover:bg-purple-500">
+          <Button type="submit" disabled={pending}>
             {isEditing ? <Save className="size-4" /> : <Plus className="size-4" />}
             {pending ? "Speichern…" : isEditing ? "Speichern" : "Anlegen"}
           </Button>
@@ -298,7 +294,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
             onClick={() => {
               void testConnection();
             }}
-            className="border-white/20 bg-white/5 text-white hover:bg-white/15"
+            className="border-border bg-muted text-foreground hover:bg-accent"
           >
             <PlugZap className="size-4" />
             {testing ? "Teste…" : "Verbindung testen"}
@@ -308,7 +304,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
               type="button"
               variant="ghost"
               onClick={resetForm}
-              className="text-blue-100/70 hover:bg-white/10 hover:text-white"
+              className="text-muted-foreground hover:bg-accent hover:text-foreground"
             >
               <X className="size-4" />
               Abbrechen
@@ -321,7 +317,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Deine Konfigurationen</h2>
         {configs.length === 0 ? (
-          <p className="rounded-2xl border border-white/10 bg-white/5 px-4 py-6 text-center text-sm text-blue-100/50">
+          <p className="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-6 text-center text-sm">
             Noch keine Konfiguration angelegt.
           </p>
         ) : (
@@ -329,14 +325,14 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
             {configs.map((config) => (
               <li
                 key={config.id}
-                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl"
+                className="border-border bg-card flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-4"
               >
                 <div className="min-w-0">
-                  <p className="truncate font-medium text-white">{config.label}</p>
-                  <p className="truncate text-sm text-blue-100/60">
+                  <p className="text-foreground truncate font-medium">{config.label}</p>
+                  <p className="text-muted-foreground truncate text-sm">
                     {config.modelName} · {config.baseUrl}
                   </p>
-                  <p className="mt-1 flex items-center gap-1 text-xs text-blue-100/40">
+                  <p className="text-muted-foreground mt-1 flex items-center gap-1 text-xs">
                     <KeyRound className="size-3" />
                     <span className="tracking-widest">••••••••</span>
                     <span>Key hinterlegt</span>
@@ -350,7 +346,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
                     onClick={() => {
                       startEdit(config);
                     }}
-                    className="border-white/20 bg-white/5 text-white hover:bg-white/15"
+                    className="border-border bg-muted text-foreground hover:bg-accent"
                   >
                     <Pencil className="size-3.5" />
                     Bearbeiten

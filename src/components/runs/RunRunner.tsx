@@ -73,22 +73,22 @@ function messageFromPayload(payload: unknown): string {
 const STATUS_META: Record<RunStatus, { label: string; className: string; icon: React.ReactNode }> = {
   pending: {
     label: "Wartet",
-    className: "border-white/20 bg-white/10 text-blue-100/70",
+    className: "border-border bg-muted text-muted-foreground",
     icon: <CircleDashed className="size-3" />,
   },
   running: {
     label: "Läuft",
-    className: "border-amber-400/30 bg-amber-500/20 text-amber-200",
+    className: "border-chart-2/40 bg-chart-2/10 text-chart-2",
     icon: <Loader2 className="size-3 animate-spin" />,
   },
   completed: {
     label: "Fertig",
-    className: "border-emerald-500/30 bg-emerald-900/30 text-emerald-200",
+    className: "border-success/30 bg-success/10 text-success",
     icon: <CheckCircle2 className="size-3" />,
   },
   failed: {
     label: "Fehlgeschlagen",
-    className: "border-red-500/30 bg-red-900/30 text-red-300",
+    className: "border-destructive/30 bg-destructive/10 text-destructive",
     icon: <XCircle className="size-3" />,
   },
 };
@@ -116,7 +116,7 @@ function failureRate(failed: number, total: number): string {
 }
 
 const selectClass =
-  "w-full appearance-none rounded-lg border border-white/20 bg-white/10 px-3 py-2 text-white transition-colors focus:ring-2 focus:ring-purple-400 focus:outline-none";
+  "w-full appearance-none rounded-lg border border-border bg-input px-3 py-2 text-foreground transition-colors focus:ring-2 focus-visible:ring-ring focus:outline-none";
 
 export default function RunRunner({ initialRuns, personas, modelConfigs, loadError = false }: Props) {
   const [runs, setRuns] = useState<RunView[]>(initialRuns);
@@ -348,26 +348,22 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
   return (
     <div className="space-y-8">
       {/* Start-Formular */}
-      <form
-        onSubmit={handleSubmit}
-        noValidate
-        className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
-      >
+      <form onSubmit={handleSubmit} noValidate className="border-border bg-card space-y-4 rounded-2xl border p-6">
         <h2 className="flex items-center gap-2 text-lg font-semibold">
           <Play className="size-4" />
           Neuer Lauf
         </h2>
 
         {canRun ? null : (
-          <p className="flex items-start gap-2 rounded-lg border border-amber-400/30 bg-amber-900/20 px-3 py-2 text-sm text-amber-200">
+          <p className="border-chart-2/40 bg-chart-2/10 text-chart-2 flex items-start gap-2 rounded-lg border px-3 py-2 text-sm">
             <AlertCircle className="mt-0.5 size-4 shrink-0" />
             <span>
               Ein Lauf braucht mindestens eine{" "}
-              <a href="/personas" className="underline hover:text-white">
+              <a href="/personas" className="hover:text-foreground underline">
                 Persona
               </a>{" "}
               und eine{" "}
-              <a href="/models" className="underline hover:text-white">
+              <a href="/models" className="hover:text-foreground underline">
                 Modellkonfiguration
               </a>
               .
@@ -376,7 +372,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
         )}
 
         <div>
-          <label htmlFor="personaId" className="mb-1 block text-sm text-blue-100/80">
+          <label htmlFor="personaId" className="text-muted-foreground mb-1 block text-sm">
             Persona
           </label>
           <select
@@ -389,7 +385,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
             className={selectClass}
           >
             {personas.map((p) => (
-              <option key={p.id} value={p.id} className="bg-slate-900">
+              <option key={p.id} value={p.id} className="bg-muted">
                 {p.name}
               </option>
             ))}
@@ -397,7 +393,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
         </div>
 
         <div>
-          <label htmlFor="modelConfigId" className="mb-1 block text-sm text-blue-100/80">
+          <label htmlFor="modelConfigId" className="text-muted-foreground mb-1 block text-sm">
             Modellkonfiguration
           </label>
           <select
@@ -410,7 +406,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
             className={selectClass}
           >
             {modelConfigs.map((c) => (
-              <option key={c.id} value={c.id} className="bg-slate-900">
+              <option key={c.id} value={c.id} className="bg-muted">
                 {c.label} ({c.modelName})
               </option>
             ))}
@@ -418,14 +414,14 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
         </div>
 
         <div>
-          <label htmlFor="reps" className="mb-1 block text-sm text-blue-100/80">
+          <label htmlFor="reps" className="text-muted-foreground mb-1 block text-sm">
             Wiederholungen{" "}
-            <span className="text-blue-100/40">
+            <span className="text-muted-foreground">
               ({MIN_REPS}–{MAX_REPS})
             </span>
           </label>
           <div className="relative">
-            <span className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-white/40">
+            <span className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2">
               <Hash className="size-4" />
             </span>
             <input
@@ -441,24 +437,20 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                 const v = e.target.valueAsNumber;
                 setReps(Number.isNaN(v) ? MIN_REPS : v);
               }}
-              className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2 pl-10 text-white transition-colors focus:ring-2 focus:ring-purple-400 focus:outline-none"
+              className="border-border bg-input text-foreground focus-visible:ring-ring w-full rounded-lg border px-3 py-2 pl-10 transition-colors focus:ring-2 focus:outline-none"
             />
           </div>
         </div>
 
         {formError ? (
-          <p className="flex items-center gap-1 text-xs text-red-300">
+          <p className="text-destructive flex items-center gap-1 text-xs">
             <AlertCircle className="size-3" />
             {formError}
           </p>
         ) : null}
         <ServerError message={serverError} />
 
-        <Button
-          type="submit"
-          disabled={!canRun || isRunning || starting}
-          className="bg-purple-600 text-white hover:bg-purple-500"
-        >
+        <Button type="submit" disabled={!canRun || isRunning || starting}>
           {isRunning ? <Loader2 className="size-4 animate-spin" /> : <Play className="size-4" />}
           {starting ? "Starte…" : isRunning ? "Lauf aktiv…" : "Lauf starten"}
         </Button>
@@ -466,7 +458,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
 
       {/* Live-Fortschritt des aktiven Laufs */}
       {isRunning && progress ? (
-        <section className="space-y-3 rounded-2xl border border-amber-400/30 bg-amber-950/20 p-6 backdrop-blur-xl">
+        <section className="border-chart-2/40 bg-chart-2/10 space-y-3 rounded-2xl border p-6">
           <div className="flex items-center justify-between gap-3">
             <h2 className="flex items-center gap-2 text-lg font-semibold">
               <Loader2 className="size-4 animate-spin" />
@@ -485,16 +477,16 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
               Abbrechen
             </Button>
           </div>
-          <p className="text-sm text-blue-100/80">
+          <p className="text-muted-foreground text-sm">
             {progress.completedReps} von {progress.totalReps} Wiederholungen
             {progress.failedCount > 0 ? ` · ${String(progress.failedCount)} fehlgeschlagen` : ""}
           </p>
-          <p className="text-xs text-blue-100/50">
+          <p className="text-muted-foreground text-xs">
             Tokens: {progress.promptTokens} ein / {progress.completionTokens} aus
           </p>
-          <div className="h-2 overflow-hidden rounded-full bg-white/10">
+          <div className="bg-muted h-2 overflow-hidden rounded-full">
             <div
-              className="h-full rounded-full bg-purple-500 transition-all"
+              className="bg-primary h-full rounded-full transition-all"
               style={{
                 width: `${String(progress.totalReps > 0 ? Math.round((progress.completedReps / progress.totalReps) * 100) : 0)}%`,
               }}
@@ -507,7 +499,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Deine Läufe</h2>
         {runs.length === 0 ? (
-          <p className="rounded-2xl border border-white/10 bg-white/5 px-4 py-6 text-center text-sm text-blue-100/50">
+          <p className="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-6 text-center text-sm">
             Noch kein Lauf gestartet.
           </p>
         ) : (
@@ -515,27 +507,27 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
             {runs.map((run) => (
               <li
                 key={run.id}
-                className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl"
+                className="border-border bg-card flex flex-wrap items-start justify-between gap-3 rounded-2xl border p-4"
               >
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <StatusBadge status={run.status} />
                     {run.visibility === "global" ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-blue-400/30 bg-blue-500/20 px-2 py-0.5 text-xs text-blue-200">
+                      <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
                         <Globe className="size-3" />
                         Global
                       </span>
                     ) : run.isOwn ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-xs text-blue-100/60">
+                      <span className="border-border bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
                         <Lock className="size-3" />
                         Privat
                       </span>
                     ) : null}
-                    <span className="text-sm text-blue-100/60">
+                    <span className="text-muted-foreground text-sm">
                       {run.completedReps}/{run.repetitionCount} Wiederholungen
                     </span>
                   </div>
-                  <p className="mt-1 text-xs text-blue-100/50">
+                  <p className="text-muted-foreground mt-1 text-xs">
                     Fehlquote: {failureRate(run.failedCount, run.repetitionCount)} · Tokens: {run.promptTokens} ein /{" "}
                     {run.completionTokens} aus
                   </p>
@@ -545,7 +537,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                       Laeufe; max. zwei. Gesperrt, sobald zwei andere gewaehlt sind. */}
                   {run.status === "completed" && run.id !== activeRunId ? (
                     <label
-                      className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-white/15 bg-white/10 px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-white/20 has-disabled:cursor-not-allowed has-disabled:opacity-40"
+                      className="border-border bg-muted hover:bg-accent inline-flex cursor-pointer items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors has-disabled:cursor-not-allowed has-disabled:opacity-40"
                       title="Für Vergleich auswählen (max. 2)"
                     >
                       <input
@@ -555,7 +547,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                         onChange={() => {
                           toggleCompare(run.id);
                         }}
-                        className="size-3.5 accent-purple-500"
+                        className="accent-primary size-3.5"
                       />
                       <GitCompare className="size-3.5" />
                       Vergleichen
@@ -566,7 +558,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                   {run.id !== activeRunId ? (
                     <a
                       href={`/runs/${run.id}`}
-                      className="inline-flex items-center gap-1 rounded-md border border-white/15 bg-white/10 px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-white/20"
+                      className="border-border bg-muted hover:bg-accent inline-flex items-center gap-1 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors"
                     >
                       <BarChart3 className="size-3.5" />
                       Ergebnis
@@ -587,7 +579,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                       onClick={() => {
                         void setVisibility(run);
                       }}
-                      className="border-white/20 bg-white/5 text-white hover:bg-white/15"
+                      className="border-border bg-muted text-foreground hover:bg-accent"
                     >
                       {run.visibility === "global" ? <Lock className="size-3.5" /> : <Globe className="size-3.5" />}
                       {run.visibility === "global" ? "Privat" : "Global"}
@@ -618,8 +610,8 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       {/* Sticky Vergleichs-Leiste (S-08): erscheint ab einer Auswahl, der
           "Vergleichen"-Button aktiviert sich bei genau zwei Laeufen. */}
       {compareIds.length > 0 ? (
-        <div className="sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-purple-400/30 bg-purple-950/40 px-4 py-3 backdrop-blur-xl">
-          <span className="text-sm text-blue-100/80">
+        <div className="border-primary/30 bg-muted sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-4 py-3">
+          <span className="text-muted-foreground text-sm">
             {compareIds.length === 2
               ? "Zwei Läufe gewählt — bereit zum Vergleich."
               : "Ein Lauf gewählt — wähle einen zweiten zum Vergleichen."}
@@ -632,7 +624,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
               onClick={() => {
                 setCompareIds([]);
               }}
-              className="border-white/20 bg-white/5 text-white hover:bg-white/15"
+              className="border-border bg-muted text-foreground hover:bg-accent"
             >
               Auswahl aufheben
             </Button>
@@ -644,7 +636,6 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                 const [a, b] = compareIds;
                 if (a && b) navigateToCompare(a, b);
               }}
-              className="bg-purple-600 text-white hover:bg-purple-500"
             >
               <GitCompare className="size-3.5" />
               Vergleichen

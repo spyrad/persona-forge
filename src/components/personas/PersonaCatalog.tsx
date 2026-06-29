@@ -45,7 +45,7 @@ const EMPTY_FORM: FormState = {
 };
 
 const textAreaClass =
-  "w-full rounded-lg border bg-white/10 px-3 py-2 text-white placeholder-white/40 transition-colors focus:ring-2 focus:outline-none";
+  "w-full rounded-lg border bg-input px-3 py-2 text-foreground placeholder:text-muted-foreground transition-colors focus:ring-2 focus:outline-none";
 
 /**
  * Navigations-Side-Effect bei 401. Bewusst auf Modul-Ebene (nicht in der
@@ -316,18 +316,14 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
   return (
     <div className="space-y-8">
       {/* Formular */}
-      <form
-        onSubmit={handleSubmit}
-        noValidate
-        className="space-y-4 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl"
-      >
+      <form onSubmit={handleSubmit} noValidate className="border-border bg-card space-y-4 rounded-2xl border p-6">
         <h2 className="flex items-center gap-2 text-lg font-semibold">
           <Plus className="size-4" />
           Neue Persona
         </h2>
 
         {/* Modus-Umschaltung */}
-        <div className="inline-flex rounded-lg border border-white/15 bg-white/5 p-1 text-sm">
+        <div className="border-border bg-muted inline-flex rounded-lg border p-1 text-sm">
           <button
             type="button"
             onClick={() => {
@@ -335,7 +331,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
             }}
             className={cn(
               "flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors",
-              mode === "freeform" ? "bg-purple-600 text-white" : "text-blue-100/70 hover:bg-white/10",
+              mode === "freeform" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent",
             )}
           >
             <FileText className="size-3.5" />
@@ -348,7 +344,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
             }}
             className={cn(
               "flex items-center gap-1.5 rounded-md px-3 py-1.5 transition-colors",
-              mode === "structured" ? "bg-purple-600 text-white" : "text-blue-100/70 hover:bg-white/10",
+              mode === "structured" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-accent",
             )}
           >
             <ListChecks className="size-3.5" />
@@ -369,7 +365,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
         />
 
         <div>
-          <label htmlFor="description" className="mb-1 block text-sm text-blue-100/80">
+          <label htmlFor="description" className="text-muted-foreground mb-1 block text-sm">
             Beschreibung
           </label>
           <textarea
@@ -380,7 +376,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
             }}
             placeholder="Wofür ist diese Persona da? (optional)"
             rows={2}
-            className={cn(textAreaClass, "border-white/20 focus:ring-purple-400")}
+            className={cn(textAreaClass, "border-border focus-visible:ring-ring")}
           />
         </div>
 
@@ -398,7 +394,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
 
         {mode === "freeform" ? (
           <div>
-            <label htmlFor="systemPrompt" className="mb-1 block text-sm text-blue-100/80">
+            <label htmlFor="systemPrompt" className="text-muted-foreground mb-1 block text-sm">
               System-Prompt
             </label>
             <textarea
@@ -412,14 +408,16 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
               className={cn(
                 textAreaClass,
                 "font-mono text-sm",
-                errors.systemPrompt ? "border-red-400/60 focus:ring-red-400" : "border-white/20 focus:ring-purple-400",
+                errors.systemPrompt
+                  ? "border-destructive/60 focus-visible:ring-destructive"
+                  : "border-border focus-visible:ring-ring",
               )}
             />
-            {errors.systemPrompt ? <p className="mt-1 text-xs text-red-300">{errors.systemPrompt}</p> : null}
+            {errors.systemPrompt ? <p className="text-destructive mt-1 text-xs">{errors.systemPrompt}</p> : null}
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-xs text-blue-100/50">
+            <p className="text-muted-foreground text-xs">
               Strukturiert nach Spec (§§1–4 Pflicht, §§5–6 optional). Ein Eintrag pro Zeile. Der System-Prompt wird
               daraus erzeugt.
             </p>
@@ -460,8 +458,8 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
               }}
             />
             <div>
-              <label htmlFor="exampleDialog" className="mb-1 block text-sm text-blue-100/80">
-                §5 Stimme in Aktion <span className="text-blue-100/40">(optional)</span>
+              <label htmlFor="exampleDialog" className="text-muted-foreground mb-1 block text-sm">
+                §5 Stimme in Aktion <span className="text-muted-foreground">(optional)</span>
               </label>
               <textarea
                 id="exampleDialog"
@@ -470,12 +468,12 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
                   setField("exampleDialog", e.target.value);
                 }}
                 rows={3}
-                className={cn(textAreaClass, "border-white/20 focus:ring-purple-400")}
+                className={cn(textAreaClass, "border-border focus-visible:ring-ring")}
               />
             </div>
             <div>
-              <label htmlFor="usage" className="mb-1 block text-sm text-blue-100/80">
-                §6 Nutzung <span className="text-blue-100/40">(optional)</span>
+              <label htmlFor="usage" className="text-muted-foreground mb-1 block text-sm">
+                §6 Nutzung <span className="text-muted-foreground">(optional)</span>
               </label>
               <textarea
                 id="usage"
@@ -484,7 +482,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
                   setField("usage", e.target.value);
                 }}
                 rows={2}
-                className={cn(textAreaClass, "border-white/20 focus:ring-purple-400")}
+                className={cn(textAreaClass, "border-border focus-visible:ring-ring")}
               />
             </div>
           </div>
@@ -493,7 +491,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
         <ServerError message={serverError} />
 
         <div className="flex flex-wrap gap-2">
-          <Button type="submit" disabled={pending} className="bg-purple-600 text-white hover:bg-purple-500">
+          <Button type="submit" disabled={pending}>
             <Plus className="size-4" />
             {pending ? "Anlegen…" : "Anlegen"}
           </Button>
@@ -502,7 +500,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
               type="button"
               variant="ghost"
               onClick={resetForm}
-              className="text-blue-100/70 hover:bg-white/10 hover:text-white"
+              className="text-muted-foreground hover:bg-accent hover:text-foreground"
             >
               <X className="size-4" />
               Zurücksetzen
@@ -514,7 +512,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
       {/* Tag-Filter */}
       {allTags.length > 0 ? (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm text-blue-100/50">Filter:</span>
+          <span className="text-muted-foreground text-sm">Filter:</span>
           <button
             type="button"
             onClick={() => {
@@ -523,8 +521,8 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
             className={cn(
               "rounded-full border px-3 py-1 text-xs transition-colors",
               activeTag === null
-                ? "border-purple-400 bg-purple-500/30 text-white"
-                : "border-white/20 bg-white/5 text-blue-100/70 hover:bg-white/15",
+                ? "border-primary bg-primary/15 text-foreground"
+                : "border-border bg-muted text-muted-foreground hover:bg-accent",
             )}
           >
             Alle
@@ -539,8 +537,8 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
               className={cn(
                 "rounded-full border px-3 py-1 text-xs transition-colors",
                 activeTag === tag
-                  ? "border-purple-400 bg-purple-500/30 text-white"
-                  : "border-white/20 bg-white/5 text-blue-100/70 hover:bg-white/15",
+                  ? "border-primary bg-primary/15 text-foreground"
+                  : "border-border bg-muted text-muted-foreground hover:bg-accent",
               )}
             >
               {tag}
@@ -553,7 +551,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Katalog</h2>
         {visiblePersonas.length === 0 ? (
-          <p className="rounded-2xl border border-white/10 bg-white/5 px-4 py-6 text-center text-sm text-blue-100/50">
+          <p className="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-6 text-center text-sm">
             {personas.length === 0 ? "Noch keine Persona angelegt." : "Keine Persona mit diesem Tag."}
           </p>
         ) : (
@@ -561,38 +559,38 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
             {visiblePersonas.map((persona) => (
               <li
                 key={persona.id}
-                className="flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl"
+                className="border-border bg-card flex flex-wrap items-start justify-between gap-3 rounded-2xl border p-4"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="flex flex-wrap items-center gap-2 font-medium text-white">
+                  <p className="text-foreground flex flex-wrap items-center gap-2 font-medium">
                     <span className="truncate">{persona.name}</span>
                     {persona.visibility === "global" ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-blue-400/30 bg-blue-500/20 px-2 py-0.5 text-xs text-blue-200">
+                      <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
                         <Globe className="size-3" />
                         Global
                       </span>
                     ) : persona.isOwn ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-white/15 bg-white/5 px-2 py-0.5 text-xs text-blue-100/60">
+                      <span className="border-border bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
                         <Lock className="size-3" />
                         Privat
                       </span>
                     ) : null}
                     {persona.sourceKind === "structured" ? (
-                      <span className="inline-flex items-center gap-1 rounded-full border border-purple-400/30 bg-purple-500/20 px-2 py-0.5 text-xs text-purple-200">
+                      <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
                         <ListChecks className="size-3" />
                         Strukturiert
                       </span>
                     ) : null}
                   </p>
                   {persona.description ? (
-                    <p className="mt-0.5 truncate text-sm text-blue-100/60">{persona.description}</p>
+                    <p className="text-muted-foreground mt-0.5 truncate text-sm">{persona.description}</p>
                   ) : null}
                   {persona.tags.length > 0 ? (
                     <div className="mt-2 flex flex-wrap gap-1">
                       {persona.tags.map((tag) => (
                         <span
                           key={tag}
-                          className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-xs text-blue-100/50"
+                          className="border-border bg-muted text-muted-foreground rounded-full border px-2 py-0.5 text-xs"
                         >
                           {tag}
                         </span>
@@ -609,7 +607,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
                     onClick={() => {
                       void duplicate(persona.id);
                     }}
-                    className="border-white/20 bg-white/5 text-white hover:bg-white/15"
+                    className="border-border bg-muted text-foreground hover:bg-accent"
                   >
                     <Copy className="size-3.5" />
                     Kopieren
@@ -621,7 +619,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
                     onClick={() => {
                       adapt(persona);
                     }}
-                    className="border-white/20 bg-white/5 text-white hover:bg-white/15"
+                    className="border-border bg-muted text-foreground hover:bg-accent"
                   >
                     <Pencil className="size-3.5" />
                     Anpassen
@@ -640,7 +638,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
                       onClick={() => {
                         void setVisibility(persona);
                       }}
-                      className="border-white/20 bg-white/5 text-white hover:bg-white/15"
+                      className="border-border bg-muted text-foreground hover:bg-accent"
                     >
                       {persona.visibility === "global" ? <Lock className="size-3.5" /> : <Globe className="size-3.5" />}
                       {persona.visibility === "global" ? "Privat" : "Global"}
@@ -682,8 +680,8 @@ interface StructuredListFieldProps {
 function StructuredListField({ id, label, value, error, onChange }: StructuredListFieldProps) {
   return (
     <div>
-      <label htmlFor={id} className="mb-1 block text-sm text-blue-100/80">
-        {label} <span className="text-blue-100/40">(ein Eintrag pro Zeile)</span>
+      <label htmlFor={id} className="text-muted-foreground mb-1 block text-sm">
+        {label} <span className="text-muted-foreground">(ein Eintrag pro Zeile)</span>
       </label>
       <textarea
         id={id}
@@ -694,10 +692,10 @@ function StructuredListField({ id, label, value, error, onChange }: StructuredLi
         rows={3}
         className={cn(
           textAreaClass,
-          error ? "border-red-400/60 focus:ring-red-400" : "border-white/20 focus:ring-purple-400",
+          error ? "border-destructive/60 focus-visible:ring-destructive" : "border-border focus-visible:ring-ring",
         )}
       />
-      {error ? <p className="mt-1 text-xs text-red-300">{error}</p> : null}
+      {error ? <p className="text-destructive mt-1 text-xs">{error}</p> : null}
     </div>
   );
 }

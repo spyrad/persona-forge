@@ -7,12 +7,21 @@ const { user } = Astro.locals;
 
 <header class="border-border bg-card border-b">
   <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-    <a
-      href={user ? "/dashboard" : "/"}
-      class="text-foreground hover:text-primary text-base font-semibold tracking-tight transition-colors"
-    >
-      persona-forge
-    </a>
+    <div class="flex items-center gap-3">
+      <a
+        href={user ? "/dashboard" : "/"}
+        class="text-foreground hover:text-primary text-base font-semibold tracking-tight transition-colors"
+      >
+        persona-forge
+      </a>
+      {
+        user && (
+          <a href="/dashboard" class:list={buttonVariants({ variant: "ghost", size: "sm" })}>
+            Dashboard
+          </a>
+        )
+      }
+    </div>
     <nav class="flex items-center gap-1 text-sm">
       {
         user ? (
