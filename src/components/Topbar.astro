@@ -1,37 +1,42 @@
 ---
+import ThemeToggle from "@/components/ThemeToggle";
+import { buttonVariants } from "@/components/ui/button";
+
 const { user } = Astro.locals;
 ---
 
-<div
-  class="mb-4 flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80"
->
-  {
-    user ? (
-      <>
-        <span class="text-blue-100/70">{user.email}</span>
-        <div class="flex items-center gap-3">
-          <a href="/dashboard" class="text-purple-300 transition-colors hover:text-purple-100 hover:underline">
-            Dashboard
-          </a>
-          <form method="POST" action="/api/auth/signout">
-            <button type="submit" class="text-purple-300 transition-colors hover:text-purple-100 hover:underline">
-              Sign out
-            </button>
-          </form>
-        </div>
-      </>
-    ) : (
-      <>
-        <span class="text-blue-100/70">Not signed in</span>
-        <div class="flex gap-3">
-          <a href="/auth/signin" class="text-purple-300 transition-colors hover:text-purple-100 hover:underline">
-            Sign in
-          </a>
-          <a href="/auth/signup" class="text-purple-300 transition-colors hover:text-purple-100 hover:underline">
-            Sign up
-          </a>
-        </div>
-      </>
-    )
-  }
-</div>
+<header class="border-border bg-card border-b">
+  <div class="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
+    <a
+      href={user ? "/dashboard" : "/"}
+      class="text-foreground hover:text-primary text-base font-semibold tracking-tight transition-colors"
+    >
+      persona-forge
+    </a>
+    <nav class="flex items-center gap-1 text-sm">
+      {
+        user ? (
+          <>
+            <span class="text-muted-foreground mr-2 hidden sm:inline">{user.email}</span>
+            <ThemeToggle client:load />
+            <form method="POST" action="/api/auth/signout">
+              <button type="submit" class:list={buttonVariants({ variant: "ghost", size: "sm" })}>
+                Sign out
+              </button>
+            </form>
+          </>
+        ) : (
+          <>
+            <ThemeToggle client:load />
+            <a href="/auth/signin" class:list={buttonVariants({ variant: "ghost", size: "sm" })}>
+              Sign in
+            </a>
+            <a href="/auth/signup" class:list={buttonVariants({ variant: "default", size: "sm" })}>
+              Sign up
+            </a>
+          </>
+        )
+      }
+    </nav>
+  </div>
+</header>

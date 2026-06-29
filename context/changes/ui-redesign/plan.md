@@ -400,30 +400,30 @@ Standard-Mapping-Tabelle (konsistent über alle Phasen anwenden):
 
 #### Automated
 
-- [x] 1.1 `src/components/ui/card.tsx` existiert
-- [x] 1.2 `npm run build` erfolgreich
-- [x] 1.3 `npm run test` grün
-- [x] 1.4 `npm run lint` sauber
+- [x] 1.1 `src/components/ui/card.tsx` existiert — 4740727
+- [x] 1.2 `npm run build` erfolgreich — 4740727
+- [x] 1.3 `npm run test` grün — 4740727
+- [x] 1.4 `npm run lint` sauber — 4740727
 
 #### Manual
 
-- [x] 1.5 Toggle schaltet live Hell/Dunkel und überlebt Reload
-- [x] 1.6 Kein weißer Flash beim Dark-Reload
-- [x] 1.7 `--primary` sichtbar als Teal
+- [x] 1.5 Toggle schaltet live Hell/Dunkel und überlebt Reload — 4740727
+- [x] 1.6 Kein weißer Flash beim Dark-Reload — 4740727
+- [x] 1.7 `--primary` sichtbar als Teal — 4740727
 
 ### Phase 2: Topbar + Layout-Shell + Dashboard-Hub
 
 #### Automated
 
-- [ ] 2.1 `npm run build` erfolgreich
-- [ ] 2.2 `npm run lint` sauber
+- [x] 2.1 `npm run build` erfolgreich
+- [x] 2.2 `npm run lint` sauber
 
 #### Manual
 
-- [ ] 2.3 Topbar auf allen Seiten; Logo → Dashboard
-- [ ] 2.4 Theme-Toggle von jeder Seite aus funktional
-- [ ] 2.5 Dashboard-Kacheln navigieren korrekt, stimmig in beiden Modi
-- [ ] 2.6 Kein doppeltes „← Dashboard" mehr
+- [x] 2.3 Topbar auf allen Seiten; Logo → Dashboard
+- [x] 2.4 Theme-Toggle von jeder Seite aus funktional
+- [x] 2.5 Dashboard-Kacheln navigieren korrekt, stimmig in beiden Modi
+- [x] 2.6 Kein doppeltes „← Dashboard" mehr
 
 ### Phase 3: App-Sichten-Sweep
 
