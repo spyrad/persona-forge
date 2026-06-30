@@ -126,7 +126,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
   const [reps, setReps] = useState<number>(DEFAULT_REPS);
   const [formError, setFormError] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(
-    loadError ? "Couldn't load runs. Please reload." : null,
+    loadError ? "Laufliste konnte nicht geladen werden. Bitte neu laden." : null,
   );
   const [starting, setStarting] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -178,9 +178,9 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       return;
     }
     if (res.ok) {
-      const parsed = runViewArraySchema.safeParse(await res.json());
+      const parsed = runViewArraySchema.safeParse(await res.json().catch(() => null));
       if (!parsed.success) {
-        setServerError("Couldn't load runs. Please reload.");
+        setServerError("Laufliste konnte nicht geladen werden. Bitte neu laden.");
         return;
       }
       const fresh = parsed.data;
@@ -188,7 +188,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       // Geloeschte/verschwundene Laeufe aus der Vergleichs-Auswahl entfernen.
       setCompareIds((prev) => prev.filter((id) => fresh.some((r) => r.id === id)));
     } else {
-      setServerError("Couldn't load runs. Please reload.");
+      setServerError("Laufliste konnte nicht geladen werden. Bitte neu laden.");
     }
   }
 
@@ -214,7 +214,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       await refetch();
       return;
     }
-    const parsed = runProgressSchema.safeParse(await res.json());
+    const parsed = runProgressSchema.safeParse(await res.json().catch(() => null));
     if (isCancelled()) return;
     if (!parsed.success) {
       setServerError("Unerwartete Server-Antwort.");
