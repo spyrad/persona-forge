@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { ServerError } from "@/components/auth/ServerError";
 import { Button } from "@/components/ui/button";
-import { runViewArraySchema, runViewSchema } from "@/lib/runs/run-schemas";
+import { runProgressSchema, runViewArraySchema, runViewSchema } from "@/lib/runs/run-schemas";
 import { cn } from "@/lib/utils";
 import type { ModelConfigView, PersonaView, RunProgress, RunStatus, RunView } from "@/types";
 
@@ -214,8 +214,15 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       await refetch();
       return;
     }
-    const next = (await res.json()) as RunProgress;
+    const parsed = runProgressSchema.safeParse(await res.json());
     if (isCancelled()) return;
+    if (!parsed.success) {
+      setServerError("Unerwartete Server-Antwort.");
+      stopLoop();
+      await refetch();
+      return;
+    }
+    const next = parsed.data;
     setProgress(next);
     if (next.status === "completed" || next.status === "failed") {
       stopLoop();
