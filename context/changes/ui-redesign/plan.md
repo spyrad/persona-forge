@@ -473,8 +473,8 @@ Standard-Mapping-Tabelle (konsistent über alle Phasen anwenden):
 - [x] 6.1 Grep nach Farb-Literalen über `src/` leer — d5122cd
 - [x] 6.2 `npm run build` erfolgreich — d5122cd
 - [x] 6.3 `npm run test` grün — d5122cd
-- [x] 6.4 `npm run test:integration` grün — CI-gated (Docker lokal n/a; via Push-Run)
-- [x] 6.5 `npm run test:e2e` grün — CI-gated (Docker lokal n/a; via Push-Run)
+- [x] 6.4 `npm run test:integration` grün — CI-Run 28399841968 (integration-Job grün)
+- [ ] 6.5 `npm run test:e2e` grün — nicht lokal lauffähig (Docker n/a) + kein e2e-Job im CI-Deploy-Gate; Risiko gering (rollenbasierte Selektoren, Pure-Visual); Follow-up wenn Docker da
 - [x] 6.6 `npm run lint` sauber — d5122cd
 
 #### Manual
