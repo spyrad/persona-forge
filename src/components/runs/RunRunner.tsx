@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { ServerError } from "@/components/auth/ServerError";
 import { Button } from "@/components/ui/button";
+import { runViewSchema } from "@/lib/runs/run-schemas";
 import { cn } from "@/lib/utils";
 import type { ModelConfigView, PersonaView, RunProgress, RunStatus, RunView } from "@/types";
 
@@ -255,7 +256,12 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
         setServerError(messageFromPayload(await res.json().catch(() => null)));
         return;
       }
-      const view = (await res.json()) as RunView;
+      const parsed = runViewSchema.safeParse(await res.json());
+      if (!parsed.success) {
+        setServerError("Unerwartete Server-Antwort.");
+        return;
+      }
+      const view = parsed.data;
       setRuns((prev) => [view, ...prev]);
       cancelledRef.current = false;
       setActiveRunId(view.id);
