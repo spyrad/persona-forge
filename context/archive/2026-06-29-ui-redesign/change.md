@@ -1,10 +1,10 @@
 ---
 change_id: ui-redesign
 title: "UI-Vereinheitlichung: shadcn-Tokens, Teal-Akzent, Topbar-Nav, Dark Mode"
-status: implemented
+status: archived
 created: 2026-06-29
-updated: 2026-06-29
-archived_at: null
+updated: 2026-06-30
+archived_at: 2026-06-30T03:10:06Z
 ---
 
 ## Notes
