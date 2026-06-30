@@ -6,6 +6,11 @@
  * API-Vertragsbasis (camelCase, ohne Key-Material).
  */
 
+// `RunView`/`RunProgress` werden aus ihren zod-Schemas abgeleitet (Single Source,
+// C-B). Hier importiert, um sie unten unveraendert weiter aus `@/types` zu
+// re-exportieren und gegen `RunStatus`/`Visibility`-Drift zu guarden.
+import type { RunView, RunProgress } from "@/lib/runs/run-schemas";
+
 /** DB-Entity `public.model_configs` — inkl. Krypto-Spalten (server-only). */
 export interface ModelConfig {
   id: string;
@@ -247,24 +252,27 @@ export interface RunRepetition {
   updated_at: string;
 }
 
-/** Client-sichere Projektion eines Laufs. */
-export interface RunView {
-  id: string;
-  personaId: string | null;
-  modelConfigId: string | null;
-  instrumentId: string;
-  repetitionCount: number;
-  status: RunStatus;
-  promptTokens: number;
-  completionTokens: number;
-  failedCount: number;
-  /** Anzahl bereits geschriebener Wiederholungen (aus run_repetitions gezaehlt). */
-  completedReps: number;
-  visibility: Visibility;
-  isOwn: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+/**
+ * Client-sichere Projektionen des Run-Flows. **Single Source** sind die
+ * zod-Schemas in `@/lib/runs/run-schemas`; `RunView`/`RunProgress` sind deren
+ * `z.infer`-Typen. Hier nur re-exportiert, damit der bestehende `@/types`-Pfad
+ * fuer alle Importeure stabil bleibt (`services/runs.ts`, `RunRunner.tsx`, ...).
+ */
+export type { RunView, RunProgress };
+
+/**
+ * Compile-Guard: die `z.enum`-Literale fuer `status`/`visibility` in
+ * `run-schemas.ts` sind eine bewusste lokale Kopie (Unifizierung = C-C, Non-Goal).
+ * Diese Typ-Gleichheits-Checks brechen den Typecheck (`astro check`),
+ * sobald die Kopie von `RunStatus`/`Visibility` driftet — Wert hinzugefuegt,
+ * entfernt oder umbenannt. Fuer String-Literal-Unions ist beidseitige
+ * Zuweisbarkeit gleich Mengengleichheit (`MutualExtends`).
+ */
+type MutualExtends<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
+type Expect<T extends true> = T;
+type _RunViewStatusGuard = Expect<MutualExtends<RunView["status"], RunStatus>>;
+type _RunViewVisibilityGuard = Expect<MutualExtends<RunView["visibility"], Visibility>>;
+type _RunProgressStatusGuard = Expect<MutualExtends<RunProgress["status"], RunStatus>>;
 
 /** Eingabe beim Starten eines Laufs. */
 export interface CreateRunInput {
@@ -274,16 +282,9 @@ export interface CreateRunInput {
   repetitionCount: number;
 }
 
-/** Fortschritts-Antwort eines Orchestrierungs-Schritts (Phase 2). */
-export interface RunProgress {
-  status: RunStatus;
-  completedReps: number;
-  totalReps: number;
-  failedCount: number;
-  /** Bis hierhin akkumulierter Token-Verbrauch (FR-015) — fuer den Live-Zaehler. */
-  promptTokens: number;
-  completionTokens: number;
-}
+// `RunProgress` (Fortschritts-Antwort eines Orchestrierungs-Schritts, FR-015) ist
+// oben als `z.infer<typeof runProgressSchema>` re-exportiert — Single Source in
+// `@/lib/runs/run-schemas`.
 
 // ─── Ergebnis-Auswertung (Verteilung je Achse, S-05) ─────────────────────────
 

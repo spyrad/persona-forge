@@ -221,14 +221,14 @@ Keine Daten-/Schema-Migration. Reine Code-Änderung, voll umkehrbar (Schemas ent
 
 #### Automated
 
-- [ ] 1.1 Unit-Tests grün: `npm run test`
-- [ ] 1.2 Typecheck grün: `npm run build`
-- [ ] 1.3 Lint grün: `npm run lint`
+- [x] 1.1 Unit-Tests grün: `npm run test`
+- [x] 1.2 Typecheck grün: `npm run build`
+- [x] 1.3 Lint grün: `npm run lint`
 
 #### Manual
 
-- [ ] 1.4 Die 3 Casts in `src/components` unverändert vorhanden (Phase 1 ändert sie nicht)
-- [ ] 1.5 `run-schemas.ts` importiert nichts aus `types.ts` (kein Zyklus)
+- [x] 1.4 Die 3 Casts in `src/components` unverändert vorhanden (Phase 1 ändert sie nicht)
+- [x] 1.5 `run-schemas.ts` importiert nichts aus `types.ts` (kein Zyklus)
 
 ### Phase 2: 3 Casts → safeParse mit serverError-Banner
 
