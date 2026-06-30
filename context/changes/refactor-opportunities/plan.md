@@ -84,6 +84,9 @@ unangetastet. Danach ist der Mechanismus bewiesen (Tests grün), bevor die Naht 
 `RunProgress`) und `runViewArraySchema = z.array(runViewSchema)`. Exportiert die abgeleiteten Typen
 `RunView = z.infer<typeof runViewSchema>` und `RunProgress = z.infer<typeof runProgressSchema>`.
 Importiert nichts aus `types.ts` (kein Zyklus).
+**Strictness:** Default-`z.object` (NICHT `.strict()`) — unbekannte Keys werden gestrippt, sodass
+**additive** Server-Felder rückwärtskompatibel bleiben (kein Banner). Nur Rename/Remove/falscher Typ
+eines bekannten Feldes → Reject. Diese Drift-Semantik ist gewollt; `.strict()` würde sie umkehren.
 
 #### 2. types.ts auf Single Source umstellen
 
@@ -101,9 +104,12 @@ still von `RunStatus` driftet.
 
 **File**: `src/lib/runs/run-schemas.test.ts` (neu)
 **Intent**: Den Guard beweisen — die Schemas akzeptieren echte Server-Shapes und weisen Drift ab.
-**Contract**: Pro Schema mind. zwei Fälle: (a) **Accept** eines bekannt-guten Objekts (aus
-`src/test/integration/fixtures.ts` abgeleitet oder inline), (b) **Reject** eines Drift-Falls (umbenanntes/
-fehlendes Feld, z. B. `failedCount`→`failures`) via `safeParse(...).success === false`. Node-Vitest, kein jsdom.
+**Contract**: Pro Schema mind. drei Fälle: (a) **Accept** eines bekannt-guten Objekts (inline; die
+`fixtures.ts`-Factories sind async Supabase-Helfer und liefern nur die Form-Referenz), (b) **Reject** eines
+Drift-Falls (umbenanntes/fehlendes Feld, z. B. `failedCount`→`failures`) via `safeParse(...).success === false`,
+(c) **Accept-additiv**: ein bekannt-gutes Objekt **mit einem zusätzlichen unbekannten Feld** parst weiterhin
+(`safeParse(...).success === true`) — pinnt die non-strict-Semantik fest, damit kein späteres `.strict()`
+additive Server-Felder bricht. Node-Vitest, kein jsdom.
 
 ### Success Criteria:
 
@@ -154,8 +160,9 @@ bestehender `setServerError("Couldn't load runs. Please reload.")`-Pfad. Bei `su
 **File**: `src/components/runs/RunRunner.tsx`
 **Intent**: Den Fortschritt jeder Iteration im Step-Loop validieren (heißeste Naht).
 **Contract**: `(await res.json()) as RunProgress` → `runProgressSchema.safeParse(...)`. Bei `!success` →
-`setServerError(...)` + `stopLoop()` + `return` (kein `setProgress` mit unvalidierten Daten). Bei `success`
-unverändert (`setProgress`, Terminal-Check, Verkettung).
+`setServerError(...)` + `stopLoop()` + `await refetch()` + `return` (kein `setProgress` mit unvalidierten
+Daten) — analog zum bestehenden `!res.ok`-Pfad (`:206-208`), damit die Lauf-Liste nach dem Drift-Abbruch den
+realen DB-Stand spiegelt. Bei `success` unverändert (`setProgress`, Terminal-Check, Verkettung).
 
 ### Success Criteria:
 
