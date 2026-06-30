@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { ServerError } from "@/components/auth/ServerError";
 import { Button } from "@/components/ui/button";
-import { runViewSchema } from "@/lib/runs/run-schemas";
+import { runViewArraySchema, runViewSchema } from "@/lib/runs/run-schemas";
 import { cn } from "@/lib/utils";
 import type { ModelConfigView, PersonaView, RunProgress, RunStatus, RunView } from "@/types";
 
@@ -178,7 +178,12 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       return;
     }
     if (res.ok) {
-      const fresh = (await res.json()) as RunView[];
+      const parsed = runViewArraySchema.safeParse(await res.json());
+      if (!parsed.success) {
+        setServerError("Couldn't load runs. Please reload.");
+        return;
+      }
+      const fresh = parsed.data;
       setRuns(fresh);
       // Geloeschte/verschwundene Laeufe aus der Vergleichs-Auswahl entfernen.
       setCompareIds((prev) => prev.filter((id) => fresh.some((r) => r.id === id)));
