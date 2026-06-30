@@ -221,26 +221,26 @@ Keine Daten-/Schema-Migration. Reine Code-Änderung, voll umkehrbar (Schemas ent
 
 #### Automated
 
-- [x] 1.1 Unit-Tests grün: `npm run test`
-- [x] 1.2 Typecheck grün: `npm run build`
-- [x] 1.3 Lint grün: `npm run lint`
+- [x] 1.1 Unit-Tests grün: `npm run test` — 8f64969
+- [x] 1.2 Typecheck grün: `npm run build` — 8f64969
+- [x] 1.3 Lint grün: `npm run lint` — 8f64969
 
 #### Manual
 
-- [x] 1.4 Die 3 Casts in `src/components` unverändert vorhanden (Phase 1 ändert sie nicht)
-- [x] 1.5 `run-schemas.ts` importiert nichts aus `types.ts` (kein Zyklus)
+- [x] 1.4 Die 3 Casts in `src/components` unverändert vorhanden (Phase 1 ändert sie nicht) — 8f64969
+- [x] 1.5 `run-schemas.ts` importiert nichts aus `types.ts` (kein Zyklus) — 8f64969
 
 ### Phase 2: 3 Casts → safeParse mit serverError-Banner
 
 #### Automated
 
-- [ ] 2.1 Typecheck grün: `npm run build`
-- [ ] 2.2 Lint grün: `npm run lint`
-- [ ] 2.3 Bestehende Tests grün: `npm run test`
-- [ ] 2.4 `git grep "as RunView\|as RunProgress" RunRunner.tsx` = 0 Treffer
+- [x] 2.1 Typecheck grün: `npm run build` — d1d28a3
+- [x] 2.2 Lint grün: `npm run lint` — d1d28a3
+- [x] 2.3 Bestehende Tests grün: `npm run test` — d1d28a3
+- [x] 2.4 `git grep "as RunView\|as RunProgress" RunRunner.tsx` = 0 Treffer — d1d28a3
 
 #### Manual
 
-- [ ] 2.5 Echter Messlauf läuft unverändert durch (Ergebnis erscheint)
-- [ ] 2.6 Simulierter Drift zeigt `serverError`-Banner statt Crash
-- [ ] 2.7 Step-Loop bricht bei Mismatch sauber ab
+- [x] 2.5 Echter Messlauf läuft unverändert durch (Ergebnis erscheint) — d1d28a3
+- [x] 2.6 Simulierter Drift zeigt `serverError`-Banner statt Crash — d1d28a3
+- [x] 2.7 Step-Loop bricht bei Mismatch sauber ab — d1d28a3
