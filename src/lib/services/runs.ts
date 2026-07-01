@@ -16,6 +16,7 @@ import { OEJTS } from "@/lib/instruments/oejts";
 import { chatCompletion } from "@/lib/llm/openai-compatible";
 import { aggregateRun } from "@/lib/runs/oejts-aggregate";
 import { buildOejtsMessages, parseOejtsResponse, permuteItems } from "@/lib/runs/oejts-run";
+import { summarizeTiming } from "@/lib/runs/run-timing";
 import { getDecryptedTarget } from "@/lib/services/model-configs";
 import type { createClient } from "@/lib/supabase";
 import type {
@@ -196,15 +197,26 @@ export async function getRunResult(sb: SupabaseClient, userId: string, id: strin
   if (!run) return null;
 
   if (run.status === "pending" || run.status === "running") {
-    return { run, aggregate: null, state: "unfinished" };
+    return {
+      run,
+      aggregate: null,
+      state: "unfinished",
+      timing: summarizeTiming(run.createdAt, run.finishedAt, []),
+    };
   }
 
-  const { data, error } = await sb.from("run_repetitions").select("item_values").eq("run_id", id);
+  const { data, error } = await sb.from("run_repetitions").select("item_values, duration_ms").eq("run_id", id);
   if (error) fail("result:reps", error.message);
-  const reps = (data as Pick<RunRepetition, "item_values">[]).map(toRepForScoring);
+  const rows = data as Pick<RunRepetition, "item_values" | "duration_ms">[];
+  const reps = rows.map(toRepForScoring);
+  const timing = summarizeTiming(
+    run.createdAt,
+    run.finishedAt,
+    rows.map((r) => r.duration_ms),
+  );
 
   const aggregate = aggregateRun(reps, OEJTS);
-  return { run, aggregate, state: aggregate.usableReps === 0 ? "empty" : "ready" };
+  return { run, aggregate, state: aggregate.usableReps === 0 ? "empty" : "ready", timing };
 }
 
 // ─── Orchestrierung (Phase 2) ────────────────────────────────────────────────
@@ -285,6 +297,11 @@ async function patchRun(sb: SupabaseClient, runId: string, patch: Record<string,
   if (error) fail("step:patch", error.message);
 }
 
+/** Terminal-Übergang eines Laufs: setzt Status UND finished_at (genau einmal). */
+async function finalize(sb: SupabaseClient, runId: string, status: "completed" | "failed"): Promise<void> {
+  await patchRun(sb, runId, { status, finished_at: new Date().toISOString() });
+}
+
 /**
  * Verarbeitet die naechste offene Wiederholung eines Laufs (eine pro Aufruf,
  * client-orchestriert) und schreibt den Fortschritt fort:
@@ -322,6 +339,7 @@ export async function processNextRepetition(
       failedCount: run.failedCount,
       promptTokens: run.promptTokens,
       completionTokens: run.completionTokens,
+      lastRepDurationMs: null,
     };
   }
 
@@ -335,7 +353,7 @@ export async function processNextRepetition(
   // Alle Wiederholungen geschrieben → Lauf finalisieren.
   if (completedReps >= run.repetitionCount) {
     const finalStatus: RunStatus = run.failedCount >= run.repetitionCount ? "failed" : "completed";
-    await patchRun(sb, runId, { status: finalStatus });
+    await finalize(sb, runId, finalStatus);
     return {
       status: finalStatus,
       completedReps,
@@ -343,12 +361,13 @@ export async function processNextRepetition(
       failedCount: run.failedCount,
       promptTokens: run.promptTokens,
       completionTokens: run.completionTokens,
+      lastRepDurationMs: null,
     };
   }
 
   // F3: ohne Modellkonfig kann kein Call erfolgen → ganzer Lauf failed.
   if (!run.modelConfigId) {
-    await patchRun(sb, runId, { status: "failed" });
+    await finalize(sb, runId, "failed");
     return {
       status: "failed",
       completedReps,
@@ -356,11 +375,12 @@ export async function processNextRepetition(
       failedCount: run.failedCount,
       promptTokens: run.promptTokens,
       completionTokens: run.completionTokens,
+      lastRepDurationMs: null,
     };
   }
   const target = await getDecryptedTarget(sb, run.modelConfigId);
   if (!target) {
-    await patchRun(sb, runId, { status: "failed" });
+    await finalize(sb, runId, "failed");
     return {
       status: "failed",
       completedReps,
@@ -368,6 +388,7 @@ export async function processNextRepetition(
       failedCount: run.failedCount,
       promptTokens: run.promptTokens,
       completionTokens: run.completionTokens,
+      lastRepDurationMs: null,
     };
   }
 
@@ -386,6 +407,7 @@ export async function processNextRepetition(
   let repPrompt: number | null = null;
   let repCompletion: number | null = null;
   let repError: string | null = null;
+  const repStartedAt = performance.now();
 
   try {
     const completion = await chatCompletion({
@@ -408,6 +430,7 @@ export async function processNextRepetition(
   } catch (err) {
     repError = err instanceof Error ? err.message : "completion failed";
   }
+  const repDurationMs = Math.round(performance.now() - repStartedAt);
 
   // Wiederholung persistieren; F4: unique-Verletzung tolerieren (Doppelaufruf).
   const { error: insErr } = await sb.from("run_repetitions").insert({
@@ -420,6 +443,7 @@ export async function processNextRepetition(
     error: repError,
     prompt_tokens: repPrompt,
     completion_tokens: repCompletion,
+    duration_ms: repDurationMs,
   });
   if (insErr) {
     if (insErr.code === "23505") {
@@ -434,6 +458,7 @@ export async function processNextRepetition(
         failedCount: c.failedCount,
         promptTokens: c.promptTokens,
         completionTokens: c.completionTokens,
+        lastRepDurationMs: null,
       };
     }
     fail("step:insert", insErr.message);
@@ -459,5 +484,6 @@ export async function processNextRepetition(
     failedCount: newFailedCount,
     promptTokens: newPromptTokens,
     completionTokens: newCompletionTokens,
+    lastRepDurationMs: repDurationMs,
   };
 }

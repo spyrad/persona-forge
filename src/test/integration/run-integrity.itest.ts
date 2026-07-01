@@ -126,6 +126,38 @@ describe("Risk #4 — Lauf-Integrität", () => {
       }
       expect(Math.max(p1?.completedReps ?? 0, p2?.completedReps ?? 0)).toBe(reps.length);
     });
+
+    it("misst duration_ms je Wiederholung und setzt finished_at beim Abschluss", async () => {
+      mockLlmContent();
+      // 0 vorab eingefügte Reps, repetitionCount = 1.
+      const run = await makeRunningRun(account, personaId, modelConfigId, 0, 1);
+
+      // Schritt 1: schreibt Wiederholung 1 inkl. gemessener Dauer, Lauf bleibt "running".
+      const step1 = await processNextRepetition(account.client, account.userId, run.id);
+      expect(typeof step1?.lastRepDurationMs).toBe("number");
+
+      // Schritt 2: alle Reps geschrieben → Lauf wird finalisiert (finished_at gesetzt).
+      const step2 = await processNextRepetition(account.client, account.userId, run.id);
+      expect(step2?.status).toBe("completed");
+      expect(step2?.lastRepDurationMs).toBeNull();
+
+      const { data: reps, error: repErr } = await account.client
+        .from("run_repetitions")
+        .select("duration_ms")
+        .eq("run_id", run.id);
+      if (repErr) throw new Error(repErr.message);
+      expect(reps).toHaveLength(1);
+      expect(typeof reps[0].duration_ms).toBe("number");
+
+      const { data: runRow, error: runErr } = await account.client
+        .from("runs")
+        .select("finished_at, status")
+        .eq("id", run.id)
+        .single();
+      if (runErr) throw new Error(runErr.message);
+      expect(runRow.status).toBe("completed");
+      expect(runRow.finished_at).not.toBeNull();
+    });
   });
 
   describe("Failure-Quote & kein partielles Aggregat", () => {

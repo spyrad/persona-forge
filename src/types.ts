@@ -10,6 +10,7 @@
 // C-B). Hier importiert, um sie unten unveraendert weiter aus `@/types` zu
 // re-exportieren und gegen `RunStatus`/`Visibility`-Drift zu guarden.
 import type { RunView, RunProgress } from "@/lib/runs/run-schemas";
+import type { RunTiming } from "@/lib/runs/run-timing";
 
 /** DB-Entity `public.model_configs` — inkl. Krypto-Spalten (server-only). */
 export interface ModelConfig {
@@ -261,6 +262,7 @@ export interface RunRepetition {
  * fuer alle Importeure stabil bleibt (`services/runs.ts`, `RunRunner.tsx`, ...).
  */
 export type { RunView, RunProgress };
+export type { RunTiming };
 
 /**
  * Compile-Guard: die `z.enum`-Literale fuer `status`/`visibility` in
@@ -337,6 +339,7 @@ export interface RunResultView {
   run: RunView;
   aggregate: RunAggregate | null;
   state: "ready" | "empty" | "unfinished";
+  timing: RunTiming;
 }
 
 // ─── Zwei-Laeufe-Vergleich (side-by-side, S-08) ──────────────────────────────

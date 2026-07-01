@@ -54,6 +54,7 @@ export const runProgressSchema = z.object({
   failedCount: z.number(),
   promptTokens: z.number(),
   completionTokens: z.number(),
+  lastRepDurationMs: z.number().nullable(),
 });
 
 /** Aus dem Schema abgeleiteter Typ (Single Source) — re-exportiert von `@/types`. */

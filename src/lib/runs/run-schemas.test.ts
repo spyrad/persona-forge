@@ -31,6 +31,7 @@ function goodRunProgress() {
     failedCount: 1,
     promptTokens: 1234,
     completionTokens: 567,
+    lastRepDurationMs: 33000,
   };
 }
 
@@ -105,5 +106,10 @@ describe("runProgressSchema", () => {
   it("non-strict: ein additives unbekanntes Feld bricht NICHT", () => {
     const additive = { ...goodRunProgress(), serverAddedLater: 42 };
     expect(runProgressSchema.safeParse(additive).success).toBe(true);
+  });
+
+  it("akzeptiert lastRepDurationMs = null", () => {
+    const p = { ...goodRunProgress(), lastRepDurationMs: null };
+    expect(runProgressSchema.safeParse(p).success).toBe(true);
   });
 });
