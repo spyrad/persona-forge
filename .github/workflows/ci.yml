@@ -81,7 +81,9 @@ jobs:
             SUPABASE_URL
             SUPABASE_KEY
             SENTRY_DSN
+            ENCRYPTION_KEY
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
