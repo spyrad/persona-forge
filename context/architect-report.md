@@ -88,7 +88,7 @@ Wdrożone, zreviewowane (plan-review SOUND, impl-review APPROVED) i **wdrożone 
 
 **Ubiquitous language (kluczowe pojęcia):** _Bieg (Run)_ (samo-zawierająca się N-krotna
 egzekucja), _Powtórzenie/rep_ (izolowana sesja), _Rozkład per oś_ (położenie + rozrzut zamiast
-punktu), _Belastbarkeit / wiarygodność wyniku_. Najgroźniejszy homonim: **„Persona"** = obiekt
+punktu), _wiarygodność wyniku_. Najgroźniejszy homonim: **„Persona"** = obiekt
 testowy domeny vs. rola użytkownika. Kluczowe pojęcie wizji **„Disposition" BRAK w kodzie**
 (tylko tekst UI, implicite `RunAggregate`).
 
@@ -121,7 +121,8 @@ miejscu: jest świadomie wybrany i zabezpieczony CI, więc „guard, nie przebud
 **C-B**, jedyny problem _przypadkowej_ złożoności o małej, odwracalnej ścieżce. **D1**
 potraktowałem wbrew pierwszemu odruchowi _nie_ jako refaktor mechaniczny, lecz przesunąłem do
 L5, bo to brakujące **pojęcie biznesowe** (odsetek plonu scoringu vs. odsetek błędów odpowiedzi),
-nie zachowujące zachowania. W L5 zgadzam się, że wiarygodność to niezmiennik #1, ale przejmuję
+a jego naprawa zmienia zachowanie — nie jest to więc refaktoryzacja zachowawcza. W L5 zgadzam
+się, że wiarygodność to niezmiennik #1, ale przejmuję
 **zastrzeżenie agenta projektowego** wobec propozycji z distillation: wiarygodność należy do
 osobnego pola `reliability`, a **nie** do `RunResultView.state` — `state` to dyskryminator
 renderu, do tego ortogonalny. Ta decyzja jest moja, kiedy przekuję plan w konkretny `change-id`.
