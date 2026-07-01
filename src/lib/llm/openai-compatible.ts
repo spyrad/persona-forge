@@ -96,6 +96,16 @@ function backoff(attempt: number, signal?: AbortSignal): Promise<void> {
   });
 }
 
+/** True, wenn der Endpunkt zu z.ai gehört (Host endet auf „z.ai"). Nur dann sendet
+ *  der Client `thinking:{type:"disabled"}`, da GLM-Modelle sonst per Default reasonen. */
+export function isZaiEndpoint(baseUrl: string): boolean {
+  try {
+    return new URL(baseUrl).hostname.endsWith("z.ai");
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Fuehrt einen Chat-Completion-Call aus und gibt Inhalt + Token-Nutzung zurueck.
  * Wirft bei nicht erreichbarem/abweisendem Endpunkt nach erschoepften Retries —
@@ -110,6 +120,9 @@ export async function chatCompletion(args: ChatCompletionArgs): Promise<ChatComp
   const url = `${args.baseUrl.replace(/\/+$/, "")}/chat/completions`;
   let jsonMode = args.jsonMode ?? false;
   let lastError = "request failed";
+  // z.ai-GLM reasont per Default (langsam) — für z.ai-Hosts abschalten. OpenAI würde
+  // ein unbekanntes Feld mit 400 ablehnen, daher gehostet-gated.
+  const disableThinking = isZaiEndpoint(args.baseUrl);
 
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     const { signal, cancel } = withTimeout(args.signal);
@@ -126,6 +139,7 @@ export async function chatCompletion(args: ChatCompletionArgs): Promise<ChatComp
           model: args.model,
           messages: args.messages,
           ...(jsonMode ? { response_format: { type: "json_object" } } : {}),
+          ...(disableThinking ? { thinking: { type: "disabled" } } : {}),
         }),
         signal,
         redirect: "manual",
