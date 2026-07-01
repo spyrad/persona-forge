@@ -75,6 +75,7 @@ export default function RunResult({ result }: Props) {
             durchgelaufen sind.
           </span>
         </p>
+        <p className="text-muted-foreground text-xs">Ausgeführt: {formatDateTime(timing.executedAt)}</p>
         <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
           <ArrowLeft className="size-4" /> Zurück zu den Läufen
         </a>
@@ -93,6 +94,7 @@ export default function RunResult({ result }: Props) {
             Dieser Lauf lieferte keine parsebaren Wiederholungen, daher gibt es keine Verteilung. Fehlquote:{" "}
             {failureRate(run.failedCount, run.repetitionCount)}.
           </p>
+          <p className="text-muted-foreground mt-2 text-xs">Ausgeführt: {formatDateTime(timing.executedAt)}</p>
         </div>
         <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
           <ArrowLeft className="size-4" /> Zurück zu den Läufen
