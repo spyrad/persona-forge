@@ -17,6 +17,7 @@ import {
 import { ServerError } from "@/components/auth/ServerError";
 import { Button } from "@/components/ui/button";
 import { runProgressSchema, runViewArraySchema, runViewSchema } from "@/lib/runs/run-schemas";
+import { formatDateTime, formatDuration } from "@/lib/runs/run-timing";
 import { cn } from "@/lib/utils";
 import type { ModelConfigView, PersonaView, RunProgress, RunStatus, RunView } from "@/types";
 
@@ -149,6 +150,10 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
   const [activeRunId, setActiveRunId] = useState<string | null>(null);
   const [progress, setProgress] = useState<RunProgress | null>(null);
 
+  // Live-Modell-Zeit: Summe der lastRepDurationMs über die Steps dieses Laufs.
+  const [modelMsSoFar, setModelMsSoFar] = useState<number>(0);
+  const [lastRepMs, setLastRepMs] = useState<number | null>(null);
+
   // Loop-Steuerung ueber Refs (kein Render-State): `cancelled` stoppt die
   // Verkettung nach Abbruch/Fehler, `timer` haelt das ausstehende setTimeout.
   const cancelledRef = useRef(false);
@@ -224,6 +229,11 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
     }
     const next = parsed.data;
     setProgress(next);
+    const d = next.lastRepDurationMs;
+    if (d != null) {
+      setLastRepMs(d);
+      setModelMsSoFar((prev) => prev + d);
+    }
     if (next.status === "completed" || next.status === "failed") {
       stopLoop();
       await refetch();
@@ -277,6 +287,8 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       setRuns((prev) => [view, ...prev]);
       cancelledRef.current = false;
       setActiveRunId(view.id);
+      setModelMsSoFar(0);
+      setLastRepMs(null);
       setProgress({
         status: view.status,
         completedReps: 0,
@@ -284,6 +296,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
         failedCount: 0,
         promptTokens: 0,
         completionTokens: 0,
+        lastRepDurationMs: null,
       });
       void runStep(view.id);
     } catch {
@@ -502,6 +515,11 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
           <p className="text-muted-foreground text-xs">
             Tokens: {progress.promptTokens} ein / {progress.completionTokens} aus
           </p>
+          {lastRepMs != null ? (
+            <p className="text-muted-foreground text-xs">
+              Letzte Wiederholung {formatDuration(lastRepMs)} · Modell-Zeit gesamt {formatDuration(modelMsSoFar)}
+            </p>
+          ) : null}
           <div className="bg-muted h-2 overflow-hidden rounded-full">
             <div
               className="bg-primary h-full rounded-full transition-all"
@@ -546,7 +564,8 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                     </span>
                   </div>
                   <p className="text-muted-foreground mt-1 text-xs">
-                    Fehlquote: {failureRate(run.failedCount, run.repetitionCount)} · Tokens: {run.promptTokens} ein /{" "}
+                    Ausgeführt: {formatDateTime(run.createdAt)} · Fehlquote:{" "}
+                    {failureRate(run.failedCount, run.repetitionCount)} · Tokens: {run.promptTokens} ein /{" "}
                     {run.completionTokens} aus
                   </p>
                 </div>
