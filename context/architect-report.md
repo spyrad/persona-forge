@@ -1,128 +1,129 @@
 ---
-title: "Architektur-Report — 10xArchitect (Modul 4)"
+title: "Raport architektoniczny — 10xArchitect (moduł 4)"
 created: 2026-07-01
 type: architect-report
-author: Damian Spyra (via Claude Opus 4.8)
-scope: "Ein Repository (persona-forge) über alle vier Artefakte L2–L5"
+author: Damian Spyra (przy pomocy Claude Opus 4.8)
+scope: "Jedno repozytorium (persona-forge) przez wszystkie cztery artefakty L2–L5"
 ---
 
-# Architektur-Report — 10xArchitect (Modul 4)
+# Raport architektoniczny — 10xArchitect (moduł 4)
 
-> Two-Pager für das Zertifizierungs-Formular. Synthese ausschließlich aus den vier
-> Modul-4-Artefakten (L2 Map, L3 Research, L4 Plan, L5 Domäne). Jede strukturelle Aussage
-> ist im jeweiligen Artefakt belegt; hier nur die Verdichtung.
+> Two-pager do formularza certyfikacyjnego. Synteza wyłącznie z czterech artefaktów
+> modułu 4 (L2 mapa, L3 research, L4 plan, L5 domena). Każde twierdzenie strukturalne jest
+> udowodnione w odpowiednim artefakcie; tutaj tylko zagęszczenie.
 
-## 1. Beschriebene Projekte
+## 1. Opisane projekty
 
-Der komplette Architect-Pfad lief auf **einem** Repository — bewusst, nicht auf einem
-fremden Übungs-Repo.
+Cała ścieżka Architekta powstała na **jednym** repozytorium — świadomie, nie na obcym
+repo ćwiczeniowym.
 
-| Projekt                                                                                                                                                                | Stack                                                                                            | Skala                                           | Artefakte      |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ----------------------------------------------- | -------------- |
-| **persona-forge** — Web-Tool für psychometrisches LLM-Profiling: fährt gemeinfreie Tests (v1: OEJTS) mit N Wiederholungen gegen LLMs und liefert Verteilungen je Achse | Astro 6 SSR + React 19 + TypeScript + Tailwind 4 + Supabase (Postgres/Auth) + Cloudflare Workers | ~68 TS/TSX-Module, 172 Commits / 20 Tage / Solo | L2, L3, L4, L5 |
+| Projekt                                                                                                                                                                                    | Stack                                                                                            | Skala                                           | Artefakty      |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ----------------------------------------------- | -------------- |
+| **persona-forge** — narzędzie webowe do psychometrycznego profilowania LLM-ów: uruchamia testy z domeny publicznej (v1: OEJTS) z N powtórzeniami przeciwko LLM-om i zwraca rozkłady per oś | Astro 6 SSR + React 19 + TypeScript + Tailwind 4 + Supabase (Postgres/Auth) + Cloudflare Workers | ~68 modułów TS/TSX, 172 commity / 20 dni / solo | L2, L3, L4, L5 |
 
-## 2. Projekt-Map (L2)
+## 2. Mapa projektu (L2)
 
-- **Drei-Schichten-Architektur:** Astro-Pages/API-Routes (Entry, instabil I≈75–100 %) →
-  React-Inseln → `src/lib/` (Business-Logik, stabiles Fundament mit hohem afferentem
-  Coupling). Deploy auf Cloudflare, Zustand in Supabase.
-- **Ein klares Zentrum:** der **Mess-/Run-Flow** (`services/runs.ts` Ca 9 +
-  `instruments/oejts.ts` Ca 7 + Run-Inseln) ist Aktivitäts-Hotspot **und**
-  Blast-Radius-Kern zugleich → der natürliche Deep-Focus-Kandidat für L3.
-- **Querschnitte mit hohem Risiko:** Auth (`middleware.ts` + `api-auth.ts`, 10 Importeure)
-  und verschlüsselte LLM-Keys (`model-configs.ts` + `crypto.ts`); dazu `api-responses.ts`
-  (11 Importeure) — eine Form-Änderung dort strahlt auf jede Route.
-- **Gesunde Statik:** keine Import-Zyklen, keine toten Module; jedes Feature bewegt
-  `lib`+`pages`+`components` als vertikaler Slice.
-- **Größter Unknown (ehrlich benannt):** die `.astro`-Routing-Schicht ist für statische
-  Tools unsichtbar; Aussagen zu stabil-vs-tot sind bei 20 Tagen Historie nicht ableitbar.
+- **Architektura trójwarstwowa:** Astro-strony/API-routes (wejście, niestabilne I≈75–100 %) →
+  wyspy React → `src/lib/` (logika biznesowa, stabilny fundament o wysokim couplingu
+  aferentnym). Deploy na Cloudflare, stan w Supabase.
+- **Jedno wyraźne centrum:** przepływ **pomiaru/Run** (`services/runs.ts` Ca 9 +
+  `instruments/oejts.ts` Ca 7 + wyspy Run) jest jednocześnie hotspotem aktywności **i**
+  rdzeniem blast-radius → naturalny kandydat do Deep Focus w L3.
+- **Przekroje o wysokim ryzyku:** Auth (`middleware.ts` + `api-auth.ts`, 10 importujących)
+  oraz zaszyfrowane klucze LLM (`model-configs.ts` + `crypto.ts`); do tego `api-responses.ts`
+  (11 importujących) — zmiana formy tam promieniuje na każdą route.
+- **Zdrowa statyka:** brak cykli importów, brak martwych modułów; każdy ficzer rusza
+  `lib`+`pages`+`components` jako pionowy slice.
+- **Największy unknown (uczciwie nazwany):** warstwa routingu `.astro` jest niewidoczna dla
+  narzędzi statycznych; przy 20 dniach historii nie da się orzec stabilne-vs-martwe.
 
-## 3. Feature-Analyse (L3)
+## 3. Analiza ficzera (L3)
 
-**Untersuchter Flow und Grund:** der OEJTS-Mess-/Run-Flow (Lauf starten → N Wiederholungen
-gegen ein LLM → Verteilung/Typ je Achse) — aus der Map als fachlicher Kern und
-Coupling-Zentrum gewählt.
+**Badany przepływ i powód:** przepływ pomiaru/Run OEJTS (start biegu → N powtórzeń
+przeciwko LLM → rozkład/typ per oś) — wybrany z mapy jako rdzeń biznesowy i centrum
+couplingu.
 
-**Feature overview:** Der Flow ist ein **client-getriebener Step-Loop** — die `RunRunner`-Insel
-ruft pro Wiederholung genau **einen** `POST /api/runs/[id]/step`, der gesamte Zustand liegt in
-Supabase (`runs` + `run_repetitions`). Das umgeht das Cloudflare-Edge-Zeitlimit **ohne**
-Queue/Worker. Scoring und Aggregation sind reine, unit-getestete Logik; die Ergebnis-Aggregate
-werden **nicht persistiert**, sondern bei jedem SSR-Aufruf deterministisch neu berechnet
-(eine Quelle der Wahrheit = die DB-Reps).
+**Feature overview:** Przepływ to **step-loop sterowany przez klienta** — wyspa `RunRunner`
+wywołuje na każde powtórzenie dokładnie **jeden** `POST /api/runs/[id]/step`, a cały stan leży
+w Supabase (`runs` + `run_repetitions`). Omija to limit czasu Cloudflare-Edge **bez**
+kolejki/workera. Scoring i agregacja to czysta, otestowana jednostkowo logika; agregaty wyniku
+**nie są persystowane**, tylko liczone deterministycznie na nowo przy każdym renderze SSR
+(jedno źródło prawdy = powtórzenia w DB).
 
-**Technical Debt (Top 3):**
+**Dług techniczny (Top 3):**
 
-1. **LLM-Client-Fehlerpfade komplett ungetestet** (`openai-compatible.ts`:
-   Retry/Backoff/Timeout/jsonMode-Fallback) — die gefährlichste Lücke; breit genutzte
-   Netzlogik, ein Regress bliebe still.
-2. **D1 — „ok" ≠ „verwertbar":** eine Wiederholung gilt bei `okCount≥1` als `ok`
-   (`runs.ts:401`), Scoring braucht aber alle 8 Items einer Achse (`oejts-score.ts:37`) →
-   stille Semantik-Lücke (Fehlquote sinkt, ohne dass ein Ergebnis verwertbarer wird).
-3. **Fragile Entity↔View-Naht:** handgepflegter `VIEW_COLUMNS`-String + `toView`-Mapper und
-   **ungeprüfte `as`-Casts** über die HTTP-Grenze. **ast-grep-verifiziert** und dabei von
-   Vermutung zu Evidenz geschärft: die Casts liegen an exakt drei Stellen **einer** Datei
-   (`RunRunner.tsx:180/211/258`) — ein zod-Validator dort schließt die ganze dynamische Naht.
+1. **Ścieżki błędów klienta LLM zupełnie nieotestowane** (`openai-compatible.ts`:
+   retry/backoff/timeout/fallback jsonMode) — najgroźniejsza luka; szeroko używana logika
+   sieciowa, regres byłby cichy.
+2. **D1 — „ok" ≠ „nadające się":** powtórzenie liczy się jako `ok` już przy `okCount≥1`
+   (`runs.ts:401`), a scoring wymaga wszystkich 8 itemów danej osi (`oejts-score.ts:37`) →
+   cicha luka semantyczna (spada odsetek błędów, choć wynik nie staje się bardziej użyteczny).
+3. **Krucha szew encja↔widok:** ręcznie utrzymywany string `VIEW_COLUMNS` + mapper `toView`
+   oraz **niesprawdzone rzutowania `as`** przez granicę HTTP. **Zweryfikowane ast-grepem** i przy
+   tym zaostrzone z domysłu do dowodu: rzutowania są w dokładnie trzech miejscach **jednego**
+   pliku (`RunRunner.tsx:180/211/258`) — walidator zod tam zamyka cały dynamiczny szew.
 
-## 4. Refaktor-Plan (L4)
+## 4. Plan refaktoryzacji (L4)
 
-**Was refaktoriert:** **C-B** — ein **zod-Validator an der `RunRunner`-Insel↔HTTP-Naht**. Der
-Client parst jede Erfolgs-Response gegen `z.infer`-Schemas (`run-schemas.ts`, non-strict);
-Drift erzeugt einen kontrollierten `serverError`-Banner statt eines stillen Render-Fehlers.
-`types.ts` wird **Single Source** (`z.infer`-Re-Export) plus **Compile-Guard**
-(`MutualExtends`) gegen `RunStatus`/`Visibility`-Drift.
+**Co refaktoryzowane:** **C-B** — **walidator zod na szwie wyspa `RunRunner`↔HTTP**. Klient
+parsuje każdą odpowiedź sukcesu przeciwko schematom `z.infer` (`run-schemas.ts`, non-strict);
+rozjazd generuje kontrolowany baner `serverError` zamiast cichego błędu renderu. `types.ts`
+staje się **jednym źródłem** (re-eksport `z.infer`) plus **compile-guard** (`MutualExtends`)
+przeciw rozjazdowi `RunStatus`/`Visibility`.
 
-**Bewusst NICHT getan:** C-C (Constraint-Single-Source — bewusste Defense-in-Depth), C-A
-(Supabase-Typgen — bewusst + CI-abgesichert), D1 (Geschäftskonzept, verschoben nach L5).
+**Świadomie NIE zrobione:** C-C (single-source dla constraintów — celowa defense-in-depth), C-A
+(typegen Supabase — celowy + zabezpieczony CI), D1 (koncept biznesowy, przesunięty do L5).
 
-**Phasen (guard-first):**
+**Fazy (guard-first):**
 
-- Phase 1 — `run-schemas.ts` + `z.infer`-Typen + Compile-Guard + 12 Unit-Tests · _auto_
-  (`npm run test`/`build`/`lint`).
-- Phase 2 — 3 `as`-Casts einzeln auf `safeParse` umgestellt (je eigener Commit) · _auto_
-  (Typecheck, `git grep "as RunView" = 0`) **+ manuell** (echter Messlauf durch alle drei
-  Pfade; DevTools-Drift-Test zeigt Banner, Loop bricht sauber ab).
+- Faza 1 — `run-schemas.ts` + typy `z.infer` + compile-guard + 12 testów jednostkowych ·
+  _auto_ (`npm run test`/`build`/`lint`).
+- Faza 2 — 3 rzutowania `as` przestawione na `safeParse` pojedynczo (każde osobny commit) ·
+  _auto_ (typecheck, `git grep "as RunView" = 0`) **+ ręcznie** (realny bieg pomiarowy przez
+  wszystkie trzy ścieżki; test rozjazdu przez DevTools pokazuje baner, pętla przerywa czysto).
 
-Umgesetzt, reviewt (plan-review SOUND, impl-review APPROVED) und **live deployt** (Prod 200).
+Wdrożone, zreviewowane (plan-review SOUND, impl-review APPROVED) i **wdrożone na żywo** (prod 200).
 
-## 5. Domäne nach DDD (L5)
+## 5. Domena wg DDD (L5)
 
-**Ubiquitous Language (Kernbegriffe):** _Lauf_ (selbst-enthaltene N-fache Ausführung),
-_Wiederholung/rep_ (isolierte Sitzung), _Achsen-Verteilung_ (Lage + Streuung statt Punktwert),
-_Belastbarkeit_. Gefährlichstes Homonym: **„Persona"** = Domänen-Testobjekt vs. Nutzer-Rolle.
-Zentraler Vision-Begriff **„Disposition" FEHLT im Code** (nur UI-Text, implizit `RunAggregate`).
+**Ubiquitous language (kluczowe pojęcia):** _Bieg (Run)_ (samo-zawierająca się N-krotna
+egzekucja), _Powtórzenie/rep_ (izolowana sesja), _Rozkład per oś_ (położenie + rozrzut zamiast
+punktu), _Belastbarkeit / wiarygodność wyniku_. Najgroźniejszy homonim: **„Persona"** = obiekt
+testowy domeny vs. rola użytkownika. Kluczowe pojęcie wizji **„Disposition" BRAK w kodzie**
+(tylko tekst UI, implicite `RunAggregate`).
 
-**Wichtigste Model-vs-Code-Rozjazdy:** (a) das `permute`-Flag ist **toter Vertrag** —
-deklariert (`types.ts:192`), aber der Orchestrator permutiert immer hart (`runs.ts:376`);
-(b) die Belastbarkeits-Regel lebt **nur im UI** (`RELIABLE_MIN=2`, `axis-chart.tsx:14`),
-während API/DB/Aggregat N=1 als fertiges `ready`-Ergebnis zulassen.
+**Najważniejsze rozjazdy model-vs-kod:** (a) flaga `permute` to **martwy kontrakt** —
+zadeklarowana (`types.ts:192`), ale orkiestrator zawsze permutuje na twardo (`runs.ts:376`);
+(b) reguła wiarygodności żyje **tylko w UI** (`RELIABLE_MIN=2`, `axis-chart.tsx:14`),
+podczas gdy API/DB/agregat dopuszczają N=1 jako gotowy wynik `ready`.
 
-**Invariante #1 + Aggregat:** „**Ein Ergebnis wird nie als belastbar dargestellt, wenn es aus
-weniger als N_min verwertbaren Wiederholungen stammt**" — der einzige als _unverletzlich_
-markierte Guardrail und zugleich der am **schwächsten** erzwungene (Grep `reliab` über
-`src/lib` = null Produktionscode). Gehört an das Aggregat **Lauf** (`RunAggregate`); Design:
-domänen-berechnetes `reliability`-Verdikt + Single-Source-Konstante `MIN_RELIABLE_REPS` +
-fail-fast `UnreliableRunError` für Vertragspfade.
+**Niezmiennik #1 + agregat:** „**Wynik nigdy nie jest przedstawiany jako wiarygodny, jeśli
+pochodzi z mniej niż N_min użytecznych powtórzeń**" — jedyny guardrail oznaczony jako
+_nienaruszalny_, a zarazem **najsłabiej** egzekwowany (grep `reliab` po `src/lib` = zero kodu
+produkcyjnego). Należy do agregatu **Bieg** (`RunAggregate`); projekt: liczony w domenie werdykt
+`reliability` + stała single-source `MIN_RELIABLE_REPS` + fail-fast `UnreliableRunError` dla
+ścieżek kontraktowych.
 
-**Anti-Corruption-Layer:** schlimmster Leak = **Supabase-Client**, sickert durch **5 Schichten /
-6 Dateien** (Typ `SupabaseClient` 4× Zeichen-für-Zeichen dupliziert; Postgres-Fehlercode
-`"23505"` als String-Match in der Businesslogik, `runs.ts:423`). Ehrlich dimensioniert: der
-Leak ist **mild** — er erreicht weder UI noch reine Scoring-Domäne; `openai-compatible.ts` ist
-bereits ein lehrbuchreiner ACL und dient als Vorbild. Prüfbares Zukunfts-Kriterium:
-`grep @supabase src/` darf nur noch das Adapter-Verzeichnis treffen.
+**Anti-Corruption Layer:** najgorszy przeciek = **klient Supabase**, sączy się przez **5 warstw /
+6 plików** (typ `SupabaseClient` zduplikowany 4× znak w znak; kod błędu Postgresa `"23505"` jako
+string-match w logice biznesowej, `runs.ts:423`). Uczciwie zwymiarowane: przeciek jest **łagodny**
+— nie dociera ani do UI, ani do czystej domeny scoringu; `openai-compatible.ts` to już
+podręcznikowy ACL i służy jako wzorzec. Sprawdzalne kryterium na przyszłość: `grep @supabase src/`
+ma trafiać wyłącznie w katalog adaptera.
 
-## 6. Entscheidungen, die mir gehören
+## 6. Decyzje, które należą do mnie
 
-Ich habe den Architect-Pfad bewusst auf meinem **echten Produkt** statt einem Wegwerf-Repo
-gefahren — damit die Diagnosen direkt in die Roadmap fließen, nicht in eine Übung. Beim
-L4-Ranking hat mich die **Intentionalitäts-Lupe** (Git-Archäologie statt ADRs) überzeugt, den
-L3-spektakulärsten Befund (die `VIEW_COLUMNS`-Naht, C-A) auf den **letzten** Platz zu setzen:
-er ist bewusst gewählt und CI-abgesichert, also „guard, nicht Umbau" — und **C-B** zu wählen,
-das einzige _zufällige_ Komplexitäts-Problem mit kleinem, umkehrbarem Pfad. **D1** habe ich
-gegen den ersten Reflex _nicht_ als mechanischen Refaktor behandelt, sondern nach L5 verschoben,
-weil es ein fehlendes **Geschäftskonzept** ist (Scoring-Yield-Quote vs. Antwort-Fehlquote),
-nicht verhaltenserhaltend. In L5 stimme ich zu, dass Belastbarkeit Invariante #1 ist, übernehme
-aber den **Einwand des Design-Agenten** gegen den Distillation-Vorschlag: Belastbarkeit gehört
-in ein eigenes `reliability`-Feld, **nicht** in `RunResultView.state` — `state` ist ein
-Render-Diskriminator und dazu orthogonal. Diese Abwägung ist meine, wenn ich den Plan in ein
-`change-id` überführe. Das Werkzeug (Agenten, ast-grep, Git-Historie) liefert Kandidaten und
-Belege; die Wahl, was Kern ist und was warten kann, bleibt bei mir.
+Ścieżkę Architekta poprowadziłem świadomie na moim **realnym produkcie**, a nie na repo
+jednorazowym — żeby diagnozy trafiały prosto do roadmapy, nie do ćwiczenia. Przy rankingu L4
+przekonała mnie **soczewka intencjonalności** (archeologia Gita zamiast ADR-ów), by
+najbardziej spektakularny wynik z L3 (szew `VIEW_COLUMNS`, C-A) postawić na **ostatnim**
+miejscu: jest świadomie wybrany i zabezpieczony CI, więc „guard, nie przebudowa" — a wybrać
+**C-B**, jedyny problem _przypadkowej_ złożoności o małej, odwracalnej ścieżce. **D1**
+potraktowałem wbrew pierwszemu odruchowi _nie_ jako refaktor mechaniczny, lecz przesunąłem do
+L5, bo to brakujące **pojęcie biznesowe** (odsetek plonu scoringu vs. odsetek błędów odpowiedzi),
+nie zachowujące zachowania. W L5 zgadzam się, że wiarygodność to niezmiennik #1, ale przejmuję
+**zastrzeżenie agenta projektowego** wobec propozycji z distillation: wiarygodność należy do
+osobnego pola `reliability`, a **nie** do `RunResultView.state` — `state` to dyskryminator
+renderu, do tego ortogonalny. Ta decyzja jest moja, kiedy przekuję plan w konkretny `change-id`.
+Narzędzie (agenci, ast-grep, historia Gita) dostarcza kandydatów i dowodów; wybór, co jest
+rdzeniem, a co może poczekać, zostaje po mojej stronie.
