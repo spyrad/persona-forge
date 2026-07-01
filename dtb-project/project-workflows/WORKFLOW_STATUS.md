@@ -7,22 +7,20 @@
 
 ## Aktueller Stand
 
-| Kennzahl              | Wert                                                                                                                                                                                                                                         |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Laufende Arbeit**   | Kurs **Modul 4 (10xArchitect) KOMPLETT** — **4/4 Artefakte** (L2 Map · L3 Research · L4 Plan+Impl LIVE · **L5 DDD**) + **Architektur-Report** (`context/architect-report.md`). `refactor-opportunities` archiviert. `origin/main = 5906197`. |
-| **Naechster Schritt** | **Termin-Entscheidung 2026-07-02**. Report ins Zert-Formular (letzte Kurswoche). Optional: Event Storming (`event-storming-canvas`).                                                                                                         |
-| **Blocker**           | Keine.                                                                                                                                                                                                                                       |
+| Kennzahl              | Wert                                                                                                                                                                                                                                                                                                              |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Laufende Arbeit**   | Kurs **Modul 4 (10xArchitect) KOMPLETT** — **4/4 Artefakte** (L2 Map · L3 Research · L4 Plan+Impl LIVE · **L5 DDD**) + **Architektur-Report** (`context/architect-report.md`). `refactor-opportunities` archiviert; F3 (`ENCRYPTION_KEY`) live gelöst. `origin/main = 93fae0c` (dieser Status-Commit noch lokal). |
+| **Naechster Schritt** | **Termin-Entscheidung 2026-07-02**. Report ins Zert-Formular (letzte Kurswoche). Optional: Event Storming (`event-storming-canvas`).                                                                                                                                                                              |
+| **Blocker**           | Keine.                                                                                                                                                                                                                                                                                                            |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] **3 lokale Commits pushen** (`db6cad5`/`63a7ee6`/`ba4848f`) — `origin/main = 5906197`; reine Doku, Push = Prod-Deploy.
 - [ ] **Termin-Entscheidung 2026-07-02:** Builder allein (5. Juli, Auszeichnung) vs. Builder+Architect (10. Aug); kein Nachreichen.
 - [ ] **Architektur-Report einreichen** — `context/architect-report.md` ins Zertifizierungs-Formular (erscheint in der letzten Kurswoche). Ggf. PL-Übersetzung vor Einreichung, falls das Formular es verlangt.
 - [ ] **Optional (L5-Kür):** Event Storming via `event-storming-canvas` für den Run-Flow → `board.json`-Hotspots.
 - [ ] **L5-Nachverwertung (post-MVP-Zyklus):** `02-invariant-aggregate-refactor.md` (Belastbarkeit/D1) und `03-anti-corruption-layer.md` (Supabase-ACL) sind fertige Plan-Inputs für künftige `/10x-plan`-Changes.
-- [ ] **F3-Follow-up:** `ENCRYPTION_KEY`-Worker-Secret-Stand verifizieren → ggf. `ci.yml`-`secrets:`-Sync.
 - [ ] **OEJTS-Items** als gemeinfreie Quelle dokumentieren — Owner: Damian.
 - [ ] **Repo-Description + Topics** auf GitHub setzen — manueller Schritt.
 
@@ -30,20 +28,21 @@
 
 ## Abgeschlossene Meilensteine (kompakt)
 
-| Datum      | Meilenstein                                        | Ergebnis                                                                                                                                               | Details                                                         |
-| ---------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- |
-| 2026-07-01 | **Modul-4 L5: DDD-Domäne + Modul-Abschluss**       | 3 Artefakte via Sub-Agenten (Distillation · Invariant/Aggregat=Belastbarkeit/D1 · ACL=Supabase, mild) + Review am Code; Architektur-Report (Two-Pager) | `context/domain/01-03`, `context/architect-report.md` (S6)      |
-| 2026-07-01 | **`refactor-opportunities` archiviert**            | Pre-Flight sauber, kein Roadmap-Match; CI grün, Prod 200                                                                                               | `5906197`, `context/archive/2026-06-30-refactor-opportunities/` |
-| 2026-06-30 | **Modul-4 L4: C-B umgesetzt + LIVE**               | plan-review (SOUND) → implement (guard-first 2 Ph., Compile-Guard) → manual (Banner live) → impl-review (APPROVED) → Deploy grün, Prod 200             | `2026-06-30.md` (S5), `8f64969`→`845ae83`                       |
-| 2026-06-30 | **Modul-4 L4: Refaktor-Plan (Element ④)**          | Exploration (4 Sub-Agenten, 3 Lupen) → Ranking C-B>C-C>C-A, D1→M4L5; ast-grep-Verifikation; guard-first Plan                                           | `2026-06-30.md` (S4), `context/changes/refactor-opportunities/` |
-| 2026-06-30 | **Modul-4 L3: Feature-Analyse (Run-Flow)**         | `/10x-research` 3 Sub-Agenten + ast-grep → `research.md` (Feature overview + Technical debt). D1, LLM-Test-Lücke, Naht                                 | `2026-06-30.md` (S3), `context/changes/run-flow-analysis/`      |
-| 2026-06-30 | **Modul-4 L2: Projekt-Map**                        | Wide-Scan (git/dependency-cruiser/madge) → 4 Artefakte; Run-Flow als Zentrum, keine Zyklen                                                             | `2026-06-30.md` (S2), `context/map/`                            |
-| 2026-06-30 | **E2E (6.5) nachgezogen** — `ui-redesign` komplett | `npm run test:e2e` 4 passed; Node-Adapter-Isolation; kein Code-Diff                                                                                    | `2026-06-30.md` (S1)                                            |
-| 2026-06-29 | **`ui-redesign` live + archiviert**                | shadcn-Token-System (Teal, hell-first), Topbar + Card-Hub, Dark Mode, Charts; Prod 200; archiviert                                                     | `4740727`→`9245acf`, `2026-06-29.md`                            |
-| 2026-06-26 | `sentry-monitoring` geschlossen + archiviert       | Triage (Secret-Scrubber + Gotcha) gepusht, CI grün, IP-Toggle an; archiviert                                                                           | `66a36f0`, `2026-06-26.md`                                      |
-| 2026-06-25 | Test-Rollout KOMPLETT — `integration`-CI-Gate      | `ci`+`integration` grün; Phase-3 archiviert; E2E-Lernschicht (s03e04) live                                                                             | `1b2c0ac`→`b6c7589`, `2026-06-25.md`                            |
-| 2026-06-18 | S-04/S-05 (measurement-run, distribution) live     | OEJTS-Lauf end-to-end + Verteilung/Typ-Stabilität je Achse                                                                                             | `d06afbe`, `2eb4da5`                                            |
-| 2026-06-15 | S-01–S-03 (Auth, Model-Config, Persona) live       | E-Mail-Auth, verschl. Key, Persona-Katalog                                                                                                             | `72fa7ce`, `3d8bb4e`                                            |
+| Datum      | Meilenstein                                        | Ergebnis                                                                                                                                                       | Details                                                         |
+| ---------- | -------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| 2026-07-01 | **F3-Follow-up gelöst — `ENCRYPTION_KEY` live**    | Prod-Banner „ENCRYPTION_KEY is not configured" weg; Deploy-Job synct Secret (`ci.yml` `secrets:`+`env:`) + GitHub-Secret gesetzt; Banner-Vorkommen 0, Prod 200 | `93fae0c`, Run 28514530742                                      |
+| 2026-07-01 | **Modul-4 L5: DDD-Domäne + Modul-Abschluss**       | 3 Artefakte via Sub-Agenten (Distillation · Invariant/Aggregat=Belastbarkeit/D1 · ACL=Supabase, mild) + Review am Code; Architektur-Report (Two-Pager)         | `context/domain/01-03`, `context/architect-report.md` (S6)      |
+| 2026-07-01 | **`refactor-opportunities` archiviert**            | Pre-Flight sauber, kein Roadmap-Match; CI grün, Prod 200                                                                                                       | `5906197`, `context/archive/2026-06-30-refactor-opportunities/` |
+| 2026-06-30 | **Modul-4 L4: C-B umgesetzt + LIVE**               | plan-review (SOUND) → implement (guard-first 2 Ph., Compile-Guard) → manual (Banner live) → impl-review (APPROVED) → Deploy grün, Prod 200                     | `2026-06-30.md` (S5), `8f64969`→`845ae83`                       |
+| 2026-06-30 | **Modul-4 L4: Refaktor-Plan (Element ④)**          | Exploration (4 Sub-Agenten, 3 Lupen) → Ranking C-B>C-C>C-A, D1→M4L5; ast-grep-Verifikation; guard-first Plan                                                   | `2026-06-30.md` (S4), `context/changes/refactor-opportunities/` |
+| 2026-06-30 | **Modul-4 L3: Feature-Analyse (Run-Flow)**         | `/10x-research` 3 Sub-Agenten + ast-grep → `research.md` (Feature overview + Technical debt). D1, LLM-Test-Lücke, Naht                                         | `2026-06-30.md` (S3), `context/changes/run-flow-analysis/`      |
+| 2026-06-30 | **Modul-4 L2: Projekt-Map**                        | Wide-Scan (git/dependency-cruiser/madge) → 4 Artefakte; Run-Flow als Zentrum, keine Zyklen                                                                     | `2026-06-30.md` (S2), `context/map/`                            |
+| 2026-06-30 | **E2E (6.5) nachgezogen** — `ui-redesign` komplett | `npm run test:e2e` 4 passed; Node-Adapter-Isolation; kein Code-Diff                                                                                            | `2026-06-30.md` (S1)                                            |
+| 2026-06-29 | **`ui-redesign` live + archiviert**                | shadcn-Token-System (Teal, hell-first), Topbar + Card-Hub, Dark Mode, Charts; Prod 200; archiviert                                                             | `4740727`→`9245acf`, `2026-06-29.md`                            |
+| 2026-06-26 | `sentry-monitoring` geschlossen + archiviert       | Triage (Secret-Scrubber + Gotcha) gepusht, CI grün, IP-Toggle an; archiviert                                                                                   | `66a36f0`, `2026-06-26.md`                                      |
+| 2026-06-25 | Test-Rollout KOMPLETT — `integration`-CI-Gate      | `ci`+`integration` grün; Phase-3 archiviert; E2E-Lernschicht (s03e04) live                                                                                     | `1b2c0ac`→`b6c7589`, `2026-06-25.md`                            |
+| 2026-06-18 | S-04/S-05 (measurement-run, distribution) live     | OEJTS-Lauf end-to-end + Verteilung/Typ-Stabilität je Achse                                                                                                     | `d06afbe`, `2eb4da5`                                            |
+| 2026-06-15 | S-01–S-03 (Auth, Model-Config, Persona) live       | E-Mail-Auth, verschl. Key, Persona-Katalog                                                                                                                     | `72fa7ce`, `3d8bb4e`                                            |
 
 ---
 
