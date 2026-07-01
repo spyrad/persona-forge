@@ -1,5 +1,6 @@
 import { AlertTriangle, ArrowLeft, Clock, Globe, Lock, Sigma } from "lucide-react";
 import type { AxisDistribution, RunResultView } from "@/types";
+import { formatDateTime, formatDuration } from "@/lib/runs/run-timing";
 import { AxisChart, RELIABLE_MIN } from "./axis-chart";
 
 interface Props {
@@ -62,7 +63,7 @@ function AxisCard({ axis }: { axis: AxisDistribution }) {
 }
 
 export default function RunResult({ result }: Props) {
-  const { run, aggregate, state } = result;
+  const { run, aggregate, state, timing } = result;
 
   if (state === "unfinished") {
     return (
@@ -139,6 +140,15 @@ export default function RunResult({ result }: Props) {
         <p className="text-muted-foreground mt-2 text-xs">
           Fehlquote: {failureRate(run.failedCount, run.repetitionCount)} · Tokens: {run.promptTokens} ein /{" "}
           {run.completionTokens} aus
+        </p>
+        <p className="text-muted-foreground mt-1 text-xs">
+          Ausgeführt: {formatDateTime(timing.executedAt)}
+          {timing.wallClockMs != null
+            ? ` · Dauer ${formatDuration(timing.wallClockMs)} (Modell-Zeit ${formatDuration(timing.modelMs)})`
+            : ""}
+          {timing.repCount > 0 && timing.avgMs != null && timing.minMs != null && timing.maxMs != null
+            ? ` · ⌀ ${formatDuration(timing.avgMs)}/Rep (${formatDuration(timing.minMs)}–${formatDuration(timing.maxMs)})`
+            : ""}
         </p>
 
         {lowReliability ? (
