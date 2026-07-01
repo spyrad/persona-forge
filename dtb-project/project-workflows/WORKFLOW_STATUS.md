@@ -1,66 +1,54 @@
 # Workflow-Status: persona-forge
 
-**Letztes Update:** 2026-07-01 (Session 6)
+**Letztes Update:** 2026-07-01 (Session 4)
 **Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-01.md`
 
 ---
 
 ## Aktueller Stand
 
-| Kennzahl              | Wert                                                                                                                                                                                                                                                                         |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Laufende Arbeit**   | Feature **Modellname-Vorschläge (datalist)** implementiert + gepusht (`FEATURE_MODEL_NAME_COMBOBOX.md`, „Fertig zum Testen"); Deploy `e1aeb37` in Verifikation. Modul 4 KOMPLETT (4/4 + Report); F3 + Krypto-Key-Mismatch live gelöst. `origin/main = e1aeb37`, Baum sauber. |
-| **Naechster Schritt** | **Live-Abnahme** des Modellname-Features (nach Deploy: Connection testen → Vorschläge im Modellname-Feld). Dann **Termin-Entscheidung 2026-07-02**.                                                                                                                          |
-| **Blocker**           | Keine (Feature wartet auf Live-Abnahme).                                                                                                                                                                                                                                     |
+| Kennzahl              | Wert                                                                                                                                                                                                         |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Laufende Arbeit**   | Zwei Features **live**: Lauf-/Wiederholungs-Timing + z.ai `thinking:disabled`. Beide via superpowers-Flow (Spec/Plan/SDD), CI grün, Prod 200. `origin/main = c5631f0`, Baum sauber. Warten auf Live-Abnahme. |
+| **Naechster Schritt** | **Live-Abnahme** eines z.ai-Laufs (glm-5.2, Coding-Endpunkt): schnell (~2–3 s/Rep) + Timing sichtbar (Live/Ergebnis/Liste). Dann **Termin-Entscheidung 2026-07-02**.                                         |
+| **Blocker**           | Keine.                                                                                                                                                                                                       |
 
 ---
 
 ## Offene Aufgaben
 
+- [ ] **Live-Abnahme** Timing + thinking-Fix mit einem z.ai-Lauf.
 - [ ] **Termin-Entscheidung 2026-07-02:** Builder allein (5. Juli, Auszeichnung) vs. Builder+Architect (10. Aug); kein Nachreichen.
-- [ ] **Modellname-Feature live abnehmen** (`FEATURE_MODEL_NAME_COMBOBOX.md`, „Fertig zum Testen"): nach Deploy Connection testen → Vorschläge erscheinen; bei OK → „Abgenommen" + ggf. BACKLOG/Archive.
-- [ ] **Härtung (optional):** `getDecryptedTarget`-Wurf im Step als benannten Fehlerpfad → Lauf sauber `failed`+`repError` statt 500/Hänger.
-- [ ] **Architektur-Report einreichen** — `context/architect-report.md` ins Zertifizierungs-Formular (erscheint in der letzten Kurswoche). Ggf. PL-Übersetzung vor Einreichung, falls das Formular es verlangt.
-- [ ] **Optional (L5-Kür):** Event Storming via `event-storming-canvas` für den Run-Flow → `board.json`-Hotspots.
-- [ ] **L5-Nachverwertung (post-MVP-Zyklus):** `02-invariant-aggregate-refactor.md` (Belastbarkeit/D1) und `03-anti-corruption-layer.md` (Supabase-ACL) sind fertige Plan-Inputs für künftige `/10x-plan`-Changes.
-- [ ] **OEJTS-Items** als gemeinfreie Quelle dokumentieren — Owner: Damian.
-- [ ] **Repo-Description + Topics** auf GitHub setzen — manueller Schritt.
+- [ ] **Geparkt — Fehler-Sichtbarkeit:** pro-Rep-`error` im UI anzeigen + Upstream-Fehlertext durchreichen (der „ich sehe die Fehler nicht"-Mangel) — eigener Vorgang.
+- [ ] **Optional Mikro-Härtung:** `isZaiEndpoint` auf `=== "z.ai" || endsWith(".z.ai")` (kein realer Angriffsweg).
+- [ ] **Architektur-Report einreichen** — `context/architect-report.md` ins Zert-Formular (letzte Kurswoche).
+- [ ] **OEJTS-Items** als gemeinfreie Quelle dokumentieren; **Repo-Description + Topics** auf GitHub.
 
 ---
 
 ## Abgeschlossene Meilensteine (kompakt)
 
-| Datum      | Meilenstein                                         | Ergebnis                                                                                                                                                                                                      | Details                                                           |
-| ---------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| 2026-07-01 | **Feature: Modellname-Vorschläge (datalist)**       | dtb-Workflow (feature-plan → direkt impl); `probeModels` gibt `models[]`, UI `<datalist>` + Freitext-Fallback, `extractModelIds`+5 Tests; 65/65 grün, gepusht (Live-Abnahme offen)                            | `e1aeb37`, `FEATURE_MODEL_NAME_COMBOBOX.md`, `2026-07-01.md` (S3) |
-| 2026-07-01 | **Krypto-Key-Mismatch behoben (Läufe scheiterten)** | Diagnose: Prod-Zufalls-Key ≠ `.dev.vars`-Key der geteilten Supabase-DB → Decrypt wirft, Läufe hängen 0/5. Fix: GitHub-Secret = `.dev.vars`-Key, Re-Deploy grün; verifiziert via Verbindungstest (127 Modelle) | `70784f7`, `2026-07-01.md` (S2)                                   |
-| 2026-07-01 | **F3-Follow-up gelöst — `ENCRYPTION_KEY` live**     | Prod-Banner „ENCRYPTION_KEY is not configured" weg; Deploy-Job synct Secret (`ci.yml` `secrets:`+`env:`) + GitHub-Secret gesetzt; Banner-Vorkommen 0, Prod 200                                                | `93fae0c`, Run 28514530742                                        |
-| 2026-07-01 | **Modul-4 L5: DDD-Domäne + Modul-Abschluss**        | 3 Artefakte via Sub-Agenten (Distillation · Invariant/Aggregat=Belastbarkeit/D1 · ACL=Supabase, mild) + Review am Code; Architektur-Report (Two-Pager)                                                        | `context/domain/01-03`, `context/architect-report.md` (S6)        |
-| 2026-07-01 | **`refactor-opportunities` archiviert**             | Pre-Flight sauber, kein Roadmap-Match; CI grün, Prod 200                                                                                                                                                      | `5906197`, `context/archive/2026-06-30-refactor-opportunities/`   |
-| 2026-06-30 | **Modul-4 L4: C-B umgesetzt + LIVE**                | plan-review (SOUND) → implement (guard-first 2 Ph., Compile-Guard) → manual (Banner live) → impl-review (APPROVED) → Deploy grün, Prod 200                                                                    | `2026-06-30.md` (S5), `8f64969`→`845ae83`                         |
-| 2026-06-30 | **Modul-4 L4: Refaktor-Plan (Element ④)**           | Exploration (4 Sub-Agenten, 3 Lupen) → Ranking C-B>C-C>C-A, D1→M4L5; ast-grep-Verifikation; guard-first Plan                                                                                                  | `2026-06-30.md` (S4), `context/changes/refactor-opportunities/`   |
-| 2026-06-30 | **Modul-4 L3: Feature-Analyse (Run-Flow)**          | `/10x-research` 3 Sub-Agenten + ast-grep → `research.md` (Feature overview + Technical debt). D1, LLM-Test-Lücke, Naht                                                                                        | `2026-06-30.md` (S3), `context/changes/run-flow-analysis/`        |
-| 2026-06-30 | **Modul-4 L2: Projekt-Map**                         | Wide-Scan (git/dependency-cruiser/madge) → 4 Artefakte; Run-Flow als Zentrum, keine Zyklen                                                                                                                    | `2026-06-30.md` (S2), `context/map/`                              |
-| 2026-06-30 | **E2E (6.5) nachgezogen** — `ui-redesign` komplett  | `npm run test:e2e` 4 passed; Node-Adapter-Isolation; kein Code-Diff                                                                                                                                           | `2026-06-30.md` (S1)                                              |
-| 2026-06-29 | **`ui-redesign` live + archiviert**                 | shadcn-Token-System (Teal, hell-first), Topbar + Card-Hub, Dark Mode, Charts; Prod 200; archiviert                                                                                                            | `4740727`→`9245acf`, `2026-06-29.md`                              |
-| 2026-06-26 | `sentry-monitoring` geschlossen + archiviert        | Triage (Secret-Scrubber + Gotcha) gepusht, CI grün, IP-Toggle an; archiviert                                                                                                                                  | `66a36f0`, `2026-06-26.md`                                        |
-| 2026-06-25 | Test-Rollout KOMPLETT — `integration`-CI-Gate       | `ci`+`integration` grün; Phase-3 archiviert; E2E-Lernschicht (s03e04) live                                                                                                                                    | `1b2c0ac`→`b6c7589`, `2026-06-25.md`                              |
-| 2026-06-18 | S-04/S-05 (measurement-run, distribution) live      | OEJTS-Lauf end-to-end + Verteilung/Typ-Stabilität je Achse                                                                                                                                                    | `d06afbe`, `2eb4da5`                                              |
-| 2026-06-15 | S-01–S-03 (Auth, Model-Config, Persona) live        | E-Mail-Auth, verschl. Key, Persona-Katalog                                                                                                                                                                    | `72fa7ce`, `3d8bb4e`                                              |
+| Datum      | Meilenstein                                     | Ergebnis                                                                                                                   | Details                                             |
+| ---------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| 2026-07-01 | **Feature: z.ai `thinking:disabled`**           | Host-Gate `isZaiEndpoint` → additives `thinking`-Feld nur für z.ai; GLM-Läufe ~2,8 s statt 9–16 s; 77/77, CI/Prod grün     | `a8753de`→`c5631f0`, `2026-07-01.md` (S4)           |
+| 2026-07-01 | **Feature: Lauf-/Wiederholungs-Timing**         | Migration `duration_ms`+`finished_at`; `summarizeTiming`; Modell-Zeit+Wall-Clock+Datum in Ergebnis/Live/Liste; 7 Tasks SDD | `31e9383`→`dfe0170`, `2026-07-01.md` (S4)           |
+| 2026-07-01 | **z.ai-Debug**                                  | 429 = Coding-Plan-Key auf falschem Endpunkt; Hängerei = GLM-Reasoning; beides am API belegt                                | `2026-07-01.md` (S4), `persona-forge-zai-provider`  |
+| 2026-07-01 | **Modellname-Vorschläge (datalist)**            | `probeModels` gibt `models[]`, UI `<datalist>` + Freitext; abgenommen (z.ai-Läufe laufen)                                  | `e1aeb37`, `2026-07-01.md` (S3)                     |
+| 2026-07-01 | **Krypto-Key-Mismatch + `ENCRYPTION_KEY` live** | Prod-Key = `.dev.vars`-Key der geteilten DB; Deploy-Job synct Secret; Läufe laufen                                         | `70784f7`/`93fae0c`, `2026-07-01.md` (S1/S2)        |
+| 2026-07-01 | **Modul-4 (10xArchitect) KOMPLETT**             | 4/4 Artefakte + Architektur-Report (PL, einreichbereit)                                                                    | `context/architect-report.md`, `2026-07-01.md` (S1) |
+| 2026-06-30 | **Modul-4 L2–L4 + `ui-redesign`/E2E**           | Projekt-Map, Run-Flow-Analyse, C-B-Refaktor live; Token-System + Dark Mode                                                 | `2026-06-30.md`, `2026-06-29.md`                    |
+| 2026-06-25 | **Test-Rollout KOMPLETT**                       | `ci`+`integration`-CI-Gate; E2E-Lernschicht                                                                                | `1b2c0ac`→`b6c7589`, `2026-06-25.md`                |
+| 2026-06-18 | **S-04/S-05 (Lauf + Verteilung) live**          | OEJTS-Lauf end-to-end + Verteilung/Typ-Stabilität je Achse                                                                 | `d06afbe`, `2eb4da5`                                |
 
 ---
 
 ## Gotchas (Referenz)
 
-- **Modul-4-Artefakte:** L2 `context/map/`; L3 `context/changes/run-flow-analysis/research.md`; **L4** `context/archive/2026-06-30-refactor-opportunities/` (archiviert; research = Element ④, plan = C-B, reviews/); **L5** `context/domain/01-domain-distillation.md` + `02-invariant-aggregate-refactor.md` + `03-anti-corruption-layer.md`; **Abschluss** `context/architect-report.md`. Run-Flow-Kern = `services/runs.ts`. Analyse-Werkzeuge (ast-grep/dependency-cruiser/madge) nur `--no-save`.
-- **`ENCRYPTION_KEY` MUSS = `.dev.vars`/`.env`-Key sein:** Prod + lokaler Dev teilen **dieselbe gehostete Supabase-DB** (`lccaundrniuievkmusko.supabase.co`). Modellkonfig-API-Keys sind mit dem `.dev.vars`-Key AES-GCM-verschlüsselt; ein abweichender/rotierter Prod-Key macht sie unentschlüsselbar → `getDecryptedTarget` wirft (außerhalb try/catch in `runs.ts:348`) → Läufe hängen „Läuft 0/5, 0 Tokens". GitHub-Secret = `.dev.vars`-Wert halten, nie neu würfeln. Verifiziert via Verbindungstest „Verbindung ok — N Modelle".
-- **L5-Kernbefund (D1 gelandet):** Invariante #1 = Belastbarkeit („nie Einzelwert als belastbares Ergebnis") — nur UI-erzwungen (`RELIABLE_MIN=2`, `axis-chart.tsx:14`), API/DB/Aggregat lassen N=1 zu. Design-Ziel: `RunAggregate.reliability` + `MIN_RELIABLE_REPS` + `UnreliableRunError` (Domäne, nicht `state`). ACL-Befund: Supabase-Client leakt 5 Schichten/6 Dateien, aber mild (kein UI/Scoring-Kontakt); `openai-compatible.ts` = sauberes ACL-Vorbild.
-- **L4 C-B umgesetzt:** Client parst Run-Responses mit `safeParse` gegen `z.infer`-Schemas (`src/lib/runs/run-schemas.ts`, non-strict); Drift → `serverError`-Banner. `types.ts` = Single Source + Compile-Guard (`MutualExtends`) gegen `RunStatus`/`Visibility`-Drift. Non-Goal blieb: C-C/C-A/D1.
-- **CI hat KEINEN e2e-Job:** Deploy-Gate = `ci`+`integration`. E2E (`npm run test:e2e`) braucht lokales Docker/Supabase.
-- **Lint lokal (Windows):** `npm run lint` zeigt massenhaft `Delete ␍` (CRLF) — Artefakt, CI irrelevant; husky fixt beim Commit. Gezielt prüfen: `npx eslint <datei>` + non-prettier-Filter.
-- **Push auf `main` = Prod-Deploy**; **CI-Fail blockt deploy lautlos** → nach Push Jobs per REST-API prüfen (`gh` nicht installiert; `curl.exe --ssl-no-revoke` gegen `api.github.com/.../actions/runs`; `/tmp` NICHT von Windows-node ladbar — curl direkt in node-stdin pipen).
-- **Vite-Dev-Transient:** Neue Module (z. B. `zod`-Import in einer Insel) lösen beim ersten `npm run dev` eine Dep-Re-Optimierung + Reload aus → einmalig „Invalid hook call"/`useState null`. Self-heal nach Reload; Dev-Server einmal neu starten beseitigt es. Kein Code-Bug; Build/Prod unberührt.
-- **Resume-Hygiene:** canonical Status hier; bei Resume `git ls-remote origin main` gegen lokalen HEAD prüfen.
+- **z.ai:** Coding-Plan-Key braucht Endpunkt `api.z.ai/api/coding/paas/v4` (Standard+bezahltes Modell → 429); GLM reasont per Default → jetzt via `thinking:disabled` (Host-Gate) abgeschaltet. Siehe Memory `persona-forge-zai-provider`.
+- **`ENCRYPTION_KEY` MUSS = `.dev.vars`/`.env`-Key** sein (Prod + Dev teilen dieselbe gehostete Supabase-DB `lccaundrniuievkmusko`), sonst sind Modellkonfig-Keys unentschlüsselbar → Läufe hängen 0/N.
+- **Migrationen** gehen NICHT über den Deploy-Job — separat auf die gehostete DB (`supabase db push`/Dashboard), **vor** dem Worker-Deploy (additive nullable Spalten sind kompatibel).
+- **Push auf `main` = Prod-Deploy**; CI-Fail blockt Deploy lautlos → nach Push Runs per REST prüfen (`gh` fehlt; `curl.exe --ssl-no-revoke` gegen `api.github.com/.../actions/runs`, direkt in node-stdin pipen).
+- **Timing-Artefakte:** `src/lib/runs/run-timing.ts`, Messung in `services/runs.ts#processNextRepetition`, `RunResultView.timing`. Wall-Clock enthält bewusst Leerlauf; Modell-Zeit = Σ Rep-Dauern.
 
 ---
 
