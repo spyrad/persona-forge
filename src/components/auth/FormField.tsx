@@ -17,6 +17,8 @@ interface FormFieldProps {
   hint?: ReactNode;
   icon: ReactNode;
   endContent?: ReactNode;
+  /** Optionale `<datalist>`-Id → native Autocomplete-Vorschläge, Freitext bleibt möglich. */
+  list?: string;
 }
 
 export function FormField({
@@ -31,6 +33,7 @@ export function FormField({
   hint,
   icon,
   endContent,
+  list,
 }: FormFieldProps) {
   return (
     <div>
@@ -44,6 +47,7 @@ export function FormField({
           name={name ?? id}
           type={type}
           value={value}
+          list={list}
           onChange={(e) => {
             onChange(e.target.value);
           }}

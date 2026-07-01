@@ -3,6 +3,7 @@ import { z } from "zod";
 import { requireUser } from "@/lib/api-auth";
 import { json, jsonError, serviceErrorResponse, validationError } from "@/lib/api-responses";
 import { isPublicHttpsUrl } from "@/lib/url-guard";
+import { extractModelIds } from "@/lib/llm/model-list";
 import { getDecryptedTarget } from "@/lib/services/model-configs";
 
 export const prerender = false;
@@ -20,7 +21,7 @@ const testSchema = z.union([
   z.object({ configId: z.uuid() }),
 ]);
 
-type ProbeResult = { ok: true; modelCount?: number } | { ok: false; reason: string };
+type ProbeResult = { ok: true; modelCount?: number; models?: string[] } | { ok: false; reason: string };
 
 /** GET {baseUrl}/models mit Bearer-Key, kurzem Timeout; leakt nie Key/Upstream-Header. */
 async function probeModels(baseUrl: string, apiKey: string): Promise<ProbeResult> {
@@ -47,14 +48,18 @@ async function probeModels(baseUrl: string, apiKey: string): Promise<ProbeResult
       return { ok: false, reason: `Endpoint returned status ${res.status}.` };
     }
     let modelCount: number | undefined;
+    let models: string[] | undefined;
     try {
       const payload: unknown = await res.json();
       const list = (payload as { data?: unknown }).data;
       if (Array.isArray(list)) modelCount = list.length;
+      // Modell-IDs fuer das UI-Dropdown; nur IDs, nie Key/Upstream-Header.
+      const ids = extractModelIds(payload);
+      if (ids.length) models = ids;
     } catch {
       // Kein JSON-Body — Endpoint ist erreichbar + autorisiert, das genuegt.
     }
-    return { ok: true, modelCount };
+    return { ok: true, modelCount, models };
   } catch (err) {
     if (err instanceof Error && err.name === "AbortError") {
       return { ok: false, reason: "Endpoint timed out." };

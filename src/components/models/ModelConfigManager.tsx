@@ -52,6 +52,8 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
   const [testing, setTesting] = useState(false);
   const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  // Modell-IDs aus dem letzten Verbindungstest → Vorschlagsliste fuer "Modellname".
+  const [modelOptions, setModelOptions] = useState<string[]>([]);
 
   const isEditing = editingId !== null;
 
@@ -59,6 +61,8 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
     setForm((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => ({ ...prev, [key]: undefined }));
     setTestResult(null);
+    // Endpunkt/Key geaendert → die alte Modell-Liste passt nicht mehr.
+    if (key === "baseUrl" || key === "apiKey") setModelOptions([]);
   }
 
   function resetForm() {
@@ -67,6 +71,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
     setErrors({});
     setServerError(null);
     setTestResult(null);
+    setModelOptions([]);
   }
 
   function validate(): boolean {
@@ -144,6 +149,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
     setErrors({});
     setServerError(null);
     setTestResult(null);
+    setModelOptions([]);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -193,18 +199,21 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
       }
       const payload: unknown = await res.json().catch(() => null);
       if (!res.ok) {
+        setModelOptions([]);
         setTestResult({ ok: false, message: messageFromPayload(payload) });
         return;
       }
-      const result = payload as { ok: boolean; modelCount?: number; reason?: string };
-      setTestResult(
-        result.ok
-          ? {
-              ok: true,
-              message: `Verbindung ok${typeof result.modelCount === "number" ? ` — ${result.modelCount} Modelle` : ""}.`,
-            }
-          : { ok: false, message: result.reason ?? "Verbindung fehlgeschlagen." },
-      );
+      const result = payload as { ok: boolean; modelCount?: number; reason?: string; models?: string[] };
+      if (result.ok) {
+        setModelOptions(Array.isArray(result.models) ? result.models : []);
+        setTestResult({
+          ok: true,
+          message: `Verbindung ok${typeof result.modelCount === "number" ? ` — ${result.modelCount} Modelle` : ""}.`,
+        });
+      } else {
+        setModelOptions([]);
+        setTestResult({ ok: false, message: result.reason ?? "Verbindung fehlgeschlagen." });
+      }
     } catch {
       setTestResult({ ok: false, message: "Network error — please try again." });
     } finally {
@@ -253,7 +262,22 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
           placeholder="gpt-4o"
           error={errors.modelName}
           icon={<Box className="size-4" />}
+          list={modelOptions.length ? "model-name-options" : undefined}
+          hint={
+            modelOptions.length ? (
+              <span className="text-muted-foreground mt-1 block text-xs">
+                {modelOptions.length} Modelle aus dem Verbindungstest — tippen zum Filtern oder frei eingeben.
+              </span>
+            ) : undefined
+          }
         />
+        {modelOptions.length ? (
+          <datalist id="model-name-options">
+            {modelOptions.map((m) => (
+              <option key={m} value={m} />
+            ))}
+          </datalist>
+        ) : null}
         <FormField
           id="apiKey"
           label="API-Key"
