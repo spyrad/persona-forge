@@ -1,10 +1,10 @@
 ---
 change_id: refactor-opportunities
 title: Refactor-Opportunities-Ranking für den OEJTS-Run-Flow
-status: impl_reviewed
+status: archived
 created: 2026-06-30
-updated: 2026-06-30
-archived_at: null
+updated: 2026-07-01
+archived_at: 2026-07-01T03:11:24Z
 ---
 
 ## Notes
