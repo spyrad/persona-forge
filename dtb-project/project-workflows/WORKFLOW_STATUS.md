@@ -1,7 +1,7 @@
 # Workflow-Status: persona-forge
 
 **Letztes Update:** 2026-07-01 (Session 6)
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-06/2026-06-30.md` (S6-Log folgt bei Checkpoint)
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-01.md`
 
 ---
 
@@ -17,6 +17,7 @@
 
 ## Offene Aufgaben
 
+- [ ] **3 lokale Commits pushen** (`db6cad5`/`63a7ee6`/`ba4848f`) — `origin/main = 5906197`; reine Doku, Push = Prod-Deploy.
 - [ ] **Termin-Entscheidung 2026-07-02:** Builder allein (5. Juli, Auszeichnung) vs. Builder+Architect (10. Aug); kein Nachreichen.
 - [ ] **Architektur-Report einreichen** — `context/architect-report.md` ins Zertifizierungs-Formular (erscheint in der letzten Kurswoche). Ggf. PL-Übersetzung vor Einreichung, falls das Formular es verlangt.
 - [ ] **Optional (L5-Kür):** Event Storming via `event-storming-canvas` für den Run-Flow → `board.json`-Hotspots.
