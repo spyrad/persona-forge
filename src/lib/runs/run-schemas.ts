@@ -40,6 +40,7 @@ export const runViewSchema = z.object({
   isOwn: z.boolean(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  finishedAt: z.string().nullable(),
 });
 
 /** Liste sichtbarer Laeufe — Response von `GET /api/runs`. */

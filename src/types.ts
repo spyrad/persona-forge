@@ -230,6 +230,7 @@ export interface Run {
   failed_count: number;
   created_at: string;
   updated_at: string;
+  finished_at: string | null;
 }
 
 /**
@@ -250,6 +251,7 @@ export interface RunRepetition {
   completion_tokens: number | null;
   created_at: string;
   updated_at: string;
+  duration_ms: number | null;
 }
 
 /**

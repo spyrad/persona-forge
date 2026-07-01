@@ -18,6 +18,7 @@ function goodRunView() {
     isOwn: true,
     createdAt: "2026-06-30T00:00:00.000Z",
     updatedAt: "2026-06-30T00:01:00.000Z",
+    finishedAt: "2026-06-30T00:03:00.000Z",
   };
 }
 
@@ -40,6 +41,11 @@ describe("runViewSchema", () => {
 
   it("akzeptiert null fuer personaId/modelConfigId (globale/owner-lose Laeufe)", () => {
     const v = { ...goodRunView(), personaId: null, modelConfigId: null };
+    expect(runViewSchema.safeParse(v).success).toBe(true);
+  });
+
+  it("akzeptiert finishedAt = null", () => {
+    const v = { ...goodRunView(), finishedAt: null };
     expect(runViewSchema.safeParse(v).success).toBe(true);
   });
 
