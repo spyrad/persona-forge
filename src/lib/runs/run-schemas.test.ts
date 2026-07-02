@@ -119,3 +119,42 @@ describe("runProgressSchema", () => {
     expect(runProgressSchema.safeParse(drifted).success).toBe(false);
   });
 });
+
+describe("runProgressSchema — Steadfastness-Live-Felder", () => {
+  it("akzeptiert die additiven Live-Felder", () => {
+    const r = runProgressSchema.safeParse({
+      status: "running",
+      completedReps: 1,
+      totalReps: 5,
+      failedCount: 0,
+      promptTokens: 0,
+      completionTokens: 0,
+      lastRepDurationMs: null,
+      lastRepError: null,
+      phase: "experimenting",
+      currentScenario: 2,
+      totalScenarios: 5,
+      currentRound: 3,
+      lastStrategy: "gaslighting",
+    });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.phase).toBe("experimenting");
+  });
+
+  it("bleibt gültig OHNE die Live-Felder (OEJTS-Pfad)", () => {
+    const r = runProgressSchema.safeParse({
+      status: "running",
+      completedReps: 1,
+      totalReps: 5,
+      failedCount: 0,
+      promptTokens: 0,
+      completionTokens: 0,
+      lastRepDurationMs: null,
+      lastRepError: null,
+    });
+    expect(r.success).toBe(true);
+    // Optional (nicht default): weggelassen ⇒ undefined, damit die bestehenden
+    // OEJTS-RunProgress-Returns (ohne diese Felder) typkonform bleiben.
+    if (r.success) expect(r.data.phase).toBeUndefined();
+  });
+});

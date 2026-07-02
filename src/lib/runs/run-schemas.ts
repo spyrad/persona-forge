@@ -56,6 +56,14 @@ export const runProgressSchema = z.object({
   completionTokens: z.number(),
   lastRepDurationMs: z.number().nullable(),
   lastRepError: z.string().nullable(),
+  // Steadfastness-Live-Felder: nullable + optional (KEIN .default) — so bleiben sie
+  // im abgeleiteten Output-Typ optional, und die bestehenden OEJTS-RunProgress-Returns
+  // (die diese Felder weglassen) bleiben typkonform. Der steadfastness-Pfad setzt sie explizit.
+  phase: z.enum(["generating", "experimenting"]).nullable().optional(),
+  currentScenario: z.number().nullable().optional(),
+  totalScenarios: z.number().nullable().optional(),
+  currentRound: z.number().nullable().optional(),
+  lastStrategy: z.string().nullable().optional(),
 });
 
 /** Aus dem Schema abgeleiteter Typ (Single Source) — re-exportiert von `@/types`. */
