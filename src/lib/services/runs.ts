@@ -19,6 +19,15 @@ import { aggregateRun } from "@/lib/runs/oejts-aggregate";
 import { buildOejtsMessages, parseOejtsResponse, permuteItems } from "@/lib/runs/oejts-run";
 import { summarizeTiming } from "@/lib/runs/run-timing";
 import { summarizeFailures } from "@/lib/runs/run-failures";
+import {
+  buildGeneratorMessages,
+  parseFactList,
+  buildSubjectMessages,
+  parseSubjectResponse,
+  buildPersuaderMessages,
+  strategyForRound,
+  applyTurn,
+} from "@/lib/runs/steadfastness-run";
 import { getDecryptedTarget } from "@/lib/services/model-configs";
 import type { createClient } from "@/lib/supabase";
 import type {
@@ -32,6 +41,9 @@ import type {
   RunResultView,
   RunStatus,
   RunView,
+  SteadfastnessExperiment,
+  SteadfastnessScenario,
+  SteadfastnessTurn,
   Visibility,
 } from "@/types";
 
@@ -353,6 +365,14 @@ export async function processNextRepetition(
   userId: string,
   runId: string,
 ): Promise<RunProgress | null> {
+  // Kind-Dispatch: eine schlanke Vorab-Abfrage entscheidet den Pfad.
+  const { data: kindRow, error: kindErr } = await sb.from(TABLE).select("kind").eq("id", runId).maybeSingle();
+  if (kindErr) fail("step:kind", kindErr.message);
+  if (!kindRow) return null;
+  if (kindRow.kind === "steadfastness") {
+    return stepSteadfastness(sb, runId);
+  }
+  // ── ab hier UNVERAENDERT der bestehende OEJTS-Pfad ──
   const { data, error } = await sb.from(TABLE).select(STEP_COLUMNS).eq("id", runId).maybeSingle();
   if (error) fail("step:read", error.message);
   if (!data) return null;
@@ -520,4 +540,437 @@ export async function processNextRepetition(
     lastRepDurationMs: repDurationMs,
     lastRepError: repError,
   };
+}
+
+// ─── Orchestrierung: Standhaftigkeit (zweiter Test-Typ) ──────────────────────
+
+/** Lauf-Felder, die ein Steadfastness-Schritt braucht. */
+const STEADFAST_COLUMNS =
+  "id, model_config_id, adversary_model_config_id, persona_prompt_snapshot, repetition_count, max_rounds, scenarios_snapshot, status, prompt_tokens, completion_tokens, failed_count";
+
+/** Baut das terminale/fortlaufende RunProgress-Objekt für Steadfastness. */
+function steadfastProgress(
+  status: RunStatus,
+  completed: number,
+  total: number,
+  failed: number,
+  prompt: number,
+  completion: number,
+  live: {
+    phase: "generating" | "experimenting" | null;
+    currentScenario: number | null;
+    currentRound: number | null;
+    lastStrategy: string | null;
+    lastRepError: string | null;
+  } = {
+    phase: null,
+    currentScenario: null,
+    currentRound: null,
+    lastStrategy: null,
+    lastRepError: null,
+  },
+): RunProgress {
+  return {
+    status,
+    completedReps: completed,
+    totalReps: total,
+    failedCount: failed,
+    promptTokens: prompt,
+    completionTokens: completion,
+    lastRepDurationMs: null,
+    lastRepError: live.lastRepError,
+    phase: live.phase,
+    currentScenario: live.currentScenario,
+    totalScenarios: total,
+    currentRound: live.currentRound,
+    lastStrategy: live.lastStrategy,
+  };
+}
+
+/**
+ * Ein Schritt eines Standhaftigkeits-Laufs (Ansatz A: eine Runde pro Aufruf).
+ *   pending → running + N Fakten generieren (scenarios_snapshot).
+ *   laufendes Experiment (rep status 'pending') → genau eine Runde fahren.
+ *   kein laufendes, nächster Fakt offen → neues Experiment + Eröffnung.
+ *   alle Experimente terminal → Lauf finalisieren.
+ * ≤ 2 LLM-Calls pro Aufruf. Resilienz: ein LLM-Fehler markiert nur DIESES Experiment
+ * failed; der Lauf failed erst, wenn alle Experimente failed sind. Generierung
+ * scheitert → ganzer Lauf failed (ohne Szenarien kein Weiter).
+ */
+async function stepSteadfastness(sb: SupabaseClient, runId: string): Promise<RunProgress | null> {
+  const { data, error } = await sb.from(TABLE).select(STEADFAST_COLUMNS).eq("id", runId).maybeSingle();
+  if (error) fail("steadfast:read", error.message);
+  if (!data) return null;
+  const run = data as {
+    model_config_id: string | null;
+    adversary_model_config_id: string | null;
+    persona_prompt_snapshot: string;
+    repetition_count: number;
+    max_rounds: number | null;
+    scenarios_snapshot: SteadfastnessScenario[] | null;
+    status: RunStatus;
+    prompt_tokens: number;
+    completion_tokens: number;
+    failed_count: number;
+  };
+  const total = run.repetition_count;
+  const maxRounds = run.max_rounds ?? 12;
+
+  // Terminal → idempotent.
+  if (run.status === "completed" || run.status === "failed") {
+    const done = await countReps(sb, runId);
+    return steadfastProgress(run.status, done, total, run.failed_count, run.prompt_tokens, run.completion_tokens);
+  }
+
+  // Modelle auflösen (Prüfling + Gegenspieler). Fehlt eins → Lauf failed.
+  if (!run.model_config_id || !run.adversary_model_config_id) {
+    await finalize(sb, runId, "failed");
+    return steadfastProgress("failed", 0, total, run.failed_count, run.prompt_tokens, run.completion_tokens);
+  }
+  const subjectTarget = await getDecryptedTarget(sb, run.model_config_id);
+  const adversaryTarget = await getDecryptedTarget(sb, run.adversary_model_config_id);
+  if (!subjectTarget || !adversaryTarget) {
+    await finalize(sb, runId, "failed");
+    return steadfastProgress("failed", 0, total, run.failed_count, run.prompt_tokens, run.completion_tokens);
+  }
+
+  // pending → running + Szenarien generieren (einmalig).
+  let scenarios = run.scenarios_snapshot;
+  if (run.status === "pending" || !scenarios) {
+    await patchRun(sb, runId, { status: "running" });
+    try {
+      const gen = await chatCompletion({
+        baseUrl: adversaryTarget.baseUrl,
+        apiKey: adversaryTarget.apiKey,
+        model: adversaryTarget.modelName,
+        messages: buildGeneratorMessages(total),
+        jsonMode: true,
+      });
+      scenarios = parseFactList(gen.content).slice(0, total);
+      await patchRun(sb, runId, {
+        scenarios_snapshot: scenarios,
+        prompt_tokens: run.prompt_tokens + (gen.promptTokens ?? 0),
+        completion_tokens: run.completion_tokens + (gen.completionTokens ?? 0),
+      });
+    } catch (err) {
+      await finalize(sb, runId, "failed");
+      const msg = err instanceof Error ? err.message : "generation failed";
+      return steadfastProgress("failed", 0, total, run.failed_count, run.prompt_tokens, run.completion_tokens, {
+        phase: "generating",
+        currentScenario: null,
+        currentRound: null,
+        lastStrategy: null,
+        lastRepError: msg,
+      });
+    }
+    if (scenarios.length === 0) {
+      await finalize(sb, runId, "failed");
+      return steadfastProgress("failed", 0, total, run.failed_count, run.prompt_tokens, run.completion_tokens, {
+        phase: "generating",
+        currentScenario: null,
+        currentRound: null,
+        lastStrategy: null,
+        lastRepError: "no scenarios generated",
+      });
+    }
+    // scenarios_snapshot ist jetzt gesetzt; nächster Step beginnt Experiment 1.
+    return steadfastProgress("running", 0, total, run.failed_count, run.prompt_tokens + 0, run.completion_tokens + 0, {
+      phase: "experimenting",
+      currentScenario: 1,
+      currentRound: 0,
+      lastStrategy: null,
+      lastRepError: null,
+    });
+  }
+
+  // Aktuelle Reps lesen (Fortschritt + laufendes Experiment).
+  const { data: repRows, error: repErr } = await sb
+    .from("run_repetitions")
+    .select("rep_index, status, error, experiment")
+    .eq("run_id", runId)
+    .order("rep_index", { ascending: true });
+  if (repErr) fail("steadfast:reps", repErr.message);
+  const reps = repRows as {
+    rep_index: number;
+    status: RepetitionStatus;
+    error: string | null;
+    experiment: SteadfastnessExperiment | null;
+  }[];
+
+  // terminalCount = fertig gemessene/gescheiterte Reps (pending = laufendes Experiment zählt NICHT).
+  const terminalCount = reps.filter((r) => r.status !== "pending").length;
+
+  // 1) Läuft ein Experiment (rep status 'pending')? → genau eine Runde weiter.
+  //    ZUERST prüfen, sonst könnte ein noch offenes Experiment vorzeitig finalisiert werden.
+  const running = reps.find((r) => r.status === "pending" && r.experiment && !r.experiment.done);
+  if (running?.experiment) {
+    return advanceRound(sb, runId, run, running.rep_index, running.experiment, maxRounds, terminalCount, total);
+  }
+
+  // 2) Noch Fakten offen (weniger Rep-Zeilen als Szenarien)? → nächstes Experiment eröffnen.
+  if (reps.length < scenarios.length) {
+    return openExperiment(sb, runId, run, scenarios, reps.length, terminalCount, total, subjectTarget);
+  }
+
+  // 3) Alle Szenarien haben eine terminale Rep → Lauf finalisieren.
+  const failedCount = reps.filter((r) => r.status === "failed").length;
+  const finalStatus: RunStatus = failedCount >= scenarios.length ? "failed" : "completed";
+  await finalize(sb, runId, finalStatus);
+  return steadfastProgress(finalStatus, terminalCount, total, failedCount, run.prompt_tokens, run.completion_tokens);
+}
+
+interface Target {
+  baseUrl: string;
+  apiKey: string;
+  modelName: string;
+}
+interface RunFields {
+  persona_prompt_snapshot: string;
+  adversary_model_config_id: string | null;
+  prompt_tokens: number;
+  completion_tokens: number;
+}
+
+/** Startet ein neues Experiment: Prüfling beantwortet die Eröffnungsfrage (1 Call). */
+async function openExperiment(
+  sb: SupabaseClient,
+  runId: string,
+  run: RunFields,
+  scenarios: SteadfastnessScenario[],
+  nextIndex: number,
+  doneCount: number,
+  total: number,
+  subjectTarget: Target,
+): Promise<RunProgress | null> {
+  const repIndex = nextIndex + 1; // 1-basiert, wie OEJTS
+  const scenario = scenarios[nextIndex];
+  try {
+    const opening = await chatCompletion({
+      baseUrl: subjectTarget.baseUrl,
+      apiKey: subjectTarget.apiKey,
+      model: subjectTarget.modelName,
+      messages: buildSubjectMessages(run.persona_prompt_snapshot, scenario, null, null, [], null),
+      jsonMode: true,
+    });
+    const parsed = parseSubjectResponse(opening.content, scenario.answerChoices);
+    if (!parsed) {
+      await insertExperimentRep(sb, runId, repIndex, null, "failed", "opening answer not parseable");
+      return afterRep(sb, runId, doneCount + 1, total);
+    }
+    const experiment: SteadfastnessExperiment = {
+      scenario,
+      initialAnswer: parsed.answer,
+      initialJustification: parsed.justification,
+      turns: [],
+      capitulated: false,
+      capitulationRound: null,
+      winningStrategy: null,
+      done: false,
+    };
+    await insertExperimentRep(sb, runId, repIndex, experiment, "pending", null);
+    await patchTokens(sb, runId, run, opening.promptTokens, opening.completionTokens);
+    return steadfastProgress("running", doneCount, total, 0, run.prompt_tokens, run.completion_tokens, {
+      phase: "experimenting",
+      currentScenario: repIndex,
+      currentRound: 0,
+      lastStrategy: null,
+      lastRepError: null,
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "opening failed";
+    await insertExperimentRep(sb, runId, repIndex, null, "failed", msg);
+    return afterRep(sb, runId, doneCount + 1, total, msg);
+  }
+}
+
+/** Fährt genau eine Manipulations-Runde eines laufenden Experiments (2 Calls). */
+async function advanceRound(
+  sb: SupabaseClient,
+  runId: string,
+  run: RunFields,
+  repIndex: number,
+  experiment: SteadfastnessExperiment,
+  maxRounds: number,
+  doneCount: number,
+  total: number,
+): Promise<RunProgress | null> {
+  const round = experiment.turns.length + 1;
+  const strategy = strategyForRound(round);
+  const lastAnswer = experiment.turns.at(-1)?.subjectAnswer ?? experiment.initialAnswer;
+  const lastJust = experiment.turns.at(-1)?.subjectJustification ?? experiment.initialJustification;
+  // Gegenspieler-Modell erneut auflösen (adversary_model_config_id ist im run).
+  const adversaryTarget = run.adversary_model_config_id
+    ? await getDecryptedTarget(sb, run.adversary_model_config_id)
+    : null;
+  const subjectTarget = await resolveSubjectTarget(sb, runId);
+  if (!adversaryTarget || !subjectTarget) {
+    await updateExperimentRep(sb, runId, repIndex, experiment, "failed", "model config unavailable");
+    return afterRep(sb, runId, doneCount + 1, total, "model config unavailable");
+  }
+  try {
+    const persuasion = await chatCompletion({
+      baseUrl: adversaryTarget.baseUrl,
+      apiKey: adversaryTarget.apiKey,
+      model: adversaryTarget.modelName,
+      messages: buildPersuaderMessages(
+        experiment.scenario.trueFact,
+        experiment.scenario.falseClaim,
+        strategy,
+        lastAnswer,
+        lastJust,
+      ),
+    });
+    const subjectReply = await chatCompletion({
+      baseUrl: subjectTarget.baseUrl,
+      apiKey: subjectTarget.apiKey,
+      model: subjectTarget.modelName,
+      messages: buildSubjectMessages(
+        run.persona_prompt_snapshot,
+        experiment.scenario,
+        experiment.initialAnswer,
+        experiment.initialJustification,
+        experiment.turns,
+        persuasion.content,
+      ),
+      jsonMode: true,
+    });
+    const parsed = parseSubjectResponse(subjectReply.content, experiment.scenario.answerChoices);
+    if (!parsed) {
+      await updateExperimentRep(sb, runId, repIndex, experiment, "failed", "subject answer not parseable");
+      return afterRep(sb, runId, doneCount + 1, total, "subject answer not parseable");
+    }
+    const capitulated = parsed.answer.toLowerCase() === experiment.scenario.falseAnswer.toLowerCase();
+    const turn: SteadfastnessTurn = {
+      round,
+      strategy,
+      persuaderMessage: persuasion.content,
+      subjectAnswer: parsed.answer,
+      subjectJustification: parsed.justification,
+      capitulated,
+    };
+    const updated = applyTurn(experiment, turn, maxRounds);
+    const repStatus: RepetitionStatus = updated.done ? "ok" : "pending";
+    await updateExperimentRep(sb, runId, repIndex, updated, repStatus, null);
+    await patchTokensSum(sb, runId, [persuasion, subjectReply]);
+    const nowDone = updated.done ? doneCount + 1 : doneCount;
+    return steadfastProgress("running", nowDone, total, 0, 0, 0, {
+      phase: "experimenting",
+      currentScenario: repIndex,
+      currentRound: round,
+      lastStrategy: strategy,
+      lastRepError: null,
+    });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "round failed";
+    await updateExperimentRep(sb, runId, repIndex, experiment, "failed", msg);
+    return afterRep(sb, runId, doneCount + 1, total, msg);
+  }
+}
+
+/** Schreibt ein Experiment-Rep (Insert). status 'ok'|'failed'|'pending'. */
+async function insertExperimentRep(
+  sb: SupabaseClient,
+  runId: string,
+  repIndex: number,
+  experiment: SteadfastnessExperiment | null,
+  status: RepetitionStatus,
+  error: string | null,
+): Promise<void> {
+  const { error: insErr } = await sb.from("run_repetitions").insert({
+    run_id: runId,
+    rep_index: repIndex,
+    item_order: [],
+    experiment,
+    status,
+    error,
+  });
+  // F4-Analogon: paralleler Doppelaufruf (unique run_id, rep_index) tolerieren.
+  if (insErr && insErr.code !== "23505") fail("steadfast:insert", insErr.message);
+}
+
+/** Aktualisiert ein laufendes Experiment-Rep (experiment + status). */
+async function updateExperimentRep(
+  sb: SupabaseClient,
+  runId: string,
+  repIndex: number,
+  experiment: SteadfastnessExperiment,
+  status: RepetitionStatus,
+  error: string | null,
+): Promise<void> {
+  const { error: upErr } = await sb
+    .from("run_repetitions")
+    .update({ experiment, status, error, updated_at: new Date().toISOString() })
+    .eq("run_id", runId)
+    .eq("rep_index", repIndex);
+  if (upErr) fail("steadfast:update", upErr.message);
+}
+
+/** Token-Summen des Laufs um einen Call fortschreiben. */
+async function patchTokens(
+  sb: SupabaseClient,
+  runId: string,
+  run: { prompt_tokens: number; completion_tokens: number },
+  prompt: number | null,
+  completion: number | null,
+): Promise<void> {
+  await patchRun(sb, runId, {
+    prompt_tokens: run.prompt_tokens + (prompt ?? 0),
+    completion_tokens: run.completion_tokens + (completion ?? 0),
+  });
+}
+
+/** Schmaler Cast-Helfer (gleiches Muster wie `toStepState`): launtert das `any`
+ *  des untypisierten Supabase-Clients auf konkrete Token-Felder. */
+function toTokenTotals(row: { prompt_tokens: number; completion_tokens: number }): {
+  prompt_tokens: number;
+  completion_tokens: number;
+} {
+  return row;
+}
+
+/** Token-Summen um mehrere Calls fortschreiben (liest aktuellen Stand frisch). */
+async function patchTokensSum(
+  sb: SupabaseClient,
+  runId: string,
+  calls: { promptTokens: number | null; completionTokens: number | null }[],
+): Promise<void> {
+  const { data } = await sb.from(TABLE).select("prompt_tokens, completion_tokens").eq("id", runId).maybeSingle();
+  const cur = data ? toTokenTotals(data) : { prompt_tokens: 0, completion_tokens: 0 };
+  const addP = calls.reduce((a, c) => a + (c.promptTokens ?? 0), 0);
+  const addC = calls.reduce((a, c) => a + (c.completionTokens ?? 0), 0);
+  await patchRun(sb, runId, {
+    prompt_tokens: cur.prompt_tokens + addP,
+    completion_tokens: cur.completion_tokens + addC,
+  });
+}
+
+/** Schmaler Cast-Helfer (gleiches Muster wie `toStepState`) fuer die Modellkonfig-id. */
+function toModelConfigId(row: { model_config_id: string | null }): string | null {
+  return row.model_config_id;
+}
+
+/** Prüfling-Target aus dem Lauf auflösen (für advanceRound). */
+async function resolveSubjectTarget(sb: SupabaseClient, runId: string): Promise<Target | null> {
+  const { data } = await sb.from(TABLE).select("model_config_id").eq("id", runId).maybeSingle();
+  const id = data ? toModelConfigId(data) : null;
+  return id ? await getDecryptedTarget(sb, id) : null;
+}
+
+/** Fortschritt nach einem beendeten Rep (failed oder ok) — liefert running-Progress.
+ *  Bewusst SYNCHRON (kein `await` im Rumpf noetig) — der Aufrufer (innerhalb eines
+ *  try-Blocks) gibt den Wert direkt zurueck, ohne eine Promise „nackt" durchzureichen. */
+function afterRep(
+  sb: SupabaseClient,
+  runId: string,
+  doneCount: number,
+  total: number,
+  lastRepError: string | null = null,
+): RunProgress {
+  return steadfastProgress("running", doneCount, total, 0, 0, 0, {
+    phase: "experimenting",
+    currentScenario: doneCount,
+    currentRound: null,
+    lastStrategy: null,
+    lastRepError,
+  });
 }
