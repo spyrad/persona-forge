@@ -82,18 +82,24 @@ function FailureList({ failures }: { failures: RunFailureSummary[] }) {
   );
 }
 
-/** Leer-Karte fuer `state === "empty"` — kind-neutral (Ueberschrift per `itemLabel` angepasst). */
+/**
+ * Leer-Karte fuer `state === "empty"` — kind-neutral (Ueberschrift per `itemLabel`).
+ * Unterscheidet einen fehlgeschlagenen Lauf (`status: "failed"`, z. B. Szenario-
+ * Generierung/Modell nicht erreichbar) von „abgeschlossen, aber nichts verwertbar".
+ */
 function EmptyResult({ result, itemLabel }: { result: RunResultView; itemLabel: string }) {
   const { run, timing, failures } = result;
+  const failed = run.status === "failed";
   return (
     <div className="space-y-4">
       <div className="border-destructive/30 bg-destructive/10 rounded-2xl border p-6">
         <h2 className="text-destructive flex items-center gap-2 font-semibold">
-          <AlertTriangle className="size-4" /> Keine verwertbaren {itemLabel}
+          <AlertTriangle className="size-4" /> {failed ? "Lauf fehlgeschlagen" : `Keine verwertbaren ${itemLabel}`}
         </h2>
         <p className="text-muted-foreground mt-2 text-sm">
-          Dieser Lauf lieferte keine parsebaren Wiederholungen, daher gibt es keine Verteilung. Fehlquote:{" "}
-          {failureRate(run.failedCount, run.repetitionCount)}.
+          {failed
+            ? "Dieser Lauf konnte nicht abgeschlossen werden — es gibt kein verwertbares Ergebnis."
+            : `Dieser Lauf lieferte keine verwertbaren ${itemLabel}, daher gibt es kein Ergebnis. Fehlquote: ${failureRate(run.failedCount, run.repetitionCount)}.`}
         </p>
         <p className="text-muted-foreground mt-2 text-xs">Ausgeführt: {formatDateTime(timing.executedAt)}</p>
         {failures.length > 0 ? (

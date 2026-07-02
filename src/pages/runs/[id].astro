@@ -30,6 +30,12 @@ const notFound = !loadError && !result;
 if (notFound) {
   Astro.response.status = 404;
 }
+
+// Untertitel je Test-Typ (run.kind ist immer gesetzt, auch bei unfertigen Läufen).
+const resultSubtitle =
+  result?.run.kind === "steadfastness"
+    ? "Standhaftigkeit (Manipulationsresistenz): Kapitulationsrate über die Experimente plus Strategie-Breakdown."
+    : "OEJTS-Verteilung je Achse über die Wiederholungen plus abgeleiteter Typ.";
 ---
 
 <Layout title="Lauf-Ergebnis">
@@ -37,9 +43,7 @@ if (notFound) {
     <div class="mx-auto max-w-3xl">
       <header class="mb-8">
         <h1 class="text-foreground text-3xl font-bold">Lauf-Ergebnis</h1>
-        <p class="text-muted-foreground mt-1 text-sm">
-          OEJTS-Verteilung je Achse über die Wiederholungen plus abgeleiteter Typ.
-        </p>
+        <p class="text-muted-foreground mt-1 text-sm">{resultSubtitle}</p>
       </header>
 
       {

@@ -222,12 +222,6 @@ function toRepForScoring(row: Pick<RunRepetition, "item_values">): Pick<RunRepet
   return { item_values: row.item_values };
 }
 
-/** Schmaler Cast-Helfer (gleiches Muster wie `toModelConfigId`/`toTokenTotals`)
- *  fuer den Lauf-`kind`-Dispatch in `getRunResult`. */
-function toKind(row: { kind: string }): string {
-  return row.kind;
-}
-
 /**
  * Liest einen Lauf + seine Wiederholungen RLS-gescoped und aggregiert das Ergebnis
  * on-the-fly (deterministisch, keine persistierten Aggregate; NFR Reproduzierbarkeit).
@@ -251,10 +245,8 @@ export async function getRunResult(sb: SupabaseClient, userId: string, id: strin
     };
   }
 
-  const { data: kindRow } = await sb.from(TABLE).select("kind").eq("id", id).maybeSingle();
-  const kind = kindRow ? toKind(kindRow) : "oejts";
-
-  if (kind === "steadfastness") {
+  // `kind` kommt bereits aus getRun (RunView.kind, VIEW_COLUMNS) — keine zweite Query nötig.
+  if (run.kind === "steadfastness") {
     const { data, error } = await sb
       .from("run_repetitions")
       .select("experiment, duration_ms, status, error")
@@ -772,6 +764,7 @@ interface Target {
   modelName: string;
 }
 interface RunFields {
+  model_config_id: string | null;
   persona_prompt_snapshot: string;
   adversary_model_config_id: string | null;
   prompt_tokens: number;
@@ -852,7 +845,8 @@ async function advanceRound(
   const adversaryTarget = run.adversary_model_config_id
     ? await getDecryptedTarget(sb, run.adversary_model_config_id)
     : null;
-  const subjectTarget = await resolveSubjectTarget(sb, runId);
+  // Prüfling-Target direkt aus dem bereits geladenen run (kein zweiter DB-Read).
+  const subjectTarget = run.model_config_id ? await getDecryptedTarget(sb, run.model_config_id) : null;
   if (!adversaryTarget || !subjectTarget) {
     await updateExperimentRep(sb, runId, repIndex, experiment, "failed", "model config unavailable");
     return afterRep(sb, runId, doneCount + 1, total, "model config unavailable");
@@ -995,18 +989,6 @@ async function patchTokensSum(
     prompt_tokens: cur.prompt_tokens + addP,
     completion_tokens: cur.completion_tokens + addC,
   });
-}
-
-/** Schmaler Cast-Helfer (gleiches Muster wie `toStepState`) fuer die Modellkonfig-id. */
-function toModelConfigId(row: { model_config_id: string | null }): string | null {
-  return row.model_config_id;
-}
-
-/** Prüfling-Target aus dem Lauf auflösen (für advanceRound). */
-async function resolveSubjectTarget(sb: SupabaseClient, runId: string): Promise<Target | null> {
-  const { data } = await sb.from(TABLE).select("model_config_id").eq("id", runId).maybeSingle();
-  const id = data ? toModelConfigId(data) : null;
-  return id ? await getDecryptedTarget(sb, id) : null;
 }
 
 /** Fortschritt nach einem beendeten Rep (failed oder ok) — liefert running-Progress.
