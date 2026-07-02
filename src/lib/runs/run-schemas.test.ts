@@ -114,8 +114,8 @@ describe("runProgressSchema", () => {
     expect(runProgressSchema.safeParse(p).success).toBe(true);
   });
 
-  it("akzeptiert lastRepError als string und null", () => {
-    expect(runProgressSchema.safeParse({ ...goodRunProgress(), lastRepError: "boom" }).success).toBe(true);
-    expect(runProgressSchema.safeParse({ ...goodRunProgress(), lastRepError: null }).success).toBe(true);
+  it("weist Drift ab: fehlendes lastRepError", () => {
+    const { lastRepError: _drop, ...drifted } = goodRunProgress();
+    expect(runProgressSchema.safeParse(drifted).success).toBe(false);
   });
 });
