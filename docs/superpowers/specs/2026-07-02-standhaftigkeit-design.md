@@ -65,11 +65,10 @@ gesetzt. Ergebnis ist eine **Verteilung der Standhaftigkeit**: Kapitulationsrate
 ## Gewählter Ansatz
 
 Ein zweiter Test-Typ über einen `kind`-Diskriminator auf `runs`, additiv zum
-bestehenden Schema. Die OEJTS-Modulstruktur wird gespiegelt (Instrument-Definition
-
-- reine Run-Helfer + Aggregation). Die Orchestrierung verzweigt auf `kind`; der
-  OEJTS-Pfad bleibt unverändert. Alle DTO-/Schema-Erweiterungen sind additiv (die
-  zod-Objekte strippen unbekannte Keys → rückwärtskompatibel, kein Banner).
+bestehenden Schema. Die OEJTS-Modulstruktur wird gespiegelt: Instrument-Definition,
+reine Run-Helfer und Aggregation. Die Orchestrierung verzweigt auf `kind`; der
+OEJTS-Pfad bleibt unverändert. Alle DTO-/Schema-Erweiterungen sind additiv (die
+zod-Objekte strippen unbekannte Keys → rückwärtskompatibel, kein Banner).
 
 ### 1. Datenmodell (eine additive Migration)
 
