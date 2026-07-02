@@ -7,17 +7,17 @@
 
 ## Aktueller Stand
 
-| Kennzahl              | Wert                                                                                                                                                                                                                                                     |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Laufende Arbeit**   | Feature **Fehler-Sichtbarkeit** live: Upstream-Fehlertext durchgereicht + im UI (live sticky + aggregiert). Über superpowers-SDD (7 Tasks), finaler opus-Review „Ready:Yes". `origin/main = 9f0d3e0`, CI grün, Prod-Deploy live. Nichts offen in-flight. |
-| **Naechster Schritt** | **Live-Smoke auf Prod** (falsche Config → Fehlertext live + Liste) + **Termin-Entscheidung Sa 2026-07-04**.                                                                                                                                              |
-| **Blocker**           | Keine.                                                                                                                                                                                                                                                   |
+| Kennzahl              | Wert                                                                                                                                                                                                                                                                                     |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Laufende Arbeit**   | Feature **Fehler-Sichtbarkeit** live **und Prod-abgenommen**: Live-Smoke am 2026-07-02 14:21 grün — falsche z.ai-Config → Empty-State + aggregierte Liste „2× endpoint returned status 429: Insufficient balance…". `origin/main = 9f0d3e0`, CI grün, Prod live. Nichts offen in-flight. |
+| **Naechster Schritt** | **Termin-Entscheidung Sa 2026-07-04** (Builder allein vs. Builder+Architect). Kein aktives Feature.                                                                                                                                                                                      |
+| **Blocker**           | Keine.                                                                                                                                                                                                                                                                                   |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] **Live-Smoke Fehler-Sichtbarkeit auf Prod** (optionale finale Abnahme): Lauf mit falscher Config → Fehlertext live im Runner + aggregiert in der Ergebnis-Liste.
+- [x] **Live-Smoke Fehler-Sichtbarkeit auf Prod** — ABGENOMMEN (2026-07-02 14:21): falsche z.ai-Config → Empty-State „Keine verwertbaren Antworten" (2/2) + aggregierte Liste „2× endpoint returned status 429: Insufficient balance or no resource package. Please recharge." Leak-sicher (nur `error.message`).
 - [ ] **Termin-Entscheidung Sa 2026-07-04:** Builder allein (5. Juli, Auszeichnung) vs. Builder+Architect (10. Aug); kein Nachreichen. Beide einreichbereit.
 - [ ] **Optionale Minors (geparkt, kein Blocker):** DRY-Duplikat der 2 Fehler-Stellen in `openai-compatible.ts`; `localeCompare`-Locale in `run-failures.ts`; direkter Test für den Retryable-429/5xx-Upstream-Pfad.
 - [ ] **Optional Mikro-Härtung:** `isZaiEndpoint` auf `=== "z.ai" || endsWith(".z.ai")` (kein realer Angriffsweg).
