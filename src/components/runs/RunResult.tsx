@@ -1,5 +1,5 @@
 import { AlertTriangle, ArrowLeft, Clock, Globe, Lock, Sigma } from "lucide-react";
-import type { AxisDistribution, RunResultView } from "@/types";
+import type { AxisDistribution, RunFailureSummary, RunResultView } from "@/types";
 import { formatDateTime, formatDuration } from "@/lib/runs/run-timing";
 import { AxisChart, RELIABLE_MIN } from "./axis-chart";
 
@@ -62,8 +62,28 @@ function AxisCard({ axis }: { axis: AxisDistribution }) {
   );
 }
 
+/** Aggregierte Fehlerliste eines Laufs (nichts rendern, wenn leer). */
+function FailureList({ failures }: { failures: RunFailureSummary[] }) {
+  if (failures.length === 0) return null;
+  return (
+    <div className="border-destructive/30 bg-destructive/10 space-y-1.5 rounded-lg border px-3 py-2">
+      <p className="text-destructive flex items-center gap-1.5 text-xs font-medium">
+        <AlertTriangle className="size-3.5 shrink-0" />
+        Fehler bei einzelnen Wiederholungen
+      </p>
+      <ul className="text-muted-foreground space-y-0.5 text-xs">
+        {failures.map((f) => (
+          <li key={f.message}>
+            <span className="text-foreground font-medium">{f.count}×</span> {f.message}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
 export default function RunResult({ result }: Props) {
-  const { run, aggregate, state, timing } = result;
+  const { run, aggregate, state, timing, failures } = result;
 
   if (state === "unfinished") {
     return (
@@ -95,6 +115,9 @@ export default function RunResult({ result }: Props) {
             {failureRate(run.failedCount, run.repetitionCount)}.
           </p>
           <p className="text-muted-foreground mt-2 text-xs">Ausgeführt: {formatDateTime(timing.executedAt)}</p>
+          <div className="mt-3">
+            <FailureList failures={failures} />
+          </div>
         </div>
         <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
           <ArrowLeft className="size-4" /> Zurück zu den Läufen
@@ -161,6 +184,12 @@ export default function RunResult({ result }: Props) {
               Dispositionsprofil. Mehr Wiederholungen erhöhen die Aussagekraft.
             </span>
           </p>
+        ) : null}
+
+        {failures.length > 0 ? (
+          <div className="mt-3">
+            <FailureList failures={failures} />
+          </div>
         ) : null}
       </section>
 
