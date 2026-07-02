@@ -32,6 +32,7 @@ function goodRunProgress() {
     promptTokens: 1234,
     completionTokens: 567,
     lastRepDurationMs: 33000,
+    lastRepError: null,
   };
 }
 
@@ -111,5 +112,10 @@ describe("runProgressSchema", () => {
   it("akzeptiert lastRepDurationMs = null", () => {
     const p = { ...goodRunProgress(), lastRepDurationMs: null };
     expect(runProgressSchema.safeParse(p).success).toBe(true);
+  });
+
+  it("akzeptiert lastRepError als string und null", () => {
+    expect(runProgressSchema.safeParse({ ...goodRunProgress(), lastRepError: "boom" }).success).toBe(true);
+    expect(runProgressSchema.safeParse({ ...goodRunProgress(), lastRepError: null }).success).toBe(true);
   });
 });

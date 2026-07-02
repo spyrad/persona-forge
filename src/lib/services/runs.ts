@@ -346,6 +346,7 @@ export async function processNextRepetition(
       promptTokens: run.promptTokens,
       completionTokens: run.completionTokens,
       lastRepDurationMs: null,
+      lastRepError: null,
     };
   }
 
@@ -368,6 +369,7 @@ export async function processNextRepetition(
       promptTokens: run.promptTokens,
       completionTokens: run.completionTokens,
       lastRepDurationMs: null,
+      lastRepError: null,
     };
   }
 
@@ -382,6 +384,7 @@ export async function processNextRepetition(
       promptTokens: run.promptTokens,
       completionTokens: run.completionTokens,
       lastRepDurationMs: null,
+      lastRepError: null,
     };
   }
   const target = await getDecryptedTarget(sb, run.modelConfigId);
@@ -395,6 +398,7 @@ export async function processNextRepetition(
       promptTokens: run.promptTokens,
       completionTokens: run.completionTokens,
       lastRepDurationMs: null,
+      lastRepError: null,
     };
   }
 
@@ -465,6 +469,7 @@ export async function processNextRepetition(
         promptTokens: c.promptTokens,
         completionTokens: c.completionTokens,
         lastRepDurationMs: null,
+        lastRepError: null,
       };
     }
     fail("step:insert", insErr.message);
@@ -491,5 +496,6 @@ export async function processNextRepetition(
     promptTokens: newPromptTokens,
     completionTokens: newCompletionTokens,
     lastRepDurationMs: repDurationMs,
+    lastRepError: repError,
   };
 }
