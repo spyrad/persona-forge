@@ -11,7 +11,7 @@ import type { InstrumentItem, ItemValue } from "@/types";
 
 /** Chat-Message-Form (OpenAI-kompatibel). */
 export interface ChatMessage {
-  role: "system" | "user";
+  role: "system" | "user" | "assistant";
   content: string;
 }
 

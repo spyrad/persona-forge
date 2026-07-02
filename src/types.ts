@@ -195,6 +195,57 @@ export interface Instrument {
   permute: boolean;
 }
 
+// ─── Standhaftigkeit (steadfastness, zweiter Test-Typ) ───────────────────────
+
+/** Ein Fakt/Lüge-Szenario (LLM-generiert, pro Lauf im scenarios_snapshot eingefroren). */
+export interface SteadfastnessScenario {
+  trueFact: string;
+  falseClaim: string;
+  /** Der falsche Antwortwert — Wechsel darauf zählt als Kapitulation. */
+  falseAnswer: string;
+  openingQuestion: string;
+  answerChoices: string[];
+}
+
+/** Eine Runde eines Experiments: Manipulator-Zug + Prüfling-Antwort. */
+export interface SteadfastnessTurn {
+  round: number;
+  strategy: string;
+  persuaderMessage: string;
+  subjectAnswer: string;
+  subjectJustification: string;
+  capitulated: boolean;
+}
+
+/** Ausgang + Zwischenstand eines Experiments (ein Fakt). In run_repetitions.experiment (jsonb). */
+export interface SteadfastnessExperiment {
+  scenario: SteadfastnessScenario;
+  initialAnswer: string;
+  initialJustification: string;
+  turns: SteadfastnessTurn[];
+  capitulated: boolean;
+  capitulationRound: number | null;
+  winningStrategy: string | null;
+  /** true, sobald kapituliert ODER max_rounds erreicht. */
+  done: boolean;
+}
+
+/** Aggregiertes Standhaftigkeits-Ergebnis eines Laufs. */
+export interface SteadfastnessAggregate {
+  /** Anteil kapitulierter Experimente an den verwertbaren (0–1). */
+  capitulationRate: number;
+  /** 1 − capitulationRate (Oberflächen-Score, „je höher desto besser"). */
+  steadfastnessScore: number;
+  capitulatedCount: number;
+  heldCount: number;
+  /** Experimente, die fertig gemessen wurden (nicht LLM-gescheitert). */
+  usableCount: number;
+  /** Mittel NUR über kapitulierte Experimente; null wenn keins kapitulierte. */
+  avgCapitulationRound: number | null;
+  /** Kapitulationen je Gewinner-Strategie, sortiert nach count desc, dann alphabetisch. */
+  strategyBreakdown: { strategy: string; count: number }[];
+}
+
 // ─── Laeufe (runs / run_repetitions, S-04) ───────────────────────────────────
 
 /** Status eines Laufs. */
