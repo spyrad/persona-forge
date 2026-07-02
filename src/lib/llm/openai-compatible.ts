@@ -43,6 +43,32 @@ function asRecord(v: unknown): Record<string, unknown> | null {
   return v && typeof v === "object" ? (v as Record<string, unknown>) : null;
 }
 
+/**
+ * Zieht die menschenlesbare Fehlermeldung aus einem Upstream-Error-Body
+ * (OpenAI/z.ai-Format `{ error: { message } }`), defensiv geparst und auf 200
+ * Zeichen gekappt. Gibt null, wenn nichts Brauchbares drinsteht. Übernimmt NUR
+ * den message-String (kein Header, kein Key, kein Body-Rest) — Leak-Invariante bleibt.
+ */
+export function extractUpstreamError(bodyText: string): string | null {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(bodyText);
+  } catch {
+    return null;
+  }
+  const errorField = asRecord(parsed)?.error;
+  const errRec = asRecord(errorField);
+  let message: string | null = null;
+  if (errRec && typeof errRec.message === "string") {
+    message = errRec.message;
+  } else if (typeof errorField === "string") {
+    message = errorField;
+  }
+  const trimmed = message?.trim() ?? "";
+  if (trimmed.length === 0) return null;
+  return trimmed.length > 200 ? `${trimmed.slice(0, 200)}…` : trimmed;
+}
+
 /** `choices[0].message.content` defensiv extrahieren. */
 function extractContent(payload: unknown): string | null {
   const choices = asRecord(payload)?.choices;
@@ -172,6 +198,8 @@ export async function chatCompletion(args: ChatCompletionArgs): Promise<ChatComp
     if (res.status === 429 || res.status >= 500) {
       cancel();
       lastError = `endpoint returned status ${res.status}`;
+      const upstream = extractUpstreamError(await res.text().catch(() => ""));
+      if (upstream) lastError = `${lastError}: ${upstream}`;
       if (attempt < MAX_ATTEMPTS) {
         await backoff(attempt, args.signal);
         continue;
@@ -181,7 +209,10 @@ export async function chatCompletion(args: ChatCompletionArgs): Promise<ChatComp
 
     if (!res.ok) {
       cancel();
-      throw new Error(`endpoint returned status ${res.status}`);
+      let message = `endpoint returned status ${res.status}`;
+      const upstream = extractUpstreamError(await res.text().catch(() => ""));
+      if (upstream) message = `${message}: ${upstream}`;
+      throw new Error(message);
     }
 
     let payload: unknown;

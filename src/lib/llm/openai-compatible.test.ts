@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { chatCompletion, isZaiEndpoint } from "./openai-compatible";
+import { chatCompletion, extractUpstreamError, isZaiEndpoint } from "./openai-compatible";
 
 describe("isZaiEndpoint", () => {
   it("erkennt z.ai-Endpunkte am Host (Standard + Coding)", () => {
@@ -56,5 +56,69 @@ describe("chatCompletion — thinking-Gate", () => {
     const cap = stubFetchCapturing();
     await chatCompletion({ ...baseArgs, model: "gpt-4o-mini", baseUrl: "https://api.openai.com/v1" });
     expect(cap.bodies[0]).not.toHaveProperty("thinking");
+  });
+});
+
+describe("extractUpstreamError", () => {
+  it("zieht error.message aus dem Upstream-Body", () => {
+    expect(extractUpstreamError('{"error":{"message":"insufficient balance"}}')).toBe("insufficient balance");
+  });
+
+  it("akzeptiert error als flachen String", () => {
+    expect(extractUpstreamError('{"error":"rate limited"}')).toBe("rate limited");
+  });
+
+  it("gibt null bei fehlendem Feld oder Nicht-JSON", () => {
+    expect(extractUpstreamError("{}")).toBeNull();
+    expect(extractUpstreamError("not json")).toBeNull();
+    expect(extractUpstreamError('{"error":{}}')).toBeNull();
+  });
+
+  it("kappt auf 200 Zeichen (plus Ellipsis)", () => {
+    const long = "x".repeat(300);
+    const out = extractUpstreamError(JSON.stringify({ error: { message: long } }));
+    expect(out).toHaveLength(201);
+    expect(out?.endsWith("…")).toBe(true);
+  });
+});
+
+describe("chatCompletion — Upstream-Fehlertext", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  /** Stubt fetch mit einem festen Status + JSON-Body (als text() lesbar). */
+  function stubFetchStatus(status: number, body: unknown): void {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() =>
+        Promise.resolve({
+          ok: status >= 200 && status < 300,
+          status,
+          type: "basic",
+          text: () => Promise.resolve(JSON.stringify(body)),
+          json: () => Promise.resolve(body),
+        } as unknown as Response),
+      ),
+    );
+  }
+
+  // baseUrl OpenAI + jsonMode weglassen → 400 fällt direkt auf den !res.ok-Wurf
+  // (kein 429-Retry-Backoff, kein jsonMode-off-Retry) → schneller, deterministischer Test.
+  const baseArgs = {
+    apiKey: "k",
+    model: "gpt-4o-mini",
+    messages: [{ role: "user" as const, content: "hi" }],
+    baseUrl: "https://api.openai.com/v1",
+  };
+
+  it("hängt den Upstream-error.message an den geworfenen Fehler an", async () => {
+    stubFetchStatus(400, { error: { message: "insufficient balance" } });
+    await expect(chatCompletion(baseArgs)).rejects.toThrow("insufficient balance");
+  });
+
+  it("bleibt beim generischen Text, wenn kein message im Body steht", async () => {
+    stubFetchStatus(400, {});
+    await expect(chatCompletion(baseArgs)).rejects.toThrow("endpoint returned status 400");
   });
 });
