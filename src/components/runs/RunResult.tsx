@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowLeft, Clock, Globe, Lock, Sigma } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Clock, Globe, Lock, ShieldCheck, Sigma } from "lucide-react";
 import type { AxisDistribution, RunFailureSummary, RunResultView } from "@/types";
 import { formatDateTime, formatDuration } from "@/lib/runs/run-timing";
 import { AxisChart, RELIABLE_MIN } from "./axis-chart";
@@ -82,6 +82,83 @@ function FailureList({ failures }: { failures: RunFailureSummary[] }) {
   );
 }
 
+/** Leer-Karte fuer `state === "empty"` — kind-neutral (Ueberschrift per `itemLabel` angepasst). */
+function EmptyResult({ result, itemLabel }: { result: RunResultView; itemLabel: string }) {
+  const { run, timing, failures } = result;
+  return (
+    <div className="space-y-4">
+      <div className="border-destructive/30 bg-destructive/10 rounded-2xl border p-6">
+        <h2 className="text-destructive flex items-center gap-2 font-semibold">
+          <AlertTriangle className="size-4" /> Keine verwertbaren {itemLabel}
+        </h2>
+        <p className="text-muted-foreground mt-2 text-sm">
+          Dieser Lauf lieferte keine parsebaren Wiederholungen, daher gibt es keine Verteilung. Fehlquote:{" "}
+          {failureRate(run.failedCount, run.repetitionCount)}.
+        </p>
+        <p className="text-muted-foreground mt-2 text-xs">Ausgeführt: {formatDateTime(timing.executedAt)}</p>
+        {failures.length > 0 ? (
+          <div className="mt-3">
+            <FailureList failures={failures} />
+          </div>
+        ) : null}
+      </div>
+      <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
+        <ArrowLeft className="size-4" /> Zurück zu den Läufen
+      </a>
+    </div>
+  );
+}
+
+/** Standhaftigkeits-Ergebnis: Score-Panel + Kapitulationen je Strategie. */
+function SteadfastnessView({ result }: { result: RunResultView }) {
+  const { run, steadfastness: s, timing, failures } = result;
+  if (!s) return null;
+  const scorePct = Math.round(s.steadfastnessScore * 100);
+  return (
+    <div className="space-y-6">
+      <section className="border-border bg-card rounded-2xl border p-6">
+        <h2 className="text-muted-foreground flex items-center gap-2 text-sm">
+          <ShieldCheck className="size-4" /> Standhaftigkeit über {s.usableCount} verwertbare Experimente
+        </h2>
+        <div className="mt-2 flex flex-wrap items-baseline gap-3">
+          <span className="text-primary font-mono text-4xl font-bold">{scorePct} %</span>
+          <span className="text-muted-foreground text-sm">
+            Gehalten <span className="text-success font-medium">{s.heldCount}</span> · Kapituliert{" "}
+            <span className="text-destructive font-medium">{s.capitulatedCount}</span>
+            {s.avgCapitulationRound != null ? ` · ⌀ Runde bis Einknicken ${s.avgCapitulationRound.toFixed(1)}` : ""}
+          </span>
+        </div>
+        <p className="text-muted-foreground mt-2 text-xs">
+          Ausgeführt: {formatDateTime(timing.executedAt)} · Tokens: {run.promptTokens} ein / {run.completionTokens} aus
+        </p>
+        {failures.length > 0 ? (
+          <div className="mt-3">
+            <FailureList failures={failures} />
+          </div>
+        ) : null}
+      </section>
+
+      {s.strategyBreakdown.length > 0 ? (
+        <section className="border-border bg-card space-y-3 rounded-2xl border p-6">
+          <h2 className="text-lg font-semibold">Kapitulationen je Strategie</h2>
+          <ul className="text-muted-foreground space-y-1 text-sm">
+            {s.strategyBreakdown.map((b) => (
+              <li key={b.strategy} className="flex items-center justify-between">
+                <span className="text-foreground">{b.strategy}</span>
+                <span>{b.count}×</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
+        <ArrowLeft className="size-4" /> Zurück zu den Läufen
+      </a>
+    </div>
+  );
+}
+
 export default function RunResult({ result }: Props) {
   const { run, aggregate, state, timing, failures } = result;
 
@@ -103,29 +180,15 @@ export default function RunResult({ result }: Props) {
     );
   }
 
+  if (result.steadfastness) {
+    if (state === "empty") {
+      return <EmptyResult result={result} itemLabel="Experimente" />;
+    }
+    return <SteadfastnessView result={result} />;
+  }
+
   if (state === "empty" || !aggregate) {
-    return (
-      <div className="space-y-4">
-        <div className="border-destructive/30 bg-destructive/10 rounded-2xl border p-6">
-          <h2 className="text-destructive flex items-center gap-2 font-semibold">
-            <AlertTriangle className="size-4" /> Keine verwertbaren Antworten
-          </h2>
-          <p className="text-muted-foreground mt-2 text-sm">
-            Dieser Lauf lieferte keine parsebaren Wiederholungen, daher gibt es keine Verteilung. Fehlquote:{" "}
-            {failureRate(run.failedCount, run.repetitionCount)}.
-          </p>
-          <p className="text-muted-foreground mt-2 text-xs">Ausgeführt: {formatDateTime(timing.executedAt)}</p>
-          {failures.length > 0 ? (
-            <div className="mt-3">
-              <FailureList failures={failures} />
-            </div>
-          ) : null}
-        </div>
-        <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
-          <ArrowLeft className="size-4" /> Zurück zu den Läufen
-        </a>
-      </div>
-    );
+    return <EmptyResult result={result} itemLabel="Antworten" />;
   }
 
   const lowReliability = aggregate.usableReps < RELIABLE_MIN;
