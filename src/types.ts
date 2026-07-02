@@ -405,6 +405,8 @@ export interface RunAggregate {
 export interface RunResultView {
   run: RunView;
   aggregate: RunAggregate | null;
+  /** Nur bei kind=steadfastness gesetzt; sonst null. */
+  steadfastness: SteadfastnessAggregate | null;
   state: "ready" | "empty" | "unfinished";
   timing: RunTiming;
   failures: RunFailureSummary[];

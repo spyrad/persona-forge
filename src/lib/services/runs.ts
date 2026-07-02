@@ -17,6 +17,7 @@ import { STEADFASTNESS_ID } from "@/lib/instruments/steadfastness";
 import { chatCompletion } from "@/lib/llm/openai-compatible";
 import { aggregateRun } from "@/lib/runs/oejts-aggregate";
 import { buildOejtsMessages, parseOejtsResponse, permuteItems } from "@/lib/runs/oejts-run";
+import { aggregateSteadfastness } from "@/lib/runs/steadfastness-aggregate";
 import { summarizeTiming } from "@/lib/runs/run-timing";
 import { summarizeFailures } from "@/lib/runs/run-failures";
 import {
@@ -219,6 +220,12 @@ function toRepForScoring(row: Pick<RunRepetition, "item_values">): Pick<RunRepet
   return { item_values: row.item_values };
 }
 
+/** Schmaler Cast-Helfer (gleiches Muster wie `toModelConfigId`/`toTokenTotals`)
+ *  fuer den Lauf-`kind`-Dispatch in `getRunResult`. */
+function toKind(row: { kind: string }): string {
+  return row.kind;
+}
+
 /**
  * Liest einen Lauf + seine Wiederholungen RLS-gescoped und aggregiert das Ergebnis
  * on-the-fly (deterministisch, keine persistierten Aggregate; NFR Reproduzierbarkeit).
@@ -235,12 +242,42 @@ export async function getRunResult(sb: SupabaseClient, userId: string, id: strin
     return {
       run,
       aggregate: null,
+      steadfastness: null,
       state: "unfinished",
       timing: summarizeTiming(run.createdAt, run.finishedAt, []),
       failures: [],
     };
   }
 
+  const { data: kindRow } = await sb.from(TABLE).select("kind").eq("id", id).maybeSingle();
+  const kind = kindRow ? toKind(kindRow) : "oejts";
+
+  if (kind === "steadfastness") {
+    const { data, error } = await sb
+      .from("run_repetitions")
+      .select("experiment, duration_ms, status, error")
+      .eq("run_id", id);
+    if (error) fail("result:reps", error.message);
+    const rows = data as {
+      experiment: SteadfastnessExperiment | null;
+      duration_ms: number | null;
+      status: RepetitionStatus;
+      error: string | null;
+    }[];
+    const timing = summarizeTiming(
+      run.createdAt,
+      run.finishedAt,
+      rows.map((r) => r.duration_ms),
+    );
+    const failures = summarizeFailures(rows.map((r) => ({ status: r.status, error: r.error })));
+    // Verwertbar = fertig gemessene (status ok + experiment.done).
+    const experiments = rows.map((r) => r.experiment).filter((e): e is SteadfastnessExperiment => e?.done ?? false);
+    const steadfastness = aggregateSteadfastness(experiments);
+    const state = steadfastness.usableCount === 0 ? "empty" : "ready";
+    return { run, aggregate: null, steadfastness, state, timing, failures };
+  }
+
+  // ── OEJTS-Pfad (unveraendert, nur steadfastness:null ergaenzt) ──
   const { data, error } = await sb
     .from("run_repetitions")
     .select("item_values, duration_ms, status, error")
@@ -256,7 +293,14 @@ export async function getRunResult(sb: SupabaseClient, userId: string, id: strin
   const failures = summarizeFailures(rows.map((r) => ({ status: r.status, error: r.error })));
 
   const aggregate = aggregateRun(reps, OEJTS);
-  return { run, aggregate, state: aggregate.usableReps === 0 ? "empty" : "ready", timing, failures };
+  return {
+    run,
+    aggregate,
+    steadfastness: null,
+    state: aggregate.usableReps === 0 ? "empty" : "ready",
+    timing,
+    failures,
+  };
 }
 
 // ─── Orchestrierung (Phase 2) ────────────────────────────────────────────────
