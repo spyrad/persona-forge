@@ -11,6 +11,7 @@
 // re-exportieren und gegen `RunStatus`/`Visibility`-Drift zu guarden.
 import type { RunView, RunProgress } from "@/lib/runs/run-schemas";
 import type { RunTiming } from "@/lib/runs/run-timing";
+import type { RunFailureSummary } from "@/lib/runs/run-failures";
 
 /** DB-Entity `public.model_configs` — inkl. Krypto-Spalten (server-only). */
 export interface ModelConfig {
@@ -263,6 +264,7 @@ export interface RunRepetition {
  */
 export type { RunView, RunProgress };
 export type { RunTiming };
+export type { RunFailureSummary };
 
 /**
  * Compile-Guard: die `z.enum`-Literale fuer `status`/`visibility` in
@@ -340,6 +342,7 @@ export interface RunResultView {
   aggregate: RunAggregate | null;
   state: "ready" | "empty" | "unfinished";
   timing: RunTiming;
+  failures: RunFailureSummary[];
 }
 
 // ─── Zwei-Laeufe-Vergleich (side-by-side, S-08) ──────────────────────────────

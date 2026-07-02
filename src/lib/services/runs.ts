@@ -17,6 +17,7 @@ import { chatCompletion } from "@/lib/llm/openai-compatible";
 import { aggregateRun } from "@/lib/runs/oejts-aggregate";
 import { buildOejtsMessages, parseOejtsResponse, permuteItems } from "@/lib/runs/oejts-run";
 import { summarizeTiming } from "@/lib/runs/run-timing";
+import { summarizeFailures } from "@/lib/runs/run-failures";
 import { getDecryptedTarget } from "@/lib/services/model-configs";
 import type { createClient } from "@/lib/supabase";
 import type {
@@ -202,21 +203,26 @@ export async function getRunResult(sb: SupabaseClient, userId: string, id: strin
       aggregate: null,
       state: "unfinished",
       timing: summarizeTiming(run.createdAt, run.finishedAt, []),
+      failures: [],
     };
   }
 
-  const { data, error } = await sb.from("run_repetitions").select("item_values, duration_ms").eq("run_id", id);
+  const { data, error } = await sb
+    .from("run_repetitions")
+    .select("item_values, duration_ms, status, error")
+    .eq("run_id", id);
   if (error) fail("result:reps", error.message);
-  const rows = data as Pick<RunRepetition, "item_values" | "duration_ms">[];
+  const rows = data as Pick<RunRepetition, "item_values" | "duration_ms" | "status" | "error">[];
   const reps = rows.map(toRepForScoring);
   const timing = summarizeTiming(
     run.createdAt,
     run.finishedAt,
     rows.map((r) => r.duration_ms),
   );
+  const failures = summarizeFailures(rows.map((r) => ({ status: r.status, error: r.error })));
 
   const aggregate = aggregateRun(reps, OEJTS);
-  return { run, aggregate, state: aggregate.usableReps === 0 ? "empty" : "ready", timing };
+  return { run, aggregate, state: aggregate.usableReps === 0 ? "empty" : "ready", timing, failures };
 }
 
 // ─── Orchestrierung (Phase 2) ────────────────────────────────────────────────

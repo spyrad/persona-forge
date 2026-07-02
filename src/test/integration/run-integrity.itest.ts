@@ -169,6 +169,7 @@ describe("Risk #4 — Lauf-Integrität", () => {
       expect(result?.aggregate?.usableReps).toBe(8);
       expect(result?.run.failedCount).toBe(2);
       expect(result?.run.status).toBe("completed");
+      expect(result?.failures).toEqual([{ message: "itest: simulierter Fehlschlag", count: 2 }]);
     });
 
     it("unfertiger Lauf (running/pending): kein Aggregat, state unfinished", async () => {
