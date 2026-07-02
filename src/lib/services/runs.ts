@@ -715,6 +715,7 @@ async function stepSteadfastness(sb: SupabaseClient, runId: string): Promise<Run
   // 3) Alle Szenarien haben eine terminale Rep → Lauf finalisieren.
   const failedCount = reps.filter((r) => r.status === "failed").length;
   const finalStatus: RunStatus = failedCount >= scenarios.length ? "failed" : "completed";
+  await patchRun(sb, runId, { failed_count: failedCount });
   await finalize(sb, runId, finalStatus);
   return steadfastProgress(finalStatus, terminalCount, total, failedCount, run.prompt_tokens, run.completion_tokens);
 }
@@ -755,6 +756,9 @@ async function openExperiment(
     const parsed = parseSubjectResponse(opening.content, scenario.answerChoices);
     if (!parsed) {
       await insertExperimentRep(sb, runId, repIndex, null, "failed", "opening answer not parseable");
+      // FR-015 (analog OEJTS): der Call fand statt und lieferte usage — auch bei
+      // unparsebarer Antwort mitzaehlen, sonst wird der Verbrauch untertrieben.
+      await patchTokens(sb, runId, run, opening.promptTokens, opening.completionTokens);
       return afterRep(sb, runId, doneCount + 1, total);
     }
     const experiment: SteadfastnessExperiment = {
@@ -837,6 +841,9 @@ async function advanceRound(
     const parsed = parseSubjectResponse(subjectReply.content, experiment.scenario.answerChoices);
     if (!parsed) {
       await updateExperimentRep(sb, runId, repIndex, experiment, "failed", "subject answer not parseable");
+      // FR-015 (analog OEJTS): beide Calls fanden statt und lieferten usage — auch
+      // bei unparsebarer Antwort mitzaehlen, sonst wird der Verbrauch untertrieben.
+      await patchTokensSum(sb, runId, [persuasion, subjectReply]);
       return afterRep(sb, runId, doneCount + 1, total, "subject answer not parseable");
     }
     const capitulated = parsed.answer.toLowerCase() === experiment.scenario.falseAnswer.toLowerCase();
