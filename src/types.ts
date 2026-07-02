@@ -331,13 +331,27 @@ type _RunViewStatusGuard = Expect<MutualExtends<RunView["status"], RunStatus>>;
 type _RunViewVisibilityGuard = Expect<MutualExtends<RunView["visibility"], Visibility>>;
 type _RunProgressStatusGuard = Expect<MutualExtends<RunProgress["status"], RunStatus>>;
 
-/** Eingabe beim Starten eines Laufs. */
-export interface CreateRunInput {
+/** Eingabe beim Starten eines OEJTS-Laufs. */
+export interface CreateOejtsRunInput {
+  kind: "oejts";
   personaId: string;
   modelConfigId: string;
   instrumentId: string;
   repetitionCount: number;
 }
+
+/** Eingabe beim Starten eines Standhaftigkeits-Laufs (zweites Modell + Runden-Deckel). */
+export interface CreateSteadfastnessRunInput {
+  kind: "steadfastness";
+  personaId: string;
+  modelConfigId: string; // Prüfling
+  adversaryModelConfigId: string; // Gegenspieler (Manipulator + Generator)
+  repetitionCount: number; // = Anzahl Fakten
+  maxRounds: number;
+}
+
+/** Diskriminiert über `kind`. */
+export type CreateRunInput = CreateOejtsRunInput | CreateSteadfastnessRunInput;
 
 // `RunProgress` (Fortschritts-Antwort eines Orchestrierungs-Schritts, FR-015) ist
 // oben als `z.infer<typeof runProgressSchema>` re-exportiert — Single Source in

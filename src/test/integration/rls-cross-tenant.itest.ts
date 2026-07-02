@@ -163,6 +163,7 @@ describe("Risk #1 — Cross-Tenant-RLS-Matrix (zwei Konten)", () => {
 
     it("A kann keinen Lauf auf B's PRIVATER Persona bauen (→ null)", async () => {
       const result = await createRun(A.client, A.userId, {
+        kind: "oejts",
         personaId: bPrivatePersona.id,
         modelConfigId: aModelConfig.id,
         instrumentId: OEJTS.id,
@@ -173,6 +174,7 @@ describe("Risk #1 — Cross-Tenant-RLS-Matrix (zwei Konten)", () => {
 
     it("A kann keinen Lauf auf B's Modellkonfig bauen (→ null)", async () => {
       const result = await createRun(A.client, A.userId, {
+        kind: "oejts",
         personaId: aPersona.id,
         modelConfigId: bModelConfig.id,
         instrumentId: OEJTS.id,

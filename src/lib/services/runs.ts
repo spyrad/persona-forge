@@ -13,6 +13,7 @@
  *   * RLS erzwingt den Scope serverseitig (select own-or-global, writes owner-only).
  */
 import { OEJTS } from "@/lib/instruments/oejts";
+import { STEADFASTNESS_ID } from "@/lib/instruments/steadfastness";
 import { chatCompletion } from "@/lib/llm/openai-compatible";
 import { aggregateRun } from "@/lib/runs/oejts-aggregate";
 import { buildOejtsMessages, parseOejtsResponse, permuteItems } from "@/lib/runs/oejts-run";
@@ -23,6 +24,7 @@ import type { createClient } from "@/lib/supabase";
 import type {
   CreateRunInput,
   ItemValue,
+  Persona,
   RepetitionStatus,
   Run,
   RunProgress,
@@ -112,6 +114,10 @@ export async function createRun(sb: SupabaseClient, userId: string, input: Creat
     .maybeSingle();
   if (pErr) fail("create:persona", pErr.message);
   if (!persona) return null;
+  // Getippter Cast launtert das `any` des untypisierten Supabase-Clients
+  // (gleiches Muster wie `duplicatePersona`), sonst meldet eslint eine
+  // "unsafe assignment" beim Aufbau von `base` unten.
+  const personaRow = persona as Pick<Persona, "system_prompt">;
 
   // Modellkonfig-Sichtbarkeit pruefen (RLS: nur eigene).
   const { data: model, error: mErr } = await sb
@@ -122,21 +128,37 @@ export async function createRun(sb: SupabaseClient, userId: string, input: Creat
   if (mErr) fail("create:model", mErr.message);
   if (!model) return null;
 
-  const { data, error } = await sb
-    .from(TABLE)
-    .insert({
-      persona_id: input.personaId,
-      model_config_id: input.modelConfigId,
-      persona_prompt_snapshot: persona.system_prompt,
-      instrument_id: input.instrumentId,
-      repetition_count: input.repetitionCount,
-      // FR-003: Default ist 'global', explizit gesetzt (DB-Default bleibt
-      // 'private' als Defense-in-Depth). Umschalten via updateRunVisibility (S-07).
-      visibility: "global",
-      // owner_id via DB-Default (auth.uid())
-    })
-    .select(VIEW_COLUMNS)
-    .single();
+  // Gemeinsame Insert-Felder.
+  const base = {
+    persona_id: input.personaId,
+    model_config_id: input.modelConfigId,
+    persona_prompt_snapshot: personaRow.system_prompt,
+    repetition_count: input.repetitionCount,
+    visibility: "global" as const,
+  };
+
+  let insert: Record<string, unknown>;
+  if (input.kind === "steadfastness") {
+    // Gegenspieler-Modell muss ebenfalls sichtbar/eigen sein.
+    const { data: adv, error: aErr } = await sb
+      .from("model_configs")
+      .select("id")
+      .eq("id", input.adversaryModelConfigId)
+      .maybeSingle();
+    if (aErr) fail("create:adversary", aErr.message);
+    if (!adv) return null;
+    insert = {
+      ...base,
+      kind: "steadfastness",
+      instrument_id: STEADFASTNESS_ID,
+      adversary_model_config_id: input.adversaryModelConfigId,
+      max_rounds: input.maxRounds,
+    };
+  } else {
+    insert = { ...base, kind: "oejts", instrument_id: input.instrumentId };
+  }
+
+  const { data, error } = await sb.from(TABLE).insert(insert).select(VIEW_COLUMNS).single();
   if (error) fail("create", error.message);
   return toView(data, userId);
 }

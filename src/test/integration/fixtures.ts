@@ -53,6 +53,7 @@ export async function makeCompletedRun(
   visibility: Visibility,
 ): Promise<RunView> {
   const run = await createRun(account.client, account.userId, {
+    kind: "oejts",
     personaId,
     modelConfigId,
     instrumentId: OEJTS.id,
@@ -117,6 +118,7 @@ export async function makePendingRun(
   repetitionCount = 3,
 ): Promise<RunView> {
   const run = await createRun(account.client, account.userId, {
+    kind: "oejts",
     personaId,
     modelConfigId,
     instrumentId: OEJTS.id,

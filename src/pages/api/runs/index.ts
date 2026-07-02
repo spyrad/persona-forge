@@ -1,17 +1,10 @@
 import type { APIRoute } from "astro";
-import { z } from "zod";
 import { requireUser } from "@/lib/api-auth";
 import { json, jsonError, serviceErrorResponse, validationError } from "@/lib/api-responses";
 import { createRun, listRuns } from "@/lib/services/runs";
+import { createSchema } from "./create-schema";
 
 export const prerender = false;
-
-const createSchema = z.object({
-  personaId: z.uuid(),
-  modelConfigId: z.uuid(),
-  instrumentId: z.string().trim().min(1).max(120).default("oejts-1.2"),
-  repetitionCount: z.number().int().min(1).max(25),
-});
 
 /** Liste der sichtbaren Laeufe (eigene + globale), neueste zuerst. */
 export const GET: APIRoute = async (context) => {
