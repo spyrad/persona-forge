@@ -41,6 +41,9 @@ export const runViewSchema = z.object({
   createdAt: z.string(),
   updatedAt: z.string(),
   finishedAt: z.string().nullable(),
+  // Additiv (Task 9): Test-Typ fuer den Listen-Badge. `.default` haelt bestehende
+  // Server-Antworten ohne das Feld typkonform (Drift-Semantik siehe Datei-Kommentar).
+  kind: z.enum(["oejts", "steadfastness"]).default("oejts"),
 });
 
 /** Liste sichtbarer Laeufe — Response von `GET /api/runs`. */

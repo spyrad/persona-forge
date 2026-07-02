@@ -32,6 +32,10 @@ interface Props {
 const MIN_REPS = 1;
 const MAX_REPS = 25;
 const DEFAULT_REPS = 5;
+const MIN_ROUNDS = 1;
+const MAX_ROUNDS = 50;
+const DEFAULT_ROUNDS = 12;
+type RunKind = "oejts" | "steadfastness";
 
 /**
  * Navigations-Side-Effect bei 401. Bewusst auf Modul-Ebene (nicht in der
@@ -125,6 +129,14 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
   const [personaId, setPersonaId] = useState<string>(personas[0]?.id ?? "");
   const [modelConfigId, setModelConfigId] = useState<string>(modelConfigs[0]?.id ?? "");
   const [reps, setReps] = useState<number>(DEFAULT_REPS);
+  const [kind, setKind] = useState<RunKind>("oejts");
+  // `?? ??`-Ketten ueber zwei Index-Zugriffe hinweg flaggt `no-unnecessary-condition`
+  // (ohne `noUncheckedIndexedAccess` gilt `modelConfigs[i]` als nie `undefined`) —
+  // deshalb hier als Ternary statt als Chain (deckt trotzdem `modelConfigs.length <= 1` ab).
+  const [adversaryId, setAdversaryId] = useState<string>(
+    modelConfigs.length > 1 ? modelConfigs[1].id : (modelConfigs[0]?.id ?? ""),
+  );
+  const [maxRounds, setMaxRounds] = useState<number>(DEFAULT_ROUNDS);
   const [formError, setFormError] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(
     loadError ? "Laufliste konnte nicht geladen werden. Bitte neu laden." : null,
@@ -268,12 +280,26 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       setFormError(`Wiederholungen müssen zwischen ${String(MIN_REPS)} und ${String(MAX_REPS)} liegen.`);
       return;
     }
+    if (kind === "steadfastness") {
+      if (!adversaryId) {
+        setFormError("Gegenspieler-Modell wählen.");
+        return;
+      }
+      if (!Number.isInteger(maxRounds) || maxRounds < MIN_ROUNDS || maxRounds > MAX_ROUNDS) {
+        setFormError(`Runden müssen zwischen ${String(MIN_ROUNDS)} und ${String(MAX_ROUNDS)} liegen.`);
+        return;
+      }
+    }
     setStarting(true);
     try {
+      const body =
+        kind === "steadfastness"
+          ? { kind, personaId, modelConfigId, adversaryModelConfigId: adversaryId, repetitionCount: reps, maxRounds }
+          : { kind, personaId, modelConfigId, instrumentId: "oejts-1.2", repetitionCount: reps };
       const res = await fetch("/api/runs", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ personaId, modelConfigId, instrumentId: "oejts-1.2", repetitionCount: reps }),
+        body: JSON.stringify(body),
       });
       if (res.status === 401) {
         redirectToSignin();
@@ -304,6 +330,11 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
         completionTokens: 0,
         lastRepDurationMs: null,
         lastRepError: null,
+        phase: null,
+        currentScenario: null,
+        totalScenarios: view.repetitionCount,
+        currentRound: null,
+        lastStrategy: null,
       });
       void runStep(view.id);
     } catch {
@@ -410,6 +441,28 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
         )}
 
         <div>
+          <label htmlFor="kind" className="text-muted-foreground mb-1 block text-sm">
+            Test-Typ
+          </label>
+          <select
+            id="kind"
+            value={kind}
+            disabled={!canRun || isRunning}
+            onChange={(e) => {
+              setKind(e.target.value as RunKind);
+            }}
+            className={selectClass}
+          >
+            <option value="oejts" className="bg-muted">
+              Persönlichkeit (OEJTS)
+            </option>
+            <option value="steadfastness" className="bg-muted">
+              Standhaftigkeit
+            </option>
+          </select>
+        </div>
+
+        <div>
           <label htmlFor="personaId" className="text-muted-foreground mb-1 block text-sm">
             Persona
           </label>
@@ -451,9 +504,55 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
           </select>
         </div>
 
+        {kind === "steadfastness" ? (
+          <>
+            <div>
+              <label htmlFor="adversaryId" className="text-muted-foreground mb-1 block text-sm">
+                Gegenspieler-Modell (Manipulator + Generator)
+              </label>
+              <select
+                id="adversaryId"
+                value={adversaryId}
+                disabled={!canRun || isRunning}
+                onChange={(e) => {
+                  setAdversaryId(e.target.value);
+                }}
+                className={selectClass}
+              >
+                {modelConfigs.map((c) => (
+                  <option key={c.id} value={c.id} className="bg-muted">
+                    {c.label} ({c.modelName})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="maxRounds" className="text-muted-foreground mb-1 block text-sm">
+                Max. Runden je Fakt{" "}
+                <span className="text-muted-foreground">
+                  ({MIN_ROUNDS}–{MAX_ROUNDS})
+                </span>
+              </label>
+              <input
+                id="maxRounds"
+                type="number"
+                min={MIN_ROUNDS}
+                max={MAX_ROUNDS}
+                value={maxRounds}
+                disabled={!canRun || isRunning}
+                onChange={(e) => {
+                  const v = e.target.valueAsNumber;
+                  setMaxRounds(Number.isNaN(v) ? MIN_ROUNDS : v);
+                }}
+                className="border-border bg-input text-foreground focus-visible:ring-ring w-full rounded-lg border px-3 py-2 transition-colors focus:ring-2 focus:outline-none"
+              />
+            </div>
+          </>
+        ) : null}
+
         <div>
           <label htmlFor="reps" className="text-muted-foreground mb-1 block text-sm">
-            Wiederholungen{" "}
+            {kind === "steadfastness" ? "Fakten" : "Wiederholungen"}{" "}
             <span className="text-muted-foreground">
               ({MIN_REPS}–{MAX_REPS})
             </span>
@@ -519,6 +618,15 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
             {progress.completedReps} von {progress.totalReps} Wiederholungen
             {progress.failedCount > 0 ? ` · ${String(progress.failedCount)} fehlgeschlagen` : ""}
           </p>
+          {progress.phase === "generating" ? (
+            <p className="text-muted-foreground text-xs">Generiere Szenarien…</p>
+          ) : progress.phase === "experimenting" && progress.currentScenario != null ? (
+            <p className="text-muted-foreground text-xs">
+              Fakt {progress.currentScenario}/{progress.totalScenarios ?? progress.totalReps}
+              {progress.currentRound ? ` · Runde ${progress.currentRound}` : ""}
+              {progress.lastStrategy ? ` · Strategie: ${progress.lastStrategy}` : ""}
+            </p>
+          ) : null}
           <p className="text-muted-foreground text-xs">
             Tokens: {progress.promptTokens} ein / {progress.completionTokens} aus
           </p>
@@ -556,6 +664,9 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-2">
                     <StatusBadge status={run.status} />
+                    <span className="border-border bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
+                      {run.kind === "steadfastness" ? "Standhaftigkeit" : "OEJTS"}
+                    </span>
                     {run.visibility === "global" ? (
                       <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
                         <Globe className="size-3" />

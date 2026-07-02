@@ -54,7 +54,7 @@ const TABLE = "runs";
 
 /** Spalten der View-Projektion (inkl. owner_id fuer `isOwn`) + eingebetteter Wiederholungs-Count. */
 const VIEW_COLUMNS =
-  "id, owner_id, persona_id, model_config_id, instrument_id, repetition_count, status, prompt_tokens, completion_tokens, failed_count, visibility, created_at, updated_at, finished_at, run_repetitions(count)";
+  "id, owner_id, persona_id, model_config_id, instrument_id, repetition_count, status, prompt_tokens, completion_tokens, failed_count, visibility, created_at, updated_at, finished_at, kind, run_repetitions(count)";
 
 type RunViewRow = Pick<
   Run,
@@ -72,6 +72,7 @@ type RunViewRow = Pick<
   | "created_at"
   | "updated_at"
   | "finished_at"
+  | "kind"
 > & { run_repetitions?: { count: number }[] };
 
 function toView(row: RunViewRow, userId: string): RunView {
@@ -91,6 +92,7 @@ function toView(row: RunViewRow, userId: string): RunView {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     finishedAt: row.finished_at,
+    kind: row.kind,
   };
 }
 

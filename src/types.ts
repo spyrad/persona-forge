@@ -284,6 +284,8 @@ export interface Run {
   created_at: string;
   updated_at: string;
   finished_at: string | null;
+  /** Test-Typ (additiv, Task 9); DB-Default 'oejts', check-constraint auf beide Werte. */
+  kind: "oejts" | "steadfastness";
 }
 
 /**
