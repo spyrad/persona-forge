@@ -115,9 +115,11 @@ export default function RunResult({ result }: Props) {
             {failureRate(run.failedCount, run.repetitionCount)}.
           </p>
           <p className="text-muted-foreground mt-2 text-xs">Ausgeführt: {formatDateTime(timing.executedAt)}</p>
-          <div className="mt-3">
-            <FailureList failures={failures} />
-          </div>
+          {failures.length > 0 ? (
+            <div className="mt-3">
+              <FailureList failures={failures} />
+            </div>
+          ) : null}
         </div>
         <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
           <ArrowLeft className="size-4" /> Zurück zu den Läufen

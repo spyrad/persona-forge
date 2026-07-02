@@ -6,8 +6,9 @@
  * `redirect:"manual"`, AbortController-Timeout) plus Retry/Backoff bei 429/5xx.
  *
  * Invarianten:
- *   * Leakt NIE Key-Material oder Upstream-Header — Fehler tragen nur generische
- *     Texte (Status/Reachability), nie den Key.
+ *   * Leakt NIE Key-Material oder Upstream-Header — an einen Fehler kann ein
+ *     gekappter Upstream-`error.message` angehängt werden (max. 200 Zeichen),
+ *     nie der Key oder Header.
  *   * `jsonMode` ist tolerant: lehnt ein Endpunkt `response_format` ab (400/422),
  *     wird der Call EINMAL ohne `response_format` wiederholt (FR-013 —
  *     der Freitext-Fallback-Parser faengt das Ergebnis).
