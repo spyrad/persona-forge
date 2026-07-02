@@ -153,6 +153,8 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
   // Live-Modell-Zeit: Summe der lastRepDurationMs über die Steps dieses Laufs.
   const [modelMsSoFar, setModelMsSoFar] = useState<number>(0);
   const [lastRepMs, setLastRepMs] = useState<number | null>(null);
+  // Letzter nicht-null Rep-Fehler (sticky bis zum nächsten Lauf-Start).
+  const [lastRepError, setLastRepError] = useState<string | null>(null);
 
   // Loop-Steuerung ueber Refs (kein Render-State): `cancelled` stoppt die
   // Verkettung nach Abbruch/Fehler, `timer` haelt das ausstehende setTimeout.
@@ -234,6 +236,9 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       setLastRepMs(d);
       setModelMsSoFar((prev) => prev + d);
     }
+    if (next.lastRepError != null) {
+      setLastRepError(next.lastRepError);
+    }
     if (next.status === "completed" || next.status === "failed") {
       stopLoop();
       await refetch();
@@ -289,6 +294,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       setActiveRunId(view.id);
       setModelMsSoFar(0);
       setLastRepMs(null);
+      setLastRepError(null);
       setProgress({
         status: view.status,
         completedReps: 0,
@@ -297,6 +303,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
         promptTokens: 0,
         completionTokens: 0,
         lastRepDurationMs: null,
+        lastRepError: null,
       });
       void runStep(view.id);
     } catch {
@@ -520,6 +527,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
               Letzte Wiederholung {formatDuration(lastRepMs)} · Modell-Zeit gesamt {formatDuration(modelMsSoFar)}
             </p>
           ) : null}
+          {lastRepError != null ? <p className="text-destructive text-xs">Letzter Fehler: {lastRepError}</p> : null}
           <div className="bg-muted h-2 overflow-hidden rounded-full">
             <div
               className="bg-primary h-full rounded-full transition-all"
