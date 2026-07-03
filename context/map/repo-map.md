@@ -8,7 +8,7 @@
 ## 1. TL;DR
 
 persona-forge ist ein **Astro-6-SSR-Tool für psychometrisches LLM-Profiling**:
-es fährt gemeinfreie Tests (v1: OEJTS) mit N Wiederholungen gegen LLMs und liefert
+es fährt offen lizenzierte Tests (v1: OEJTS, CC BY-NC-SA 4.0) mit N Wiederholungen gegen LLMs und liefert
 Verteilungen je Achse. Drei Schichten: **Astro-Pages/API-Routes** (Entry) →
 **React-Inseln** (interaktive UI) → **`src/lib/`** (Business-Logik, stabiles Fundament),
 mit **Supabase** (Postgres/Auth) und Deploy auf **Cloudflare Workers**. Die Arbeit

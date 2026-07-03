@@ -1,54 +1,62 @@
 # Workflow-Status: persona-forge
 
-**Letztes Update:** 2026-07-02 (Session 2)
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-02.md`
+**Letztes Update:** 2026-07-03 (Session 1)
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-03.md`
 
 ---
 
 ## Aktueller Stand
 
-| Kennzahl              | Wert                                                                                                                                                                                                                                                                                     |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Laufende Arbeit**   | Feature **Fehler-Sichtbarkeit** live **und Prod-abgenommen**: Live-Smoke am 2026-07-02 14:21 grün — falsche z.ai-Config → Empty-State + aggregierte Liste „2× endpoint returned status 429: Insufficient balance…". `origin/main = 9f0d3e0`, CI grün, Prod live. Nichts offen in-flight. |
-| **Naechster Schritt** | **Termin-Entscheidung Sa 2026-07-04** (Builder allein vs. Builder+Architect). Kein aktives Feature.                                                                                                                                                                                      |
-| **Blocker**           | Keine.                                                                                                                                                                                                                                                                                   |
+| Kennzahl              | Wert                                                                                                                                                                                                                            |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Laufende Arbeit**   | Doku-/Housekeeping abgeschlossen: Repo-Description+Topics live gesetzt, OEJTS-Lizenz korrigiert (CC BY-NC-SA 4.0, nicht gemeinfrei). **7 Doku-Änderungen uncommitted** (`origin/main = 528d626`, Prod live, kein Code berührt). |
+| **Naechster Schritt** | **Termin-Entscheidung Sa 2026-07-04** (Builder+Architect Termin 1 vs. Champion später) + Architektur-Report einreichen. Zuvor Doku-Änderungen committen.                                                                        |
+| **Blocker**           | Keine.                                                                                                                                                                                                                          |
 
 ---
 
 ## Offene Aufgaben
 
-- [x] **Live-Smoke Fehler-Sichtbarkeit auf Prod** — ABGENOMMEN (2026-07-02 14:21): falsche z.ai-Config → Empty-State „Keine verwertbaren Antworten" (2/2) + aggregierte Liste „2× endpoint returned status 429: Insufficient balance or no resource package. Please recharge." Leak-sicher (nur `error.message`).
-- [ ] **Termin-Entscheidung Sa 2026-07-04:** Builder allein (5. Juli, Auszeichnung) vs. Builder+Architect (10. Aug); kein Nachreichen. Beide einreichbereit.
-- [ ] **Optionale Minors (geparkt, kein Blocker):** DRY-Duplikat der 2 Fehler-Stellen in `openai-compatible.ts`; `localeCompare`-Locale in `run-failures.ts`; direkter Test für den Retryable-429/5xx-Upstream-Pfad.
-- [ ] **Optional Mikro-Härtung:** `isZaiEndpoint` auf `=== "z.ai" || endsWith(".z.ai")` (kein realer Angriffsweg).
+- [ ] **Termin-Entscheidung Sa 2026-07-04:** Builder+Architect in Termin 1 (5.07., Auszeichnung + Demo-Day-Chance, „ein Formular, einmal") vs. 🏆 Champion später (Modul 5 bauen, ~0/5, dann ohne Auszeichnung). Alle 3 Badges auch bis Termin 3 (14.09.) möglich.
 - [ ] **Architektur-Report einreichen** — `context/architect-report.md` ins Zert-Formular (letzte Kurswoche).
-- [ ] **OEJTS-Items** als gemeinfreie Quelle dokumentieren; **Repo-Description + Topics** auf GitHub.
+- [ ] **Doku-Änderungen committen** (`/10x-commit-push`) — 6 geänderte + 1 neue Datei (`docs/instruments/`).
+- [ ] **Optional:** README/BACKLOG um „Standhaftigkeit" ergänzen; Repo-LICENSE erwägen (muss SA-Pflicht des OEJTS-Teils berücksichtigen).
+- [ ] **Geparkte Minors (SDD-Ledger, kein Blocker):** Live-Progress 0 Tokens während Runden; Generierungs-Fehler ohne Rep-Detail; DRY-Duplikat `tryParseJson`.
 
 ---
 
 ## Abgeschlossene Meilensteine (kompakt)
 
-| Datum      | Meilenstein                                     | Ergebnis                                                                                                                                                                     | Details                                             |
-| ---------- | ----------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| 2026-07-02 | **Feature: Fehler-Sichtbarkeit**                | Upstream-`error.message` durchgereicht (leak-sicher, 200-Cap) + UI: live sticky (`RunRunner`) + aggregiert (`RunResult`); 7 Tasks SDD, opus-Review „Ready:Yes", CI/Prod grün | `d9d3a09`→`9f0d3e0`, `2026-07-02.md` (S2)           |
-| 2026-07-02 | **Live-Abnahme: Timing + z.ai `thinking`**      | Beide S4-Features gegen Prod abgenommen: OpenAI- + z.ai-Lauf je 5/5, Fehlquote 0, Timing an Live/Ergebnis/Liste; z.ai kein Hang                                              | `2026-07-02.md` (S1)                                |
-| 2026-07-01 | **Feature: z.ai `thinking:disabled`**           | Host-Gate `isZaiEndpoint` → additives `thinking`-Feld nur für z.ai; GLM-Läufe ~2,8 s statt 9–16 s; 77/77, CI/Prod grün                                                       | `a8753de`→`c5631f0`, `2026-07-01.md` (S4)           |
-| 2026-07-01 | **Feature: Lauf-/Wiederholungs-Timing**         | Migration `duration_ms`+`finished_at`; `summarizeTiming`; Modell-Zeit+Wall-Clock+Datum in Ergebnis/Live/Liste; 7 Tasks SDD                                                   | `31e9383`→`dfe0170`, `2026-07-01.md` (S4)           |
-| 2026-07-01 | **z.ai-Debug**                                  | 429 = Coding-Plan-Key auf falschem Endpunkt; Hängerei = GLM-Reasoning; beides am API belegt                                                                                  | `2026-07-01.md` (S4), `persona-forge-zai-provider`  |
-| 2026-07-01 | **Krypto-Key-Mismatch + `ENCRYPTION_KEY` live** | Prod-Key = `.dev.vars`-Key der geteilten DB; Deploy-Job synct Secret; Läufe laufen                                                                                           | `70784f7`/`93fae0c`, `2026-07-01.md` (S1/S2)        |
-| 2026-07-01 | **Modul-4 (10xArchitect) KOMPLETT**             | 4/4 Artefakte + Architektur-Report (PL, einreichbereit)                                                                                                                      | `context/architect-report.md`, `2026-07-01.md` (S1) |
-| 2026-06-30 | **Modul-4 L2–L4 + `ui-redesign`/E2E**           | Projekt-Map, Run-Flow-Analyse, C-B-Refaktor live; Token-System + Dark Mode                                                                                                   | `2026-06-30.md`, `2026-06-29.md`                    |
-| 2026-06-25 | **Test-Rollout KOMPLETT**                       | `ci`+`integration`-CI-Gate; E2E-Lernschicht                                                                                                                                  | `1b2c0ac`→`b6c7589`, `2026-06-25.md`                |
+| Datum      | Meilenstein                                | Ergebnis                                                                                                         | Details                                                       |
+| ---------- | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| 2026-07-03 | **OEJTS-Lizenz korrigiert + dokumentiert** | Quelle verifiziert: **CC BY-NC-SA 4.0**, nicht gemeinfrei. Attributions-Doku + „gemeinfrei"-Fixes in 5 Docs      | `docs/instruments/oejts-attribution.md`, `2026-07-03.md` (S1) |
+| 2026-07-03 | **GitHub Repo-Description + Topics**       | Description (beide Test-Typen) + 14 Topics live gesetzt; `gh` installiert + authentifiziert (`spyrad`)           | `2026-07-03.md` (S1)                                          |
+| 2026-07-02 | **Feature: Standhaftigkeit (2. Test-Typ)** | `kind`-Diskriminator; Prüfling×Gegenspieler; Score+Breakdown. 11 SDD-Tasks, Opus-Review, CI/Prod grün, Live 80 % | `64b7bf6`→`528d626`, `2026-07-02.md` (S3)                     |
+| 2026-07-02 | **Feature: Fehler-Sichtbarkeit**           | Upstream-`error.message` leak-sicher durchgereicht + UI live+aggregiert; Live-Smoke abgenommen                   | `d9d3a09`→`9f0d3e0`, `2026-07-02.md` (S2/S3)                  |
+| 2026-07-01 | **Feature: z.ai `thinking:disabled`**      | Host-Gate `isZaiEndpoint`; GLM-Läufe ~2,8 s statt 9–16 s; 77/77                                                  | `a8753de`→`c5631f0`, `2026-07-01.md` (S4)                     |
+| 2026-07-01 | **Feature: Lauf-/Wiederholungs-Timing**    | Migration `duration_ms`+`finished_at`; Timing in Ergebnis/Live/Liste                                             | `31e9383`→`dfe0170`, `2026-07-01.md` (S4)                     |
+| 2026-07-01 | **Modul-4 (10xArchitect) KOMPLETT**        | 4/4 Artefakte + Architektur-Report (PL, einreichbereit)                                                          | `context/architect-report.md`                                 |
+| 2026-06-25 | **Test-Rollout KOMPLETT**                  | `ci`+`integration`-CI-Gate; E2E-Lernschicht                                                                      | `1b2c0ac`→`b6c7589`, `2026-06-25.md`                          |
+
+---
+
+## Kurs-Standort (10xDevs, read-only Report S1)
+
+Module 1–4 = **20/20 ✅**. **10xBuilder** (Pflicht, M1–3) + **10xArchitect** (M3–4) einreichbereit.
+**10xChampion** basiert auf **Modul 5** (Team-AI + CI/CD) → aktuell ~0/5, bis Termin 1 nicht erreichbar.
+Termine: **1. = 5.07.2026** (nur hier Auszeichnung) · 2. = 10.08. · 3. (final) = 14.09.
 
 ---
 
 ## Gotchas (Referenz)
 
-- **Fehler-Sichtbarkeit:** pro-Rep-`error` persistiert (`run_repetitions.error`); `getRunResult`→`RunResultView.failures` (aggregiert via `summarizeFailures`), `RunProgress.lastRepError` (live). Upstream-Text via `extractUpstreamError` (`openai-compatible.ts`, nur `error.message`, 200-Cap, kein Key/Header). UI escaped (React) → kein XSS.
-- **z.ai:** Coding-Plan-Key braucht Endpunkt `api.z.ai/api/coding/paas/v4` (Standard+bezahltes Modell → 429); GLM reasont per Default → via `thinking:disabled` (Host-Gate) abgeschaltet. Memory `persona-forge-zai-provider`.
-- **`ENCRYPTION_KEY` MUSS = `.dev.vars`/`.env`-Key** sein (Prod + Dev teilen gehostete Supabase-DB `lccaundrniuievkmusko`), sonst Modellkonfig-Keys unentschlüsselbar → Läufe hängen 0/N.
-- **Migrationen** gehen NICHT über den Deploy-Job — separat auf die gehostete DB, **vor** dem Worker-Deploy (additive nullable Spalten kompatibel).
-- **Push auf `main` = Prod-Deploy**; CI-Fail blockt Deploy lautlos → nach Push Runs per REST prüfen (`gh` fehlt; `curl.exe --ssl-no-revoke` gegen `api.github.com/.../actions/runs`, in node-stdin pipen).
+- **OEJTS = CC BY-NC-SA 4.0**, nicht gemeinfrei — Attribution `docs/instruments/oejts-attribution.md`. NC blockt Monetarisierung; SA bindet abgeleiteten Item-Satz (kollidiert mit permissiver Repo-LICENSE); Repo hat keine LICENSE-Datei.
+- **`gh` CLI installiert** (winget, `C:\Program Files\GitHub CLI\gh.exe`), auth `spyrad` (`repo`-Scope). Git-Bash: voller Pfad nötig bis Shell-Neustart.
+- **Standhaftigkeit:** `runs.kind` (`oejts`|`steadfastness`); Orchestrierung `stepSteadfastness` (1 Runde/Schritt, ≤2 Calls). Reine Module `steadfastness-{run,aggregate}.ts`.
+- **Prod-DB-Migrationen:** Remote-Historie driftet — vor `db push` immer `migration list --linked`, ggf. `migration repair --status applied`. Auto-Mode blockt Prod-DB → per `!`. Memory `persona-forge-migrations`.
+- **z.ai:** Coding-Plan-Key braucht `api.z.ai/api/coding/paas/v4` (sonst 429); GLM via `thinking:disabled` aus. Memory `persona-forge-zai-provider`.
+- **`ENCRYPTION_KEY` MUSS = `.dev.vars`/`.env`-Key** (Prod+Dev teilen DB `lccaundrniuievkmusko`), sonst Läufe hängen 0/N.
+- **Push auf `main` = Prod-Deploy** (Auto-Mode blockt `git push` → per `!`); CI-Fail blockt Deploy lautlos → nach Push CI per REST prüfen (`branch=main`).
 
 ---
 

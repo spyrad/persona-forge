@@ -18,8 +18,8 @@ top_blocker: time
 ## Vision recap
 
 LLM-Disposition (wie zustimmend, vorsichtig, kreativ ein Modell antwortet) ist heute
-eine Blackbox. persona-forge macht sie messbar: gemeinfreie psychometrische Instrumente
-(v1: OEJTS) werden vielfach unter isolierten Bedingungen gegen eine Modell-/Persona-
+eine Blackbox. persona-forge macht sie messbar: offen lizenzierte psychometrische Instrumente
+(v1: OEJTS, CC BY-NC-SA 4.0) werden vielfach unter isolierten Bedingungen gegen eine Modell-/Persona-
 Kombination gefahren; das Ergebnis ist je Achse eine **Verteilung mit Streuung** statt
 eines Einzel-Punktwerts, plus der abgeleitete 4-Buchstaben-Typ. Zwei Konfigurationen
 lassen sich direkt vergleichen.
@@ -216,7 +216,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 
 ## Open Roadmap Questions
 
-1. **Gemeinfreie Quelle der OEJTS-Items fixieren** (Itemtext, Achsen-Zuordnung, Polung/Reverse, Scoring-Schlüssel zum 4-Buchstaben-Typ) — Owner: user. Block: S-04 (transitiv S-05, S-06, S-08). Aus PRD Open Question #2; der Datensatz ist der hartkodierte Kern des v1-Instruments.
+1. **Frei lizenzierte Quelle der OEJTS-Items fixieren** — RESOLVED (2026-07-03): Open Psychometrics (Eric Jorgenson), OEJTS 1.2, hartkodiert in `oejts-1.2.json`/`oejts.ts`. **Lizenz CC BY-NC-SA 4.0, nicht gemeinfrei** (Attribution + NC + SA binden das Repo) — siehe `docs/instruments/oejts-attribution.md`.
 
 ## Parked
 

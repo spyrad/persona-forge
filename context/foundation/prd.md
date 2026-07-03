@@ -20,7 +20,7 @@ timeline_budget:
 > Begriffshinweis: **„Persona"** bezeichnet in diesem Produkt ein **Domänenobjekt** —
 > einen KI-Charakter als strukturiertes kognitives Profil gemäß
 > `docs/persona-authoring-spec.md` (COGNITIVE.md §§1–6 + README, plus Validierungs-
-> Rubrik Abschnitt 7). Es ist ein *Testobjekt*, kein Nutzer. Die *Nutzer-Persona*
+> Rubrik Abschnitt 7). Es ist ein _Testobjekt_, kein Nutzer. Die _Nutzer-Persona_
 > im PRD-Sinn (der Mensch vor dem Tool) wird in `## User & Persona` beschrieben.
 
 ## Vision & Problem Statement
@@ -35,8 +35,8 @@ systematisch erfassbar), **Nachweis-/Compliance-Druck** (in regulierten Kontexte
 Angemessenheit belegt, nicht nur behauptet werden) und **Entscheidungslähmung**
 (Modell-/Prompt-Auswahl ohne objektive Vergleichsbasis).
 
-Der Insight, der den Status quo schlägt: etablierte, gemeinfreie psychometrische
-Instrumente (IPIP, OEJTS) liefern eine strukturierte, bekannte Skala statt
+Der Insight, der den Status quo schlägt: etablierte, offen lizenzierte psychometrische
+Instrumente (IPIP [gemeinfrei], OEJTS [CC BY-NC-SA 4.0]) liefern eine strukturierte, bekannte Skala statt
 selbsterfundener Prompts; LLM-Antworten schwanken, deshalb macht erst **Verteilung
 statt Punktwert** (mehrfach laufen lassen + Streuung zeigen) die Messung aussagekräftig;
 und der System-Prompt wird als **Erstklasse-Objekt** behandelt — wiederverwendbar,
@@ -61,9 +61,10 @@ Treue-Validierung folgt in einem späteren Cycle.
 ## Success Criteria
 
 ### Primary
+
 - Ein angemeldeter Nutzer kann ein beliebiges OpenAI-kompatibles Modell anhängen
   (Base-URL, API-Key, Modellname), eine Persona wählen/anlegen, das Instrument
-  **OEJTS** (gemeinfreie, MBTI-artige Typenausgabe) auswählen und einen Lauf mit N
+  **OEJTS** (offen lizenziert [CC BY-NC-SA 4.0], MBTI-artige Typenausgabe) auswählen und einen Lauf mit N
   Wiederholungen starten; das Ergebnis erscheint je Achse als **Verteilung mit Streuung**
   über die Wiederholungen plus den abgeleiteten 4-Buchstaben-Typ, nicht als
   Einzel-Punktwert.
@@ -71,11 +72,13 @@ Treue-Validierung folgt in einem späteren Cycle.
   nebeneinander vergleichen.
 
 ### Secondary
+
 - Eine einmal angelegte Persona ist gespeichert und in beliebig vielen weiteren Läufen
   wiederverwendbar.
 - Eine Persona kann org-weit („global") bereitgestellt werden.
 
 ### Guardrails
+
 - API-Keys werden nie im Klartext gespeichert — Verschlüsselung at rest ist Pflicht.
 - Der Methodenkern ist unverletzlich: ein Einzeldurchlauf wird nie als belastbarer
   Wert dargestellt; Ergebnisse sind immer Verteilungen über die konfigurierte
@@ -92,6 +95,7 @@ Treue-Validierung folgt in einem späteren Cycle.
 - **Then** erhält er nach Abschluss aller N Wiederholungen je Achse eine Verteilung mit Streuung plus den abgeleiteten Typ — kein Einzel-Punktwert
 
 #### Acceptance Criteria
+
 - Jede der N Wiederholungen läuft in isolierter Sitzung; die Item-Reihenfolge wird
   permutiert, sofern das Instrument Permutation aktiviert hat
 - Antworten werden strukturiert geparst (OEJTS-Format, bipolare Skala als JSON); schlägt
@@ -116,6 +120,7 @@ Treue-Validierung folgt in einem späteren Cycle.
 > Likert-Instrument, kein gezieltes Teilen — der Methodenkern bleibt unangetastet.
 
 ### Authentifizierung & Zugriff
+
 - FR-001: Nutzer kann sich per E-Mail + Passwort registrieren und anmelden. Priority: must-have
   > Socrates: Gegenargument „Selbst-Registrierung ist unnötige Angriffsfläche für ein
   > internes Tool". Resolution: steht — offene Registrierung bleibt; Passwort-Reset als
@@ -133,6 +138,7 @@ Treue-Validierung folgt in einem späteren Cycle.
   > Pro-Nutzer-ACL. N-Nutzer-Teilen ggf. späterer Cycle, nicht im Datenmodell v1.
 
 ### Modellkonfiguration
+
 - FR-005: Nutzer kann ein OpenAI-kompatibles Modell anhängen und als wiederverwendbare Konfiguration speichern (Base-URL, API-Key, Modellname). Priority: must-have
   > Socrates: Gegenargument „pro-Nutzer-Endpunkte streuen Key-Speicherung; zentral
   > sicherer". Resolution: steht — Nutzer verwalten eigene Konfigs; Key-Schutz über
@@ -143,6 +149,7 @@ Treue-Validierung folgt in einem späteren Cycle.
   > wendbarkeit überwiegt; at rest verschlüsselt, nie Klartext-Ausgabe).
 
 ### Persona-Verwaltung
+
 - FR-007: Nutzer kann eine Persona anlegen (System-Prompt frei oder strukturiert nach Spec) mit Name, Beschreibung, Tags, im Katalog speichern und für Läufe auswählen. Priority: must-have
   > Socrates: Gegenargument „frei + strukturiert verdoppelt die UI; eins wählen".
   > Resolution: steht — beide Eingabewege ab v1 gewollt.
@@ -155,7 +162,8 @@ Treue-Validierung folgt in einem späteren Cycle.
   > Resolution: keine Admin-Rolle in v1 — globale Objekte per Seed/Config; Admin-UI später.
 
 ### Test-Bibliothek
-- FR-010: Nutzer kann in v1 das Instrument OEJTS (gemeinfreies Jung'sches Instrument, MBTI-artige 4-Buchstaben-Typenausgabe) auswählen; ein Likert-/Big-Five-Instrument (Mini-IPIP) folgt in einem späteren Cycle. Priority: must-have
+
+- FR-010: Nutzer kann in v1 das Instrument OEJTS (offen lizenziertes Jung'sches Instrument [CC BY-NC-SA 4.0], MBTI-artige 4-Buchstaben-Typenausgabe) auswählen; ein Likert-/Big-Five-Instrument (Mini-IPIP) folgt in einem späteren Cycle. Priority: must-have
   > Socrates: Gegenargument „zwei Instrumente mit getrennter Scoring-Logik verdoppeln die
   > Auswertungsarbeit". Resolution: weiterhin genau EIN Instrument in v1 — später jedoch
   > von Mini-IPIP auf **OEJTS getauscht** (Nutzer-Entscheidung), weil die MBTI-artige
@@ -167,6 +175,7 @@ Treue-Validierung folgt in einem späteren Cycle.
   > dritter/andersartiger Test real ansteht.
 
 ### Testläufe (Methodenkern)
+
 - FR-012: Nutzer kann einen Lauf mit konfigurierbarer Wiederholungszahl starten; jede Wiederholung läuft in isolierter Sitzung. Die Item-Permutation ist eine Eigenschaft des Instruments (an/aus konfigurierbar). Priority: must-have
   > Socrates: Gegenargument „Permutation kann bei manchen Instrumenten die Validität
   > durch Kontext-Effekte berühren". Resolution: Wiederholung + Isolation immer Pflicht;
@@ -183,6 +192,7 @@ Treue-Validierung folgt in einem späteren Cycle.
   > = 0". Resolution: nur Token-Zählung; Kosten weggelassen.
 
 ### Ergebnisse & Vergleich
+
 - FR-016: Das Tool aggregiert die Item-Antworten je OEJTS-Achse (E/I, S/N, T/F, J/P) zu einem Achsen-Score und leitet daraus den 4-Buchstaben-Typ ab; je Achse wird die volle Verteilung über die Wiederholungen dargestellt (Lage, Streuung, Roh-Verteilung) und zusätzlich die Typ-Stabilität über die N Läufe ausgewiesen (wie oft welcher Buchstabe je Achse fällt). Priority: must-have
   > Socrates: Gegenargument „welches Streuungsmaß — reicht eine Zusammenfassung?".
   > Resolution: nicht nur Standardabweichung; auch die Roh-Verteilung je Achse zeigen.
@@ -250,10 +260,11 @@ ausgegeben (FR-006; Umsetzungsdetail downstream).
 ## Non-Goals
 
 ### Funktionale Non-Goals (v1-Scope-Schnitt)
+
 - **Kein eigenes Modell-Hosting / keine eigene Inferenz** — nur Anbindung externer
   OpenAI-kompatibler Endpunkte; kein GPU-/Modellbetrieb im Tool selbst.
 - **Kein Likert-/Big-Five-Instrument (Mini-IPIP) in v1** — v1 liefert OEJTS (MBTI-artige
-  Typenausgabe, gemeinfrei); IPIP/Big Five folgt späterer Cycle. Offizieller MBTI bleibt
+  Typenausgabe, CC BY-NC-SA 4.0); IPIP/Big Five folgt späterer Cycle. Offizieller MBTI bleibt
   dauerhaft ausgeschlossen (siehe No-Gos).
 - **Keine voll deklarative Test-Engine in v1** — Start-Test ist hartkodiert; eine
   generische Engine (beliebige Skalen/Scoring) kommt erst mit dem dritten Test.
@@ -265,12 +276,16 @@ ausgegeben (FR-006; Umsetzungsdetail downstream).
 - **Keine Persona-Treue-Validierung (Spec Abschnitt 7C)** — späterer Cycle.
 
 ### Dauerhafte No-Gos (aus der Pitch, außerhalb des Scope)
-- **Keine urheberrechtlich geschützten Test-Items** — keine offiziellen MBTI-/Gallup-/
-  Hogan-Fragen; ausschließlich gemeinfreie Instrumente.
+
+- **Keine proprietären / kostenpflichtig lizenzierten Test-Items** — keine offiziellen
+  MBTI-/Gallup-/Hogan-Fragen; ausschließlich frei lizenzierte Instrumente (gemeinfrei
+  oder offene CC-Lizenz wie CC BY-NC-SA 4.0). OEJTS ist urheberrechtlich geschützt, aber
+  offen lizenziert (CC BY-NC-SA 4.0) — der NonCommercial-Teil bindet das Projekt.
 - **Keine wissenschaftliche Validierungsstudie** — das Tool ist ein Explorations- und
   Vergleichswerkzeug, kein Forschungsinstrument.
 
 ### Nicht-funktionale Non-Goals
+
 - **Keine Kostenschätzung** — nur Token-Zählung; monetäre Preisrechnung ist kein Ziel.
 
 ## Open Questions
@@ -278,9 +293,10 @@ ausgegeben (FR-006; Umsetzungsdetail downstream).
 1. **Schnitt Persona-Treue-Validierung vs. Psychometrie im MVP** — RESOLVED (Phase 3):
    Mittelweg-Schnitt. v1 liefert vollen psychometrischen Methodenkern + Vergleich; die
    Persona-Treue-Validierung (Spec 7C) ist ein späterer Cycle und damit Non-Goal für v1.
-2. **Gemeinfreie Quelle der OEJTS-Items** — Vor der Umsetzung von FR-010/FR-016 muss eine
-   konkrete, nachweislich gemeinfreie Quelle für OEJTS fixiert werden: vollständiger
-   Itemtext, Zuordnung Item → Achse (E/I, S/N, T/F, J/P), Polung/Reverse-Items und der
-   Scoring-Schlüssel (wie Achsen-Scores zum 4-Buchstaben-Typ führen). Dieser Datensatz ist
-   der hartkodierte Kern des v1-Instruments. — Owner: Nutzer. Blockiert die Implementierung
-   des Test-Laufs, nicht das PRD.
+2. **Frei lizenzierte Quelle der OEJTS-Items** — RESOLVED (2026-07-03): Quelle fixiert auf
+   Open Psychometrics (openpsychometrics.org, Autor Eric Jorgenson), OEJTS 1.2 — vollständiger
+   Itemtext, Zuordnung Item → Achse (E/I, S/N, T/F, J/P), Polung/Reverse-Items und
+   Scoring-Schlüssel als hartkodierter v1-Kern (`context/foundation/instruments/oejts-1.2.json`,
+   `src/lib/instruments/oejts.ts`). **Befund entgegen der ursprünglichen Annahme: OEJTS ist
+   NICHT gemeinfrei, sondern CC BY-NC-SA 4.0** — Attribution + NonCommercial + ShareAlike
+   binden das (öffentliche) Repo. Details und Pflichten: `docs/instruments/oejts-attribution.md`.

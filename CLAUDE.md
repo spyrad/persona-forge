@@ -12,9 +12,10 @@ CLAUDE.md Pflege-Richtlinien:
 
 ## Project Context
 
-persona-forge — psychometrisches Profiling fuer LLMs: Web-Tool, das gemeinfreie
-Tests (v1: OEJTS) mit N Wiederholungen gegen LLMs faehrt und Verteilungen je
-Achse liefert. PRD: `context/foundation/prd.md`.
+persona-forge — psychometrisches Profiling fuer LLMs: Web-Tool, das offen
+lizenzierte Tests (v1: OEJTS, **CC BY-NC-SA 4.0** — nicht gemeinfrei; Attribution
+in `docs/instruments/oejts-attribution.md`) mit N Wiederholungen gegen LLMs faehrt
+und Verteilungen je Achse liefert. PRD: `context/foundation/prd.md`.
 
 ## Important Gotchas
 
