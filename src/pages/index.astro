@@ -35,18 +35,24 @@ import Layout from "@/layouts/Layout.astro";
     );
   }
   .reveal {
-    opacity: 0;
-    translate: 0 12px;
     transition:
       opacity 0.6s ease,
       translate 0.6s ease;
+  }
+  /* Startzustand nur mit JS ausblenden (siehe Layout.astro: `js`-Klasse auf
+     <html>) — ohne JS bleibt der Inhalt sichtbar, da nie ein "is-visible"
+     nachtraeglich gesetzt wird. */
+  .js .reveal {
+    opacity: 0;
+    translate: 0 12px;
   }
   .reveal.is-visible {
     opacity: 1;
     translate: 0 0;
   }
   @media (prefers-reduced-motion: reduce) {
-    .reveal {
+    .reveal,
+    .js .reveal {
       opacity: 1;
       translate: none;
       transition: none;

@@ -25,6 +25,10 @@ const { title = "persona-forge" } = Astro.props;
       const t = localStorage.getItem("theme");
       const dark = t ? t === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
       document.documentElement.classList.toggle("dark", dark);
+      // Markiert JS-Verfuegbarkeit vor dem Body-Render, damit CSS wie
+      // `.js .reveal` (Scroll-Reveal auf der Landing-Page) ohne JS nicht greift
+      // und Inhalte ohne Skript sichtbar bleiben.
+      document.documentElement.classList.add("js");
     </script>
   </head>
   <body>

@@ -21,6 +21,9 @@ interface ThemeColors {
 }
 
 // Theme-Tokens zur Laufzeit lesen — einzige erlaubte Farbquelle für den Canvas.
+// Hinweis: oklch()-Strings als fillStyle/strokeStyle werden vor 2023 (Safari <16.4,
+// Chrome/Edge <111, Firefox <113) ignoriert und fallen auf Schwarz zurück — akzeptierter
+// Support-Floor für den Canvas.
 function readColors(el: HTMLElement): ThemeColors {
   const s = getComputedStyle(el);
   return {
@@ -40,8 +43,11 @@ export default function HeroSimulation() {
     const ctx = canvas?.getContext("2d");
     if (!canvas || !ctx) return;
 
-    // Ab jetzt übernimmt der Canvas — SSR-Fallback ausblenden.
+    // Ab jetzt übernimmt der Canvas — SSR-Fallback ausblenden, Insel einblenden.
+    // Beide Elemente starten serverseitig überlappend (siehe Hero.astro); der
+    // Wechsel passiert atomar hier, damit ohne JS nur der Fallback sichtbar bleibt.
     document.getElementById("hero-simulation-fallback")?.setAttribute("hidden", "");
+    document.getElementById("hero-simulation-island")?.classList.remove("opacity-0");
 
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const cleanups: (() => void)[] = [];

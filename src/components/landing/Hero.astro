@@ -23,7 +23,7 @@ import HeroSimulation from "./HeroSimulation";
     <div id="hero-simulation-fallback" class="absolute inset-0 flex flex-col justify-end">
       <AxisDistribution axisIndex={0} seed={7} showStats inset />
     </div>
-    <div class="absolute inset-0">
+    <div id="hero-simulation-island" class="absolute inset-0 opacity-0 transition-opacity duration-300">
       <HeroSimulation client:visible />
     </div>
   </div>

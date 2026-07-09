@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
   AXES,
   RUNS_PER_AXIS,
-  binValues,
   curvePoints,
   mean,
   mulberry32,
@@ -61,21 +60,6 @@ describe("mean / stddev", () => {
     const values = [2, 4, 4, 4, 5, 5, 7, 9];
     expect(mean(values)).toBe(5);
     expect(stddev(values)).toBe(2);
-  });
-});
-
-describe("binValues", () => {
-  it("verteilt Werte in die richtigen Bins; Summe = Anzahl", () => {
-    const bins = binValues([0, 55, 99.9], 10);
-    expect(bins).toHaveLength(10);
-    expect(bins[0]).toBe(1);
-    expect(bins[5]).toBe(1);
-    expect(bins[9]).toBe(1);
-    expect(bins.reduce((a, b) => a + b, 0)).toBe(3);
-  });
-
-  it("klemmt den Maximalwert 100 in den letzten Bin", () => {
-    expect(binValues([100], 10)[9]).toBe(1);
   });
 });
 

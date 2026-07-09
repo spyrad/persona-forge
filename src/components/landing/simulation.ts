@@ -61,18 +61,10 @@ export function stddev(values: number[]): number {
   return Math.sqrt(values.reduce((acc, v) => acc + (v - m) ** 2, 0) / values.length);
 }
 
-/** Zählt Werte (0..100) in binCount gleich breite Bins; 100 fällt in den letzten. */
-export function binValues(values: number[], binCount: number): number[] {
-  const bins = new Array(binCount).fill(0) as number[];
-  for (const v of values) {
-    bins[Math.min(binCount - 1, Math.floor((v / 100) * binCount))]++;
-  }
-  return bins;
-}
-
 /**
  * Gauß-Glockenkurve als Höhen 0..1 an `samples` Stützstellen über 0..100.
  * sd wird auf minimal 1 geklemmt (Division durch 0).
+ * Erwartet `samples >= 2` (Division durch `samples - 1`), sonst NaN.
  */
 export function curvePoints(m: number, sd: number, samples: number): number[] {
   const s = Math.max(sd, 1);
@@ -84,7 +76,10 @@ export function curvePoints(m: number, sd: number, samples: number): number[] {
   return pts;
 }
 
-/** Höhen (0..1) → SVG-Pfad; y=height ist die Basislinie. */
+/**
+ * Höhen (0..1) → SVG-Pfad; y=height ist die Basislinie.
+ * Erwartet `heights.length >= 2` (Division durch `n - 1`), sonst NaN.
+ */
 export function toSvgPath(heights: number[], width: number, height: number): string {
   const n = heights.length;
   return heights
@@ -96,7 +91,10 @@ export function toSvgPath(heights: number[], width: number, height: number): str
     .join(" ");
 }
 
-/** Wie toSvgPath, aber als geschlossene Fläche zur Basislinie. */
+/**
+ * Wie toSvgPath, aber als geschlossene Fläche zur Basislinie.
+ * Erwartet `heights.length >= 2` (siehe toSvgPath), sonst NaN.
+ */
 export function toSvgArea(heights: number[], width: number, height: number): string {
   return `${toSvgPath(heights, width, height)} L${width},${height} L0,${height} Z`;
 }
