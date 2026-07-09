@@ -59,6 +59,23 @@ const reactConfig = tseslint.config({
   },
 });
 
+/**
+ * `promptfoo/reviewProvider.js` ist ein Node-Skript, das promptfoo zur Laufzeit
+ * laedt — kein App-Code und von keinem tsconfig erfasst. Typgestuetzte Regeln
+ * koennen dort nur Rauschen produzieren ("unsafe assignment of an error typed
+ * value"), weil die Typinformation schlicht fehlt.
+ */
+const promptfooConfig = tseslint.config({
+  files: ["promptfoo/**/*.js"],
+  extends: [tseslint.configs.disableTypeChecked],
+  languageOptions: {
+    globals: { process: "readonly", console: "readonly" },
+  },
+  rules: {
+    "no-console": "off",
+  },
+});
+
 const astroConfig = tseslint.config({
   files: ["**/*.astro"],
   rules: {
@@ -76,4 +93,6 @@ export default tseslint.config(
   ...eslintPluginAstro.configs["flat/jsx-a11y-recommended"],
   astroConfig,
   eslintPluginPrettier,
+  // Nach eslintPluginPrettier, damit `disableTypeChecked` nicht ueberschrieben wird.
+  promptfooConfig,
 );
