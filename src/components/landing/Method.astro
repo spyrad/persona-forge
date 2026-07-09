@@ -1,0 +1,47 @@
+---
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
+const steps = [
+  {
+    n: "01",
+    title: "Configure",
+    description:
+      "Attach any OpenAI-compatible model — base URL, API key, model name. Pick or create a persona: the system prompt as a first-class, reusable object.",
+  },
+  {
+    n: "02",
+    title: "Run",
+    description:
+      "The instrument runs N times, each repetition in an isolated session with permuted items. Every raw answer is stored, per item and per run.",
+  },
+  {
+    n: "03",
+    title: "Read",
+    description:
+      "Scores aggregate into a distribution per axis — location, spread, type stability. Compare two models or two personas side by side.",
+  },
+];
+---
+
+<section id="method" class="border-border border-t py-20 sm:py-28">
+  <p class="reveal text-muted-foreground font-mono text-xs tracking-[0.2em] uppercase">03 — the method</p>
+  <h2 class="reveal font-display text-foreground mt-4 max-w-2xl text-4xl text-balance sm:text-5xl">
+    Ask the same question fifty times.
+  </h2>
+
+  <div class="mt-14 grid gap-4 sm:grid-cols-3">
+    {
+      steps.map((step) => (
+        <div class="reveal">
+          <Card className="h-full">
+            <CardHeader>
+              <p class="text-muted-foreground font-mono text-xs tabular-nums">{step.n}</p>
+              <CardTitle className="mt-2">{step.title}</CardTitle>
+              <CardDescription>{step.description}</CardDescription>
+            </CardHeader>
+          </Card>
+        </div>
+      ))
+    }
+  </div>
+</section>
