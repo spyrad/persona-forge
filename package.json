@@ -17,8 +17,8 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "ai-review": "tsx scripts/ai-review.ts",
-    "eval:review": "promptfoo eval -c promptfoo/promptfooconfig.yaml",
-    "eval:review:view": "promptfoo view",
+    "eval:review": "npx -y promptfoo@0.121.18 eval -c promptfoo/promptfooconfig.yaml",
+    "eval:review:view": "npx -y promptfoo@0.121.18 view",
     "prepare": "husky"
   },
   "dependencies": {
@@ -66,7 +66,6 @@
     "prettier": "^3.8.3",
     "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-tailwindcss": "^0.8.0",
-    "promptfoo": "^0.121.18",
     "supabase": "^2.23.4",
     "tsx": "^4.23.0",
     "typescript": "^5.9.3",
@@ -81,7 +80,7 @@
     "*.{ts,tsx,astro,mjs}": [
       "eslint --fix"
     ],
-    "*.{json,css,md}": [
+    "!(package-lock).{json,css,md}": [
       "prettier --write"
     ]
   }
