@@ -478,12 +478,12 @@ Coding-Plan-Key mit 429.
 
 #### Automated
 
-- [x] 4.1 `npx promptfoo eval` läuft durch, alle Assertions bestehen
+- [x] 4.1 `npx promptfoo eval` läuft durch, alle Assertions bestehen — 0a9346e
 
 #### Manual
 
-- [x] 4.2 Score-Vergleich zwischen den Modellen ist plausibel — entfällt bewusst, siehe Hinweis
-- [x] 4.3 Champion-Beweise gesammelt (Pipeline-View, Job-Logs, PR-Kommentar)
+- [x] 4.2 Score-Vergleich zwischen den Modellen ist plausibel — entfällt bewusst, siehe Hinweis — 0a9346e
+- [x] 4.3 Champion-Beweise gesammelt (Pipeline-View, Job-Logs, PR-Kommentar) — 0a9346e
 
 > 4.2 wurde bewusst auf **ein** Modell (z.ai/glm-5.2) beschränkt: der
 > Regressionswert liegt darin, Prompt- und Code-Änderungen gegen bekannte Diffs
