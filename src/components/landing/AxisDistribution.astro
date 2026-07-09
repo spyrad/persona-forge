@@ -1,0 +1,59 @@
+---
+import { AXES, RUNS_PER_AXIS, curvePoints, mean, simulateRun, stddev, toSvgArea, toSvgPath } from "./simulation";
+
+interface Props {
+  axisIndex?: number;
+  seed?: number;
+  showStats?: boolean;
+  class?: string;
+}
+
+const { axisIndex = 0, seed = 7, showStats = false, class: className } = Astro.props;
+
+const spec = AXES[axisIndex];
+const values = simulateRun(spec, seed);
+const m = mean(values);
+const sd = stddev(values);
+
+const W = 320;
+const H = 120;
+const BASELINE = H - 24;
+const heights = curvePoints(m, Math.max(sd, 1.5), 48);
+const curve = toSvgPath(heights, W, BASELINE - 8);
+const area = toSvgArea(heights, W, BASELINE - 8);
+const ticks = Array.from({ length: 11 }, (_, i) => (i / 10) * W);
+---
+
+<figure class:list={[className]}>
+  <svg
+    viewBox={`0 0 ${W} ${H}`}
+    class="h-auto w-full"
+    role="img"
+    aria-label={`Distribution on the ${spec.left}–${spec.right} axis`}
+  >
+    <path d={area} class="fill-primary/10" transform="translate(0 8)"></path>
+    <path d={curve} class="stroke-primary fill-none" stroke-width="1.5" transform="translate(0 8)"></path>
+    <line x1="0" y1={BASELINE} x2={W} y2={BASELINE} class="stroke-border" stroke-width="1"></line>
+    {
+      ticks.map((x, i) => (
+        <line
+          x1={x}
+          y1={BASELINE}
+          x2={x}
+          y2={BASELINE + (i % 5 === 0 ? 6 : 3)}
+          class="stroke-border"
+          stroke-width="1"
+        />
+      ))
+    }
+    <text x="0" y={H - 2} class="fill-muted-foreground font-mono text-[11px]">{spec.left}</text>
+    <text x={W} y={H - 2} text-anchor="end" class="fill-muted-foreground font-mono text-[11px]">{spec.right}</text>
+  </svg>
+  {
+    showStats && (
+      <figcaption class="text-muted-foreground mt-2 font-mono text-xs tabular-nums">
+        {spec.left}–{spec.right} axis · n {RUNS_PER_AXIS} · mean {m.toFixed(1)} · σ {sd.toFixed(1)}
+      </figcaption>
+    )
+  }
+</figure>
