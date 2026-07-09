@@ -449,22 +449,22 @@ Coding-Plan-Key mit 429.
 
 #### Automated
 
-- [x] 2.1 Unit-Tests weiterhin grün: `npm run test`
-- [x] 2.2 Linting grün: `npm run lint`
-- [x] 2.3 Script meldet fehlende Env-Variable, statt durchzulaufen
+- [x] 2.1 Unit-Tests weiterhin grün: `npm run test` — 999c966
+- [x] 2.2 Linting grün: `npm run lint` — 999c966
+- [x] 2.3 Script meldet fehlende Env-Variable, statt durchzulaufen — 999c966
 
 #### Manual
 
-- [x] 2.4 `git diff main... | npm run ai-review` gibt valides JSON mit sechs Scores
-- [x] 2.5 RLS-loser Migrations-Diff wird bei Kriterium 3 unter 5 bewertet
-- [x] 2.6 `thinking:disabled` greift — kein sichtbares Reasoning, vertretbare Latenz
+- [x] 2.4 `git diff main... | npm run ai-review` gibt valides JSON mit sechs Scores — 999c966
+- [x] 2.5 RLS-loser Migrations-Diff wird bei Kriterium 3 unter 5 bewertet — 999c966
+- [x] 2.6 `thinking:disabled` greift — kein sichtbares Reasoning, vertretbare Latenz — 999c966
 
 ### Phase 3: CI + Human-in-the-Loop (Baustufe 2)
 
 #### Automated
 
-- [ ] 3.1 Workflow-Syntax valide (`actionlint` bzw. `gh workflow view`)
-- [ ] 3.2 Bestehende Pipeline unverändert grün: `npm run test && npm run lint && npm run build`
+- [x] 3.1 Workflow-Syntax valide (`actionlint` bzw. `gh workflow view`)
+- [x] 3.2 Bestehende Pipeline unverändert grün: `npm run test && npm run lint && npm run build`
 
 #### Manual
 

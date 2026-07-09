@@ -22,6 +22,7 @@ import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
 import { prepareDiff } from "../src/lib/ai-review/diff";
 import { buildPrompt, REVIEW_INSTRUCTIONS } from "../src/lib/ai-review/prompt";
+import type { ReviewOutput } from "../src/lib/ai-review/report";
 import { RULES, reviewSchema } from "../src/lib/ai-review/schema";
 import { decideVerdict, severityOf } from "../src/lib/ai-review/verdict";
 import { isZaiEndpoint } from "../src/lib/llm/openai-compatible";
@@ -152,33 +153,30 @@ async function main(): Promise<void> {
       `in ${(elapsedMs / 1000).toFixed(1)}s, ${result.usage.totalTokens ?? "?"} Tokens\n`,
   );
 
-  process.stdout.write(
-    JSON.stringify(
-      {
-        verdict,
-        average,
-        scores,
-        reasons,
-        summary: review.summary,
-        // Findings mit dem im Code abgeleiteten Schweregrad angereichert —
-        // die Action rendert daraus den PR-Kommentar.
-        findings: review.findings.map((f) => ({
-          ...f,
-          criterion: RULES[f.rule].criterion,
-          severity: severityOf(f),
-        })),
-        meta: {
-          truncated: prepared.truncated,
-          droppedFiles: prepared.droppedFiles,
-          model,
-          elapsedMs,
-          usage: result.usage,
-        },
-      },
-      null,
-      2,
-    ) + "\n",
-  );
+  // Typ festgenagelt: driftet die Ausgabe, bricht der Typecheck — nicht erst
+  // `ai-review-report.ts` zur Laufzeit im CI.
+  const output: ReviewOutput = {
+    verdict,
+    average,
+    scores,
+    reasons,
+    summary: review.summary,
+    // Findings mit dem im Code abgeleiteten Schweregrad angereichert —
+    // die Action rendert daraus den PR-Kommentar.
+    findings: review.findings.map((f) => ({
+      ...f,
+      criterion: RULES[f.rule].criterion,
+      severity: severityOf(f),
+    })),
+    meta: {
+      truncated: prepared.truncated,
+      droppedFiles: prepared.droppedFiles,
+      model,
+      elapsedMs,
+    },
+  };
+
+  process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
 
   process.exitCode = verdict === "passed" ? EXIT_PASSED : EXIT_FAILED;
 }

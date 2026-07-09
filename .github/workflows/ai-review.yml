@@ -1,0 +1,62 @@
+name: AI Code Review
+
+# Bewusst ein EIGENER Workflow, getrennt von ci.yml: ein z.ai-Ausfall oder ein
+# 429 darf niemals den Prod-Deploy blockieren. Die Merge-Sperre entsteht
+# stattdessen ueber den Commit-Status `ai-review/verdict`, der in der
+# Branch-Protection von `main` als Required Status Check gesetzt sein MUSS.
+# Ohne diesen Klick ist das gesamte Gate wirkungslos (context/foundation/lessons.md).
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, labeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+
+# Ein neuer Push auf denselben PR macht den laufenden Review ueberfluessig.
+concurrency:
+  group: ai-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  ai-review:
+    runs-on: ubuntu-latest
+    # Fork-PRs bekommen keine Secrets — der Lauf wird uebersprungen, nicht rot.
+    # `pull_request_target` waere die Alternative und eine Rechteausweitungs-Luecke.
+    # Beim `labeled`-Event nur reagieren, wenn genau `ai-cr:review` gesetzt wurde;
+    # sonst loesten die selbst gesetzten Verdict-Labels einen Folgelauf aus.
+    if: >-
+      github.event.pull_request.head.repo.fork == false &&
+      (github.event.action != 'labeled' || github.event.label.name == 'ai-cr:review')
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.0
+        with:
+          # Pflicht: sonst kennt das lokale Repo den Basis-Commit nicht und
+          # `git diff base...head` liefert nichts.
+          fetch-depth: 0
+          # Den echten HEAD des PR auschecken, nicht den Merge-Commit — der
+          # Commit-Status muss auf head.sha landen, sonst sieht die
+          # Branch-Protection ihn nicht.
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - name: Review ausfuehren
+        uses: ./.github/actions/ai-review
+        with:
+          zai-base-url: ${{ vars.ZAI_BASE_URL }}
+          zai-api-key: ${{ secrets.ZAI_API_KEY }}
+          review-model: ${{ vars.REVIEW_MODEL }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          base-sha: ${{ github.event.pull_request.base.sha }}
+          head-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+
+      - name: Re-Run-Label wieder entfernen
+        # Damit ein erneutes Setzen von `ai-cr:review` wieder ausloest.
+        if: always() && github.event.action == 'labeled'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr edit "${{ github.event.pull_request.number }}" --remove-label "ai-cr:review" || true

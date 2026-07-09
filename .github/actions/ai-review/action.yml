@@ -1,0 +1,126 @@
+name: "AI Code Review"
+description: "LLM-basierter PR-Reviewer: prueft projektspezifische Konventionen, die ESLint nicht sieht."
+
+inputs:
+  zai-base-url:
+    description: "Volle URL des OpenAI-kompatiblen Endpunkts (z.ai Coding-Plan: .../api/coding/paas/v4)"
+    required: true
+  zai-api-key:
+    description: "API-Key des Endpunkts"
+    required: true
+  review-model:
+    description: "Modell-ID, z.B. glm-5.2"
+    required: true
+  github-token:
+    description: "Token fuer PR-Kommentar, Labels und Commit-Status"
+    required: true
+  base-sha:
+    description: "Basis-Commit des Diffs"
+    required: true
+  head-sha:
+    description: "HEAD-Commit des PR"
+    required: true
+  pr-number:
+    description: "Nummer des Pull Requests"
+    required: true
+  diff-budget:
+    description: "Maximale Zeichenzahl des Diffs, der an das Modell geht"
+    required: false
+    default: "60000"
+
+outputs:
+  verdict:
+    description: "passed | failed | error"
+    value: ${{ steps.score.outputs.verdict }}
+
+runs:
+  using: composite
+  steps:
+    - name: Node einrichten
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      with:
+        node-version: 22
+        cache: npm
+
+    - name: Abhaengigkeiten installieren
+      shell: bash
+      run: npm ci
+
+    - name: Diff erzeugen
+      shell: bash
+      env:
+        BASE_SHA: ${{ inputs.base-sha }}
+        HEAD_SHA: ${{ inputs.head-sha }}
+      run: |
+        # `checkout` muss mit fetch-depth: 0 gelaufen sein, sonst kennt das
+        # lokale Repo BASE_SHA nicht und der Diff waere leer.
+        if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+          echo "::error::Basis-Commit $BASE_SHA nicht im lokalen Repo. Braucht actions/checkout mit fetch-depth: 0."
+          exit 1
+        fi
+        git diff "$BASE_SHA...$HEAD_SHA" > "$RUNNER_TEMP/pr.diff"
+        echo "Diff: $(wc -c < "$RUNNER_TEMP/pr.diff") Zeichen"
+
+    - name: Diff bewerten
+      id: score
+      shell: bash
+      env:
+        ZAI_BASE_URL: ${{ inputs.zai-base-url }}
+        ZAI_API_KEY: ${{ inputs.zai-api-key }}
+        REVIEW_MODEL: ${{ inputs.review-model }}
+        REVIEW_DIFF_BUDGET: ${{ inputs.diff-budget }}
+        PR_TITLE: ${{ github.event.pull_request.title }}
+        PR_BODY: ${{ github.event.pull_request.body }}
+      run: |
+        # `set -e` wuerde hier abbrechen: Exit-Code 1 heisst "Reviewer sagt nein",
+        # nicht "Schritt kaputt". Den Code einfangen und weiterreichen.
+        set +e
+        npx tsx scripts/ai-review.ts \
+          < "$RUNNER_TEMP/pr.diff" \
+          > "$RUNNER_TEMP/review.json" \
+          2> "$RUNNER_TEMP/review.err"
+        code=$?
+        set -e
+
+        cat "$RUNNER_TEMP/review.err" >&2
+
+        case "$code" in
+          0) verdict=passed ;;
+          1) verdict=failed ;;
+          *) verdict=error ;;
+        esac
+        echo "verdict=$verdict" >> "$GITHUB_OUTPUT"
+        echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+
+        # Nur die letzte stderr-Zeile weiterreichen: die traegt die Fehlerursache,
+        # der Rest sind Fortschrittsmeldungen.
+        {
+          echo "error<<__EOF__"
+          tail -n 1 "$RUNNER_TEMP/review.err"
+          echo "__EOF__"
+        } >> "$GITHUB_OUTPUT"
+
+    - name: Ergebnis melden (Kommentar, Labels, Commit-Status)
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        RESULT_PATH: ${{ runner.temp }}/review.json
+        REVIEW_EXIT_CODE: ${{ steps.score.outputs.exit_code }}
+        REVIEW_ERROR: ${{ steps.score.outputs.error }}
+        PR_NUMBER: ${{ inputs.pr-number }}
+        HEAD_SHA: ${{ inputs.head-sha }}
+      run: npx tsx scripts/ai-review-report.ts
+
+    - name: Job rot faerben, wenn der Reviewer nicht bestanden hat
+      shell: bash
+      env:
+        VERDICT: ${{ steps.score.outputs.verdict }}
+      run: |
+        # Der Merge-Blocker ist der Commit-Status `ai-review/verdict` (Required
+        # Status Check). Dieser Schritt macht das Urteil zusaetzlich im Job-Log
+        # sichtbar — er ist NICHT das Gate.
+        case "$VERDICT" in
+          passed) echo "::notice::AI Code Review bestanden." ;;
+          failed) echo "::error::AI Code Review nicht bestanden."; exit 1 ;;
+          *)      echo "::error::AI Code Review technisch fehlgeschlagen."; exit 1 ;;
+        esac

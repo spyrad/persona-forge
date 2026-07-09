@@ -31,18 +31,18 @@ werden übersprungen; ein LLM-Ausfall kann den Prod-Deploy nie blockieren.
 
 ## Key Decisions Made
 
-| Decision         | Choice                                                                    | Why (1 sentence)                                                                                                                       | Source       |
-| ---------------- | ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| SDK              | Vercel AI SDK 6 (`ToolLoopAgent` + `Output.object`)                       | `review.ts` ist isoliertes CI-Script — der Bruch mit dem null-SDK-Hausstil kostet nichts und schenkt den Tool-Loop für spätere Stufen. | Requirements |
-| Kriterien        | 6, je mit „1"-/„10"-Zustand                                               | Vier zielen auf Codebase-Konventionen, dazu Test-Abdeckung und Scope-Treue.                                                            | Requirements |
-| Diff-Budget      | Filtern → priorisieren → kappen                                           | Reine Kappung ließe ein Lockfile-Update die Migration verdrängen; der Reviewer bewertete dann Rauschen.                                | Plan         |
-| Trigger          | Auto auf `pull_request`, Fork-Skip, Label-Re-Run                          | Ein Gate, das man anstoßen muss, wird vergessen; `pull_request_target` wäre eine Rechteausweitungs-Lücke.                              | Plan         |
-| Verdict          | Deterministisch im Code (ein Kriterium < 5 **oder** Schnitt < 7 → failed) | Ein Merge-Gate muss reproduzierbar und unit-testbar sein; das LLM liefert nur Scores.                                                  | Plan         |
-| Score-Quelle     | Findings statt Noten: LLM meldet Regel-Verstöße, Code leitet Score ab     | Gemessen kippte das Verdict bei identischem Diff (`apiQuartet` 3/8/8); LLM-Noten sind als Gate-Grundlage unbrauchbar.                  | Phase 2      |
-| SDK-Version      | `ai@7` mit `supportsStructuredOutputs: false`                             | z.ai kennt kein `json_schema`; die Formvorgabe muss in den Prompt, `Output.object` validiert nur.                                      | Phase 2      |
-| CI-Kopplung      | Eigener Workflow, `ci.yml` unberührt                                      | Ein z.ai-429 darf keinen Prod-Deploy blockieren; die Sperre entsteht über einen separaten Commit-Status.                               | Plan         |
-| Test-Tiefe       | Unit auf `prepareDiff` + `decideVerdict`                                  | Genau die Logik, die still das Falsche tun kann, ist deterministisch abgedeckt.                                                        | Plan         |
-| Code-Platzierung | Logik in `src/lib/ai-review/`, Entry in `scripts/`                        | `vitest.config.ts:13` sammelt nur `src/**/*.test.ts` — außerhalb liegende Logik wäre ungetestet.                                       | Plan         |
+| Decision         | Choice                                                                      | Why (1 sentence)                                                                                                                       | Source       |
+| ---------------- | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| SDK              | Vercel AI SDK (`ToolLoopAgent` + `Output.object`); installiert wurde `ai@7` | `review.ts` ist isoliertes CI-Script — der Bruch mit dem null-SDK-Hausstil kostet nichts und schenkt den Tool-Loop für spätere Stufen. | Requirements |
+| Kriterien        | 6, je mit „1"-/„10"-Zustand                                                 | Vier zielen auf Codebase-Konventionen, dazu Test-Abdeckung und Scope-Treue.                                                            | Requirements |
+| Diff-Budget      | Filtern → priorisieren → kappen                                             | Reine Kappung ließe ein Lockfile-Update die Migration verdrängen; der Reviewer bewertete dann Rauschen.                                | Plan         |
+| Trigger          | Auto auf `pull_request`, Fork-Skip, Label-Re-Run                            | Ein Gate, das man anstoßen muss, wird vergessen; `pull_request_target` wäre eine Rechteausweitungs-Lücke.                              | Plan         |
+| Verdict          | Deterministisch im Code (ein Kriterium < 5 **oder** Schnitt < 7 → failed)   | Ein Merge-Gate muss reproduzierbar und unit-testbar sein; das LLM liefert nur Scores.                                                  | Plan         |
+| Score-Quelle     | Findings statt Noten: LLM meldet Regel-Verstöße, Code leitet Score ab       | Gemessen kippte das Verdict bei identischem Diff (`apiQuartet` 3/8/8); LLM-Noten sind als Gate-Grundlage unbrauchbar.                  | Phase 2      |
+| SDK-Version      | `ai@7` mit `supportsStructuredOutputs: false`                               | z.ai kennt kein `json_schema`; die Formvorgabe muss in den Prompt, `Output.object` validiert nur.                                      | Phase 2      |
+| CI-Kopplung      | Eigener Workflow, `ci.yml` unberührt                                        | Ein z.ai-429 darf keinen Prod-Deploy blockieren; die Sperre entsteht über einen separaten Commit-Status.                               | Plan         |
+| Test-Tiefe       | Unit auf `prepareDiff` + `decideVerdict`                                    | Genau die Logik, die still das Falsche tun kann, ist deterministisch abgedeckt.                                                        | Plan         |
+| Code-Platzierung | Logik in `src/lib/ai-review/`, Entry in `scripts/`                          | `vitest.config.ts:13` sammelt nur `src/**/*.test.ts` — außerhalb liegende Logik wäre ungetestet.                                       | Plan         |
 
 ## Scope
 
