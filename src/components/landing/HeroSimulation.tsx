@@ -204,8 +204,11 @@ export default function HeroSimulation() {
       setStats({ axisIndex, run: RUNS_PER_AXIS, mean: mean(values), sd: stddev(values) });
     } else {
       // Nur animieren, wenn sichtbar (Viewport + Tab)
+      let isIntersecting = false;
+
       const io = new IntersectionObserver(
         ([entry]) => {
+          isIntersecting = entry.isIntersecting;
           if (entry.isIntersecting && !document.hidden) start();
           else stop();
         },
@@ -217,7 +220,7 @@ export default function HeroSimulation() {
       });
 
       const onVisibility = () => {
-        if (document.hidden) stop();
+        if (document.hidden || !isIntersecting) stop();
         else start();
       };
       document.addEventListener("visibilitychange", onVisibility);
