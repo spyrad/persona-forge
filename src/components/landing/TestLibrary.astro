@@ -73,7 +73,14 @@ const MID = H / 2;
             {
               [120, 216].map((x) => (
                 <g>
-                  <line x1={x + 6} y1={12} x2={x + 6} y2={MID - 14} class="stroke-border" stroke-width="1" />
+                  <line
+                    x1={x + 6}
+                    y1={12}
+                    x2={x + 6}
+                    y2={MID - 14}
+                    class="stroke-muted-foreground/40"
+                    stroke-width="1"
+                  />
                   <path
                     d={`M${x + 2},${MID - 20} L${x + 6},${MID - 12} L${x + 10},${MID - 20}`}
                     class="stroke-muted-foreground fill-none"

@@ -17,7 +17,6 @@ interface Stats {
 
 interface ThemeColors {
   primary: string;
-  border: string;
   muted: string;
 }
 
@@ -26,7 +25,6 @@ function readColors(el: HTMLElement): ThemeColors {
   const s = getComputedStyle(el);
   return {
     primary: s.getPropertyValue("--primary").trim(),
-    border: s.getPropertyValue("--border").trim(),
     muted: s.getPropertyValue("--muted-foreground").trim(),
   };
 }
@@ -67,11 +65,12 @@ export default function HeroSimulation() {
     function draw(now: number) {
       if (!ctx || width === 0) return;
       ctx.clearRect(0, 0, width, height);
-      const baseline = height - 28;
-      const spec = AXES[axisIndex];
+      const baseline = height - 8;
 
-      // Achse mit Tick-Marks
-      ctx.strokeStyle = colors.border;
+      // Achse mit Tick-Marks — muted statt border, damit sie im Light Mode
+      // nicht im Weiß verschwindet (Pass 2); Pol-Labels sind HTML unter dem Canvas.
+      ctx.strokeStyle = colors.muted;
+      ctx.globalAlpha = 0.4;
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(16, baseline);
@@ -84,14 +83,7 @@ export default function HeroSimulation() {
         ctx.lineTo(x, baseline + (i % 5 === 0 ? 6 : 3));
         ctx.stroke();
       }
-
-      // Pol-Beschriftungen
-      ctx.fillStyle = colors.muted;
-      ctx.font = "12px 'JetBrains Mono', ui-monospace, monospace";
-      ctx.textAlign = "left";
-      ctx.fillText(spec.left, 16, baseline + 20);
-      ctx.textAlign = "right";
-      ctx.fillText(spec.right, width - 16, baseline + 20);
+      ctx.globalAlpha = 1;
 
       // Messpunkte: je Bin gestapelt; frische Punkte schweben von oben ein
       const shown = shownAt.length;
@@ -241,6 +233,10 @@ export default function HeroSimulation() {
   return (
     <div className="flex h-full flex-col justify-end">
       <canvas ref={canvasRef} className="h-52 w-full sm:h-80" aria-hidden="true" />
+      <div className="text-muted-foreground mt-1 flex justify-between px-4 font-mono text-[11px]" aria-hidden="true">
+        <span>{spec.left}</span>
+        <span>{spec.right}</span>
+      </div>
       <p className="text-muted-foreground mt-2 font-mono text-xs tabular-nums">
         {spec.left}–{spec.right} axis · run {stats.run}/{RUNS_PER_AXIS} · mean{" "}
         {stats.run > 0 ? stats.mean.toFixed(1) : "—"} · σ {stats.run > 0 ? stats.sd.toFixed(1) : "—"}

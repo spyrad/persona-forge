@@ -29,7 +29,7 @@ const area = toSvgArea(heights, W, BASELINE - 6);
   <div class="mt-14 grid gap-10 sm:grid-cols-2">
     <figure class="reveal">
       <svg viewBox={`0 0 ${W} ${H}`} class="h-auto w-full" role="img" aria-label="A single measurement point">
-        <line x1="0" y1={BASELINE} x2={W} y2={BASELINE} class="stroke-border" stroke-width="1"></line>
+        <line x1="0" y1={BASELINE} x2={W} y2={BASELINE} class="stroke-muted-foreground/40" stroke-width="1"></line>
         <circle cx={(singleValue / 100) * W} cy={BASELINE - 10} r="4" class="fill-chart-2"></circle>
       </svg>
       <figcaption class="text-muted-foreground mt-3 font-mono text-xs tabular-nums">
@@ -40,7 +40,7 @@ const area = toSvgArea(heights, W, BASELINE - 6);
       <svg viewBox={`0 0 ${W} ${H}`} class="h-auto w-full" role="img" aria-label="A distribution of fifty measurements">
         <path d={area} class="fill-primary/10"></path>
         <path d={curve} class="stroke-primary fill-none" stroke-width="1.5"></path>
-        <line x1="0" y1={BASELINE} x2={W} y2={BASELINE} class="stroke-border" stroke-width="1"></line>
+        <line x1="0" y1={BASELINE} x2={W} y2={BASELINE} class="stroke-muted-foreground/40" stroke-width="1"></line>
       </svg>
       <figcaption class="text-muted-foreground mt-3 font-mono text-xs tabular-nums">
         n=50 · mean {m.toFixed(1)} · σ {sd.toFixed(1)} — the actual picture

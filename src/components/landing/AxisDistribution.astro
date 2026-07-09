@@ -18,8 +18,8 @@ const m = mean(values);
 const sd = stddev(values);
 
 const W = 320;
-const H = 120;
-const BASELINE = H - 24;
+const H = 102;
+const BASELINE = H - 6;
 const heights = curvePoints(m, Math.max(sd, 1.5), 48);
 const curve = toSvgPath(heights, W, BASELINE - 8);
 const area = toSvgArea(heights, W, BASELINE - 8);
@@ -35,7 +35,7 @@ const ticks = Array.from({ length: 11 }, (_, i) => (i / 10) * W);
   >
     <path d={area} class="fill-primary/10" transform="translate(0 8)"></path>
     <path d={curve} class="stroke-primary fill-none" stroke-width="1.5" transform="translate(0 8)"></path>
-    <line x1="0" y1={BASELINE} x2={W} y2={BASELINE} class="stroke-border" stroke-width="1"></line>
+    <line x1="0" y1={BASELINE} x2={W} y2={BASELINE} class="stroke-muted-foreground/40" stroke-width="1"></line>
     {
       ticks.map((x, i) => (
         <line
@@ -43,14 +43,16 @@ const ticks = Array.from({ length: 11 }, (_, i) => (i / 10) * W);
           y1={BASELINE}
           x2={x}
           y2={BASELINE + (i % 5 === 0 ? 6 : 3)}
-          class="stroke-border"
+          class="stroke-muted-foreground/40"
           stroke-width="1"
         />
       ))
     }
-    <text x="0" y={H - 2} class="fill-muted-foreground font-mono text-[11px]">{spec.left}</text>
-    <text x={W} y={H - 2} text-anchor="end" class="fill-muted-foreground font-mono text-[11px]">{spec.right}</text>
   </svg>
+  <div class:list={["text-muted-foreground mt-1 flex justify-between font-mono text-[11px]", inset && "px-4"]}>
+    <span>{spec.left}</span>
+    <span>{spec.right}</span>
+  </div>
   {
     showStats && (
       <figcaption class="text-muted-foreground mt-2 font-mono text-xs tabular-nums">
