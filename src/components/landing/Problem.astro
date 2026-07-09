@@ -1,0 +1,51 @@
+---
+import { AXES, curvePoints, mean, simulateRun, stddev, toSvgArea, toSvgPath } from "./simulation";
+
+const spec = AXES[0];
+const values = simulateRun(spec, 21);
+const m = mean(values);
+const sd = stddev(values);
+// Der "einzelne Messwert" ist ein bewusst irreführender Ausreißer aus demselben Lauf.
+const singleValue = Math.max(...values);
+
+const W = 320;
+const H = 96;
+const BASELINE = H - 16;
+const heights = curvePoints(m, Math.max(sd, 1.5), 48);
+const curve = toSvgPath(heights, W, BASELINE - 6);
+const area = toSvgArea(heights, W, BASELINE - 6);
+---
+
+<section id="problem" class="border-border relative border-t py-20 sm:py-28">
+  <div class="section-ruler" aria-hidden="true"></div>
+  <p class="reveal text-muted-foreground font-mono text-xs tracking-[0.2em] uppercase">02 — the problem</p>
+  <h2 class="reveal font-display text-foreground mt-4 max-w-2xl text-4xl text-balance sm:text-5xl">
+    One measurement is an anecdote.
+  </h2>
+  <p class="reveal text-muted-foreground mt-5 max-w-xl text-lg">
+    Ask a model the same questions twice and you get two different people. A single test run is a coin flip dressed up
+    as insight — only the distribution over many runs tells you who your model actually is.
+  </p>
+
+  <div class="mt-14 grid gap-10 sm:grid-cols-2">
+    <figure class="reveal">
+      <svg viewBox={`0 0 ${W} ${H}`} class="h-auto w-full" role="img" aria-label="A single measurement point">
+        <line x1="0" y1={BASELINE} x2={W} y2={BASELINE} class="stroke-muted-foreground/40" stroke-width="1"></line>
+        <circle cx={(singleValue / 100) * W} cy={BASELINE - 10} r="4" class="fill-chart-2"></circle>
+      </svg>
+      <figcaption class="text-muted-foreground mt-3 font-mono text-xs tabular-nums">
+        n=1 · score {singleValue.toFixed(1)} — could mean anything
+      </figcaption>
+    </figure>
+    <figure class="reveal">
+      <svg viewBox={`0 0 ${W} ${H}`} class="h-auto w-full" role="img" aria-label="A distribution of fifty measurements">
+        <path d={area} class="fill-primary/10"></path>
+        <path d={curve} class="stroke-primary fill-none" stroke-width="1.5"></path>
+        <line x1="0" y1={BASELINE} x2={W} y2={BASELINE} class="stroke-muted-foreground/40" stroke-width="1"></line>
+      </svg>
+      <figcaption class="text-muted-foreground mt-3 font-mono text-xs tabular-nums">
+        n=50 · mean {m.toFixed(1)} · σ {sd.toFixed(1)} — the actual picture
+      </figcaption>
+    </figure>
+  </div>
+</section>

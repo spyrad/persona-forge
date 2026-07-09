@@ -1,0 +1,133 @@
+---
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { curvePoints, toSvgArea, toSvgPath } from "./simulation";
+
+const steps = [
+  {
+    n: "01",
+    title: "Configure",
+    viz: "configure",
+    description:
+      "Attach any OpenAI-compatible model — base URL, API key, model name. Pick or create a persona: the system prompt as a first-class, reusable object.",
+  },
+  {
+    n: "02",
+    title: "Run",
+    viz: "run",
+    description:
+      "The instrument runs N times, each repetition in an isolated session with permuted items. Every raw answer is stored, per item and per run.",
+  },
+  {
+    n: "03",
+    title: "Read",
+    viz: "read",
+    description:
+      "Scores aggregate into a distribution per axis — location, spread, type stability. Compare two models or two personas side by side.",
+  },
+] as const;
+
+// Mini-Diagramme (Instrument-Sprache): Configure = Parameter (muted),
+// Run = Sessions im Fortschritt (Teal nur auf erledigten Messungen),
+// Read = fertige Verteilung mit Mittelwert-Linie.
+const VW = 280;
+const VH = 48;
+const paramLines = [
+  { y: 10, dot: 196 },
+  { y: 24, dot: 74 },
+  { y: 38, dot: 132 },
+];
+const sessions = Array.from({ length: 12 }, (_, i) => ({ x: 10 + i * 23.5, done: i < 7 }));
+const readHeights = curvePoints(58, 14, 48);
+const readCurve = toSvgPath(readHeights, VW, VH - 8);
+const readArea = toSvgArea(readHeights, VW, VH - 8);
+---
+
+<section id="method" class="border-border relative border-t py-20 sm:py-28">
+  <div class="section-ruler" aria-hidden="true"></div>
+  <p class="reveal text-muted-foreground font-mono text-xs tracking-[0.2em] uppercase">03 — the method</p>
+  <h2 class="reveal font-display text-foreground mt-4 max-w-2xl text-4xl text-balance sm:text-5xl">
+    Ask the same question fifty times.
+  </h2>
+  <p class="reveal text-muted-foreground mt-5 max-w-xl text-lg">
+    Three steps between a hunch and a measurement — repetition is what turns model behavior into data.
+  </p>
+
+  <div class="mt-14 grid gap-4 sm:grid-cols-3">
+    {
+      steps.map((step) => (
+        <div class="reveal">
+          <Card className="h-full">
+            <CardHeader>
+              <p class="text-muted-foreground font-mono text-xs tabular-nums">{step.n}</p>
+              <CardTitle className="mt-2">{step.title}</CardTitle>
+              <CardDescription>{step.description}</CardDescription>
+            </CardHeader>
+            <CardContent className="mt-auto">
+              {step.viz === "configure" && (
+                <svg
+                  viewBox={`0 0 ${VW} ${VH}`}
+                  class="h-auto w-full"
+                  role="img"
+                  aria-label="Model and persona parameters"
+                >
+                  {paramLines.map((line) => (
+                    <>
+                      <line
+                        x1="0"
+                        y1={line.y}
+                        x2={VW}
+                        y2={line.y}
+                        class="stroke-muted-foreground/40"
+                        stroke-width="1"
+                      />
+                      <circle cx={line.dot} cy={line.y} r="3" class="fill-muted-foreground" />
+                    </>
+                  ))}
+                </svg>
+              )}
+              {step.viz === "run" && (
+                <svg
+                  viewBox={`0 0 ${VW} ${VH}`}
+                  class="h-auto w-full"
+                  role="img"
+                  aria-label="Seven of twelve sessions completed"
+                >
+                  {sessions.map((s) => (
+                    <circle
+                      cx={s.x}
+                      cy={VH / 2}
+                      r="3.5"
+                      class:list={[s.done ? "fill-primary" : "stroke-muted-foreground/40 fill-none"]}
+                      stroke-width="1"
+                    />
+                  ))}
+                </svg>
+              )}
+              {step.viz === "read" && (
+                <svg
+                  viewBox={`0 0 ${VW} ${VH}`}
+                  class="h-auto w-full"
+                  role="img"
+                  aria-label="Distribution with mean marker"
+                >
+                  <path d={readArea} class="fill-primary/10" transform="translate(0 4)" />
+                  <path d={readCurve} class="stroke-primary fill-none" stroke-width="1.5" transform="translate(0 4)" />
+                  <line
+                    x1={(58 / 100) * VW}
+                    y1="4"
+                    x2={(58 / 100) * VW}
+                    y2={VH - 4}
+                    class="stroke-muted-foreground/40"
+                    stroke-width="1"
+                    stroke-dasharray="2 3"
+                  />
+                  <line x1="0" y1={VH - 4} x2={VW} y2={VH - 4} class="stroke-muted-foreground/40" stroke-width="1" />
+                </svg>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      ))
+    }
+  </div>
+</section>
