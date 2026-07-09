@@ -39,14 +39,14 @@ nur eine weitere Karte, kein Redesign.
    Verteilung als visueller Kontrast; kurzer Text, große Typografie.
 3. **Methode** — „Ask the same question fifty times." Drei Karten:
    Configure → Run → Read, je mit reduziertem Mini-Diagramm.
-4. **Test Library** — vier Instrument-Karten mit Status-Badge:
+4. **Test Library** — Claim der Sektion: „A growing library of behavioral
+   instruments." Vier Instrument-Karten mit Status-Badge:
    - **OEJTS** `live` — vier animierte Achsen-Verteilungen (E/I, S/N, T/F, J/P)
    - **Steadfastness** `live` — Prüfling × Gegenspieler; Mini-Visual: Linie, die
      unter Druck-Impulsen stabil bleibt oder kippt
    - **Big Five (Mini-IPIP)** `planned` (PRD FR-010)
    - **Task-based evals** `planned` — Vision: welche Persona/welches Modell
      bewältigt welche Software-Aufgabe am besten (noch nicht im PRD)
-     Claim der Sektion: „A growing library of behavioral instruments."
 5. **CTA + Footer** — Abschluss-CTA („Start measuring"); Footer mit korrekter
    OEJTS-Attribution (**CC BY-NC-SA 4.0**). Die falsche „gemeinfrei"-Behauptung
    aus `Welcome.astro` entfällt; englische Copy sagt „openly licensed".
