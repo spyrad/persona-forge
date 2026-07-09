@@ -1,0 +1,30 @@
+---
+import { buttonVariants } from "@/components/ui/button";
+import AxisDistribution from "./AxisDistribution.astro";
+import HeroSimulation from "./HeroSimulation";
+---
+
+<section id="hero" class="grid items-center gap-12 py-16 sm:py-24 lg:grid-cols-2">
+  <div>
+    <p class="text-muted-foreground font-mono text-xs tracking-[0.2em] uppercase">01 — psychometrics for LLMs</p>
+    <h1 class="font-display text-foreground mt-6 text-5xl leading-[1.05] text-balance sm:text-6xl lg:text-7xl">
+      Your model has a personality. <em>Measure it.</em>
+    </h1>
+    <p class="text-muted-foreground mt-6 max-w-xl text-lg">
+      persona-forge runs openly licensed psychometric instruments against language models — N repetitions per run,
+      distributions per axis, instead of a single random snapshot.
+    </p>
+    <div class="mt-10 flex flex-col gap-3 sm:flex-row">
+      <a href="/auth/signup" class:list={buttonVariants({ size: "lg" })}>Start measuring</a>
+      <a href="/auth/signin" class:list={buttonVariants({ variant: "outline", size: "lg" })}>Sign in</a>
+    </div>
+  </div>
+  <div class="relative min-h-[19rem] sm:min-h-[23rem]">
+    <div id="hero-simulation-fallback" class="absolute inset-0 flex flex-col justify-end">
+      <AxisDistribution axisIndex={0} seed={7} showStats />
+    </div>
+    <div class="absolute inset-0">
+      <HeroSimulation client:visible />
+    </div>
+  </div>
+</section>
