@@ -74,6 +74,28 @@ describe("prepareDiff", () => {
     expect(positions).toEqual([...positions].sort((a, b) => a - b));
   });
 
+  it("stellt jeden Code hinter Migration und API, aber vor Doku und Manifeste", () => {
+    // Beobachtet in PR #2: scripts/ai-review.ts flog aus dem Review, waehrend
+    // plan.md und package.json um denselben Rang konkurrierten.
+    const raw =
+      block("context/changes/x/plan.md") + block("package.json") + block("scripts/ai-review.ts") + block(MIGRATION);
+    const { diff } = prepareDiff(raw, 10_000);
+
+    const order = [MIGRATION, "scripts/ai-review.ts", "package.json", "context/changes/x/plan.md"];
+    const positions = order.map((p) => diff.indexOf(`a/${p} `));
+
+    expect(positions.every((p) => p !== -1)).toBe(true);
+    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+  });
+
+  it("opfert bei knappem Budget die Doku, nicht den Code", () => {
+    const raw = block("context/changes/x/plan.md", 300) + block("scripts/ai-review.ts", 200);
+    const result = prepareDiff(raw, 400);
+
+    expect(result.diff).toContain("scripts/ai-review.ts");
+    expect(result.droppedFiles).toEqual(["context/changes/x/plan.md"]);
+  });
+
   it("zaehlt Testdateien als Test, nicht als src/lib", () => {
     // `src/lib/x.test.ts` faellt sonst in die src/lib-Prioritaet und verdraengt echte Logik.
     const raw = block("src/lib/utils.test.ts") + block("src/lib/utils.ts");

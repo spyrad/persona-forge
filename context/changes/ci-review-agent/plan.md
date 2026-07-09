@@ -463,8 +463,8 @@ Coding-Plan-Key mit 429.
 
 #### Automated
 
-- [x] 3.1 Workflow-Syntax valide (`actionlint` bzw. `gh workflow view`)
-- [x] 3.2 Bestehende Pipeline unverändert grün: `npm run test && npm run lint && npm run build`
+- [x] 3.1 Workflow-Syntax valide (`actionlint` bzw. `gh workflow view`) — f23e74c
+- [x] 3.2 Bestehende Pipeline unverändert grün: `npm run test && npm run lint && npm run build` — f23e74c
 
 #### Manual
 

@@ -40,8 +40,15 @@ import { isZaiEndpoint } from "../src/lib/llm/openai-compatible";
   }
 };
 
-/** Zeichen-Budget des Diffs. Grob ~4 Zeichen je Token. */
-const DEFAULT_DIFF_BUDGET = 60_000;
+/**
+ * Zeichen-Budget des Diffs. Grob ~4 Zeichen je Token, also ~30k Token Input.
+ *
+ * Angehoben von 60k nach dem ersten echten CI-Lauf (PR #2): ein 151k-Zeichen-Diff
+ * verlor dort beide `scripts/`-Dateien, obwohl der Lauf nur 18.950 Token
+ * verbrauchte. Der z.ai-Flat-Plan macht Token kostenneutral; die Grenze schuetzt
+ * vor Latenz und "lost in the middle", nicht vor Kosten.
+ */
+const DEFAULT_DIFF_BUDGET = 120_000;
 
 /**
  * Null Tools — aber die Struktur-Ausgabe zaehlt selbst als Step. `stepCountIs(1)`

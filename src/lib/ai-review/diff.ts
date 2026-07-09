@@ -42,6 +42,11 @@ const NOISE_PATTERNS: RegExp[] = [
  * Prioritaet je Datei — kleiner ist wichtiger. Leitet sich direkt aus den sechs
  * Kriterien ab: Migrationen tragen Kriterium 3 (RLS), API-Routen Kriterium 2,
  * Astro/TSX Kriterium 1, `src/lib` Kriterium 6.
+ *
+ * Prosa (`.md`) und Manifeste rangieren hinter JEDEM Code. Beobachtet im ersten
+ * echten CI-Lauf (PR #2, 2026-07-09): `scripts/ai-review.ts` flog aus dem Review,
+ * waehrend `plan.md` und `package-lock.json` um denselben Rang konkurrierten.
+ * Ueber eine Konvention kann nur urteilen, wer den Code sieht, der sie verletzt.
  */
 function priorityOf(path: string): number {
   if (path.startsWith("supabase/migrations/")) return 0;
@@ -49,7 +54,19 @@ function priorityOf(path: string): number {
   if (path.endsWith(".astro") || path.endsWith(".tsx")) return 2;
   if (isTestFile(path)) return 4; // vor src/lib pruefen: `src/lib/x.test.ts` ist ein Test
   if (path.startsWith("src/lib/")) return 3;
-  return 5;
+  if (isProse(path)) return 7;
+  if (isManifest(path)) return 6;
+  return 5; // uebriger Code: scripts/, src/components/, Konfiguration
+}
+
+/** Doku traegt kein Signal fuer die sechs Kriterien — aber viel Text. */
+function isProse(path: string): boolean {
+  return path.endsWith(".md") || path.endsWith(".mdx") || path.endsWith(".txt");
+}
+
+/** Manifeste sind fuer den Reviewer fast immer nur Rauschen. */
+function isManifest(path: string): boolean {
+  return /(^|\/)(package\.json|tsconfig\.json|components\.json)$/.test(path);
 }
 
 function isTestFile(path: string): boolean {

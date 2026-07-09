@@ -26,7 +26,7 @@ inputs:
   diff-budget:
     description: "Maximale Zeichenzahl des Diffs, der an das Modell geht"
     required: false
-    default: "60000"
+    default: "120000"
 
 outputs:
   verdict:
