@@ -7,11 +7,11 @@
 
 ## Aktueller Stand
 
-| Kennzahl              | Wert                                                                                                                                                                                                                                                                             |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Laufende Arbeit**   | **Modul 5 (Champion) — Bau abgeschlossen.** Change `ci-review-agent` `status: implemented`, alle 4 Phasen verifiziert, auf `main` deployt (`d4344f9`). Reviewer ist scharf: nächster PR gegen `main` bekommt Scorecard, Label und Commit-Status; rotes Verdict sperrt den Merge. |
-| **Naechster Schritt** | **`/10x-archive ci-review-agent`**, dann Champion-Einreichung zusammen mit Builder + Architect. Deadline-Anker: Termin 2 = **10.08.**                                                                                                                                            |
-| **Blocker**           | Keine.                                                                                                                                                                                                                                                                           |
+| Kennzahl              | Wert                                                                                                                                                                                                                                                                                                                                                                                    |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Laufende Arbeit**   | **Modul 5 (Champion) — Badge-Nachweis erbracht, Lernmodul 3/5.** Change `ci-review-agent` `status: implemented`, alle 4 Phasen verifiziert, auf `main` deployt (`d4344f9`). Reviewer ist scharf: nächster PR gegen `main` bekommt Scorecard, Label und Commit-Status; rotes Verdict sperrt den Merge. s05e04/e05 offen, aber **für die Einreichung nicht nötig** (siehe Kurs-Standort). |
+| **Naechster Schritt** | **`/10x-archive ci-review-agent`**, dann Champion-Einreichung zusammen mit Builder + Architect. Deadline-Anker: Termin 2 = **10.08.**                                                                                                                                                                                                                                                   |
+| **Blocker**           | Keine.                                                                                                                                                                                                                                                                                                                                                                                  |
 
 ---
 
@@ -21,6 +21,7 @@
 - [ ] **Sammel-Einreichung Termin 2 (10.08.) oder 3 (14.09.):** Builder + Architect (`context/architect-report.md`, fertig) + Champion (`context/changes/ci-review-agent/evidence.md`) — zusammen, kein Nachreichen. **Job-Logs verfallen ~07.10.** (90-Tage-Retention); PR-Kommentar bleibt dauerhaft.
 - [ ] **Optional: Timeout im Scorer** — ein hängender z.ai-Call blockiert den `ai-review`-Job bis zum Job-Limit (bewusst offen gelassen).
 - [ ] **Optional: zweiter promptfoo-Provider** für einen Modellvergleich (OpenRouter/Anthropic-Key nötig; zwei Zeilen in `promptfooconfig.yaml`).
+- [ ] **Optional: s05e04 + s05e05 lesen** (~850 Zeilen). **Nicht** einreichungsrelevant — s05e04 ist der alternative Badge-Weg (Registry statt Pipeline), s05e05 ist eine „Innovate"-Kür.
 - [ ] **Geparkte Minors (SDD-Ledger):** Live-Progress 0 Tokens während Runden; Generierungs-Fehler ohne Rep-Detail; DRY-Duplikat `tryParseJson`.
 
 ---
@@ -43,9 +44,26 @@
 ## Kurs-Standort (10xDevs)
 
 Module 1–4 = **20/20 ✅**. **10xBuilder** (M1–3) + **10xArchitect** (M3–4) einreichbereit.
-**10xChampion** = Modul 5 → **Bau fertig**: CI-Review-Pipeline gebaut, verifiziert, deployt (L2+L3).
-Beweise in `context/changes/ci-review-agent/evidence.md` (PR #2, Job-Logs, Scorecard, Merge-Sperre).
-Alle drei Badges zusammen einreichen. Termine: 2. = **10.08.** · 3. = 14.09.
+
+**10xChampion (Modul 5): Badge-Nachweis erbracht — Lernmodul zu 3/5 bearbeitet.**
+Beides sauber auseinanderhalten:
+
+| Lektion | Thema                                                | Stand                                                |
+| ------- | ---------------------------------------------------- | ---------------------------------------------------- |
+| s05e01  | AI Internal Builders                                 | gelesen → `context/team/opportunity-map.md`          |
+| s05e02  | Erster Team-Agent: SDK, Kosten, Metriken             | gelesen → SDK-Entscheidung                           |
+| s05e03  | Code Review in der KI-Ära: Agent in der Pipeline     | **gebaut, verifiziert, deployt**                     |
+| s05e04  | Shared AI Registry (Skills/Commands/Rules fürs Team) | offen — **alternativer** Badge-Weg, nicht zusätzlich |
+| s05e05  | Innovate: Async & Remote Agents                      | offen — „Innovate" = Kür, wie s02e05/s04e05          |
+
+Fürs Badge reicht **ein** Projekt: entweder die M5L2+L3-Pipeline **oder** die
+M5L4-Registry. Wir haben die Pipeline geliefert → **s05e04 und s05e05 sind für die
+Einreichung nicht nötig.** s05e04 wäre inhaltlich anschlussfähig (Regel-Katalog aus
+`static-checks.ts` + `lessons.md` sind genau solche verteilbaren Artefakte), lohnt
+ohne Team aber wenig. Die Skills `pack-init`/`setup-cicd`/`tf-registry` gehören zu L4.
+
+Beweise: `context/changes/ci-review-agent/evidence.md` (PR #2, Job-Logs, Scorecard,
+Merge-Sperre). Alle drei Badges zusammen einreichen. Termine: 2. = **10.08.** · 3. = 14.09.
 
 ---
 
