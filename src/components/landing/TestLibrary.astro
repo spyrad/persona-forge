@@ -8,7 +8,8 @@ const H = 96;
 const MID = H / 2;
 ---
 
-<section id="tests" class="border-border border-t py-20 sm:py-28">
+<section id="tests" class="border-border relative border-t py-20 sm:py-28">
+  <div class="section-ruler" aria-hidden="true"></div>
   <p class="reveal text-muted-foreground font-mono text-xs tracking-[0.2em] uppercase">04 — test library</p>
   <h2 class="reveal font-display text-foreground mt-4 max-w-2xl text-4xl text-balance sm:text-5xl">
     A growing library of behavioral instruments.
@@ -20,7 +21,7 @@ const MID = H / 2;
 
   <div class="mt-14 grid gap-4 sm:grid-cols-2">
     <div class="reveal">
-      <Card className="h-full">
+      <Card className="hover:border-primary/40 h-full transition-colors duration-300">
         <CardHeader>
           <div class="flex items-center justify-between">
             <CardTitle>OEJTS</CardTitle>
@@ -47,7 +48,7 @@ const MID = H / 2;
     </div>
 
     <div class="reveal">
-      <Card className="h-full">
+      <Card className="hover:border-primary/40 h-full transition-colors duration-300">
         <CardHeader>
           <div class="flex items-center justify-between">
             <CardTitle>Steadfastness</CardTitle>
@@ -96,7 +97,7 @@ const MID = H / 2;
     </div>
 
     <div class="reveal">
-      <Card className="h-full border-dashed">
+      <Card className="hover:border-muted-foreground/40 h-full border-dashed transition-colors duration-300">
         <CardHeader>
           <div class="flex items-center justify-between">
             <CardTitle className="text-muted-foreground">Big Five</CardTitle>
@@ -114,7 +115,7 @@ const MID = H / 2;
     </div>
 
     <div class="reveal">
-      <Card className="h-full border-dashed">
+      <Card className="hover:border-muted-foreground/40 h-full border-dashed transition-colors duration-300">
         <CardHeader>
           <div class="flex items-center justify-between">
             <CardTitle className="text-muted-foreground">Task-based evals</CardTitle>

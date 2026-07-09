@@ -4,7 +4,7 @@ import { AXES, RUNS_PER_AXIS, curvePoints, mean, simulateRun, stddev } from "./s
 // Timing der Simulation
 const POINT_INTERVAL_MS = 150; // neuer Messpunkt
 const SETTLE_MS = 320; // Einschweben eines Punkts
-const HOLD_MS = 1400; // Pause + Puls nach vollem Lauf
+const HOLD_MS = 2200; // Pause + Puls nach vollem Lauf — lang genug, um die finalen Werte zu lesen
 const BINS = 24;
 const CURVE_MIN_POINTS = 8; // ab hier wird die Kurve eingeblendet
 
@@ -98,7 +98,7 @@ export default function HeroSimulation() {
         const y = 12 + (targetY - 12) * easeOutCubic(t);
         ctx.globalAlpha = 0.35 + 0.65 * t;
         ctx.beginPath();
-        ctx.arc(xFor(v), y, 2.5, 0, Math.PI * 2);
+        ctx.arc(xFor(v), y, 3, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.globalAlpha = 1;
