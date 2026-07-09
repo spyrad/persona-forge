@@ -240,7 +240,7 @@ export default function HeroSimulation() {
   const spec = AXES[stats.axisIndex];
   return (
     <div className="flex h-full flex-col justify-end">
-      <canvas ref={canvasRef} className="h-64 w-full sm:h-80" aria-hidden="true" />
+      <canvas ref={canvasRef} className="h-52 w-full sm:h-80" aria-hidden="true" />
       <p className="text-muted-foreground mt-2 font-mono text-xs tabular-nums">
         {spec.left}–{spec.right} axis · run {stats.run}/{RUNS_PER_AXIS} · mean{" "}
         {stats.run > 0 ? stats.mean.toFixed(1) : "—"} · σ {stats.run > 0 ? stats.sd.toFixed(1) : "—"}

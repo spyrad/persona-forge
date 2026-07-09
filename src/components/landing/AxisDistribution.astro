@@ -5,10 +5,12 @@ interface Props {
   axisIndex?: number;
   seed?: number;
   showStats?: boolean;
+  /** 16px horizontale Innenränder — spiegelt die Zeichenränder des Hero-Canvas (Hydration ohne Sprung). */
+  inset?: boolean;
   class?: string;
 }
 
-const { axisIndex = 0, seed = 7, showStats = false, class: className } = Astro.props;
+const { axisIndex = 0, seed = 7, showStats = false, inset = false, class: className } = Astro.props;
 
 const spec = AXES[axisIndex];
 const values = simulateRun(spec, seed);
@@ -27,7 +29,7 @@ const ticks = Array.from({ length: 11 }, (_, i) => (i / 10) * W);
 <figure class:list={[className]}>
   <svg
     viewBox={`0 0 ${W} ${H}`}
-    class="h-auto w-full"
+    class:list={["h-auto w-full", inset && "px-4"]}
     role="img"
     aria-label={`Distribution on the ${spec.left}–${spec.right} axis`}
   >
