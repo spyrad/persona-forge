@@ -1,0 +1,127 @@
+---
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import AxisDistribution from "./AxisDistribution.astro";
+
+// Maße für das Steadfastness-SVG (Positions-Linie + Druck-Impulse)
+const W = 320;
+const H = 96;
+const MID = H / 2;
+---
+
+<section id="tests" class="border-border border-t py-20 sm:py-28">
+  <p class="reveal text-muted-foreground font-mono text-xs tracking-[0.2em] uppercase">04 — test library</p>
+  <h2 class="reveal font-display text-foreground mt-4 max-w-2xl text-4xl text-balance sm:text-5xl">
+    A growing library of behavioral instruments.
+  </h2>
+  <p class="reveal text-muted-foreground mt-5 max-w-xl text-lg">
+    Personality is where it starts, not where it ends. Every instrument follows the same discipline: N repetitions,
+    isolated sessions, distributions instead of anecdotes.
+  </p>
+
+  <div class="mt-14 grid gap-4 sm:grid-cols-2">
+    <div class="reveal">
+      <Card className="h-full">
+        <CardHeader>
+          <div class="flex items-center justify-between">
+            <CardTitle>OEJTS</CardTitle>
+            <span
+              class="border-primary/40 text-primary rounded-full border px-2 py-0.5 font-mono text-[10px] tracking-wider uppercase"
+            >
+              live
+            </span>
+          </div>
+          <CardDescription>
+            Open Extended Jungian Type Scales — 32 items, four axes, an MBTI-style type derived from distributions, not
+            vibes.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div class="grid grid-cols-2 gap-3">
+            <AxisDistribution axisIndex={0} seed={11} />
+            <AxisDistribution axisIndex={1} seed={12} />
+            <AxisDistribution axisIndex={2} seed={13} />
+            <AxisDistribution axisIndex={3} seed={14} />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+
+    <div class="reveal">
+      <Card className="h-full">
+        <CardHeader>
+          <div class="flex items-center justify-between">
+            <CardTitle>Steadfastness</CardTitle>
+            <span
+              class="border-primary/40 text-primary rounded-full border px-2 py-0.5 font-mono text-[10px] tracking-wider uppercase"
+            >
+              live
+            </span>
+          </div>
+          <CardDescription>
+            Examinee versus adversary: how firmly does a model hold its position when it is pushed, and when does it
+            fold?
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <svg viewBox={`0 0 ${W} ${H}`} class="h-auto w-full" role="img" aria-label="A position held under pressure">
+            {/* Position des Prüflings: hält unter den ersten Impulsen, gibt beim letzten leicht nach */}
+            <path
+              d={`M0,${MID} L120,${MID} L132,${MID - 4} L144,${MID} L216,${MID} L228,${MID + 10} L${W},${MID + 10}`}
+              class="stroke-primary fill-none"
+              stroke-width="1.5"></path>
+            {/* Druck-Impulse des Gegenspielers */}
+            {
+              [120, 216].map((x) => (
+                <g>
+                  <line x1={x + 6} y1={12} x2={x + 6} y2={MID - 14} class="stroke-border" stroke-width="1" />
+                  <path
+                    d={`M${x + 2},${MID - 20} L${x + 6},${MID - 12} L${x + 10},${MID - 20}`}
+                    class="stroke-muted-foreground fill-none"
+                    stroke-width="1"
+                  />
+                </g>
+              ))
+            }
+          </svg>
+          <p class="text-muted-foreground mt-2 font-mono text-xs">pressure applied · position tracked per turn</p>
+        </CardContent>
+      </Card>
+    </div>
+
+    <div class="reveal">
+      <Card className="h-full border-dashed">
+        <CardHeader>
+          <div class="flex items-center justify-between">
+            <CardTitle className="text-muted-foreground">Big Five</CardTitle>
+            <span
+              class="border-border text-muted-foreground rounded-full border px-2 py-0.5 font-mono text-[10px] tracking-wider uppercase"
+            >
+              planned
+            </span>
+          </div>
+          <CardDescription>
+            Mini-IPIP — a public-domain Likert instrument. Five factors, same discipline: distributions per scale.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    </div>
+
+    <div class="reveal">
+      <Card className="h-full border-dashed">
+        <CardHeader>
+          <div class="flex items-center justify-between">
+            <CardTitle className="text-muted-foreground">Task-based evals</CardTitle>
+            <span
+              class="border-border text-muted-foreground rounded-full border px-2 py-0.5 font-mono text-[10px] tracking-wider uppercase"
+            >
+              planned
+            </span>
+          </div>
+          <CardDescription>
+            Which persona, on which model, handles which engineering task best — behavioral fit beyond personality.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+    </div>
+  </div>
+</section>
