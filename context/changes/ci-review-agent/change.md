@@ -58,8 +58,17 @@ damit fällt auch das Falsch-Positiv weg, dass „nicht berührt" als Mangel gew
 - Kein Timeout gesetzt (bewusste Entscheidung) — ein hängender z.ai-Call blockiert den
   CI-Job bis zum Job-Limit. Offenes Risiko.
 
-**Offen für den Plan:** Diff-Größe/Token-Budget (Kappung/Segmentierung) und das
-Trigger-Modell (nur `ai-cr:review`-Label vs. auch automatisch auf `pull_request`;
-Fork-PRs ohne Secrets).
+**Phase 3 verifiziert (2026-07-09):** E2E-Belege in `evidence.md` (PR #2, geschlossen
+statt gemergt). Branch-Protection auf `main` gesetzt: `ai-review/verdict` als Required
+Status Check, `enforce_admins: false` — der direkte Push-Deploy auf `main` bleibt möglich.
+Repo-Setup: Secret `ZAI_API_KEY`, Variablen `ZAI_BASE_URL`/`REVIEW_MODEL`, drei
+`ai-cr:*`-Labels.
+
+**Nachjustiert nach dem ersten echten Lauf (`95efbc0`):** Doku (`.md`) und Manifeste
+rangieren hinter jedem Code; Diff-Budget 60k → 120k Zeichen.
+
+**Offen (Phase 4):** promptfoo-Regressions-Gate; Restschwankung bei
+`architectureConsistency`/Beobachtungen systematisch messen; kein Timeout gesetzt —
+ein hängender z.ai-Call blockiert den Job bis zum Job-Limit.
 
 Deadline-Anker: Termin 2 = 10.08. Beweise (Pipeline-View, Job-Logs, PR-Kommentar) für L3 sammeln.

@@ -468,11 +468,11 @@ Coding-Plan-Key mit 429.
 
 #### Manual
 
-- [x] 3.3 Test-PR bekommt `ai-cr:failed` und roten `ai-review/verdict`-Status — 95efbc0
-- [x] 3.4 Zweiter Push ersetzt den Kommentar (Dedup), statt anzuhängen — 95efbc0
-- [x] 3.5 Label `ai-cr:review` stößt einen erneuten Lauf an — 95efbc0
-- [x] 3.6 Required Status Check gesetzt; Merge-Button bei rotem Verdict gesperrt — 95efbc0
-- [x] 3.7 `push` auf `main` löst keinen Reviewer-Lauf aus; `deploy` bleibt entkoppelt — 95efbc0
+- [x] 3.3 Test-PR bekommt `ai-cr:failed` und roten `ai-review/verdict`-Status — 7cadefe
+- [x] 3.4 Zweiter Push ersetzt den Kommentar (Dedup), statt anzuhängen — 7cadefe
+- [x] 3.5 Label `ai-cr:review` stößt einen erneuten Lauf an — 7cadefe
+- [x] 3.6 Required Status Check gesetzt; Merge-Button bei rotem Verdict gesperrt — 7cadefe
+- [x] 3.7 `push` auf `main` löst keinen Reviewer-Lauf aus; `deploy` bleibt entkoppelt — 7cadefe
 
 ### Phase 4: promptfoo-Regressions-Gate (Baustufe 3)
 
