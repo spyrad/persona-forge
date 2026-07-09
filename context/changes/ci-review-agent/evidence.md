@@ -84,6 +84,43 @@ gemeldet. Score und Verdict blieben identisch, weil die beiden kritischen Findin
 Beobachtungen dürfen streuen, das Merge-Gate nicht. Systematische Messung folgt in
 Phase 4 (promptfoo).
 
+## Phase 4 — promptfoo-Regressions-Gate
+
+`npm run eval:review` fährt den **echten** Scorer (`scripts/ai-review.ts` als
+Subprozess) gegen vier Fixtures. Die Assertions prüfen Verdict, Scores und die
+kritischen Regel-IDs — nie die exakte Zahl der Beobachtungen, weil die streuen.
+
+| Fixture                | Erwartung                                    | Ergebnis (3 Wiederholungen) |
+| ---------------------- | -------------------------------------------- | --------------------------- |
+| `known-bad.diff`       | failed, `missing-rls` + `blanket-policy`     | 3/3                         |
+| `clean.diff`           | passed, keine kritischen Findings            | 3/3                         |
+| `rls-not-enabled.diff` | failed, `missing-rls`                        | 3/3                         |
+| `borderline.diff`      | passed, kein erfundenes `dataSafety`-Finding | 3/3                         |
+
+### Der Befund, der Phase 4 rechtfertigt
+
+`rls-not-enabled.diff` enthält eine Migration mit vorbildlichen, granularen
+Policies — nur das `enable row level security` fehlt. Ohne diese Zeile sind die
+Policies wirkungslos und die Tabelle offen. Gemessen:
+
+| Prüfweg                               | `missing-rls` erkannt |
+| ------------------------------------- | --------------------- |
+| LLM, ursprüngliche Regel-Beschreibung | 2 von 3               |
+| LLM, geschärfte Regel-Beschreibung    | **0 von 5**           |
+| `static-checks.ts` (Regex)            | **5 von 5**           |
+
+Ein Falsch-Negativ bei einem Sicherheits-Check ist das teuerste Versagen dieses
+Werkzeugs. Sieben der 18 Regeln sind syntaktisch entscheidbar und werden seither
+im Code geprüft (`detector: "static"`); das Modell sieht sie nicht mehr. Es
+beurteilt nur noch, was Kontext braucht — `logic-in-route`, `undeclared-change`,
+`missing-auth-guard`.
+
+Sichtbar in den Läufen: die statischen Findings sind über alle Wiederholungen
+**identisch**, die LLM-Findings schwanken (`logic-in-route` 2 von 3,
+`missing-test-for-risky-change` 1 von 3). Einmal meldete das Modell auf dem
+mustergültigen Diff ein `wrong-test-glob` — ein Falsch-Positiv, folgenlos, weil
+`warning` das Verdict nicht kippt.
+
 ## Infrastruktur-Notiz
 
 Während der Verifikation lief eine GitHub-Störung („Delays starting Actions runs",

@@ -1,0 +1,137 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+#
+# Regressions-Gate des CI-Review-Agenten (Baustufe 3).
+#
+# Getestet wird der ECHTE Pfad: der Provider spawnt `scripts/ai-review.ts` und
+# reicht den Diff ueber stdin hinein. Damit decken die Assertions `prepareDiff`,
+# den Prompt, den LLM-Call und die deterministische `decideVerdict`-Schwelle ab —
+# also das, was in CI tatsaechlich das Merge-Gate bildet.
+#
+# Ausfuehren:  npm run eval:review     (braucht ZAI_BASE_URL, ZAI_API_KEY, REVIEW_MODEL)
+#
+# Die Assertions sind bewusst robust gegen die gemessene Reststreuung: sie pruefen
+# Verdict, Scores und die *kritischen* Regel-IDs, nie die exakte Zahl der
+# Beobachtungen (`observation`-Findings schwanken zwischen Laeufen).
+
+description: CI-Review-Agent — Regressionen gegen bekannte Diffs
+
+providers:
+  - id: file://reviewProvider.js
+    label: zai-glm
+    config:
+      # Ohne Angabe gilt REVIEW_MODEL aus der Umgebung.
+      diffBudget: 120000
+
+# Der "Prompt" ist hier der rohe Diff; der Provider baut den echten Prompt selbst.
+prompts:
+  - "{{diff}}"
+
+defaultTest:
+  assert:
+    - type: is-json
+    # Der Vertrag mit `ai-review-report.ts`: fehlt ein Feld, bricht der PR-Kommentar.
+    - type: javascript
+      value: |
+        const r = JSON.parse(output);
+        const keys = ["verdict", "average", "scores", "reasons", "summary", "findings", "meta"];
+        const missing = keys.filter((k) => !(k in r));
+        const pass = missing.length === 0;
+        return { pass, score: pass ? 1 : 0, reason: pass ? "ok" : `fehlende Felder: ${missing}` };
+    # Jedes Finding braucht eine Datei aus dem Diff und einen Beleg.
+    - type: javascript
+      value: |
+        const r = JSON.parse(output);
+        const bad = r.findings.filter((f) => !f.file || !f.evidence || !f.rule);
+        const pass = bad.length === 0;
+        return { pass, score: pass ? 1 : 0, reason: pass ? "ok" : `Findings ohne Beleg: ${bad.length}` };
+
+tests:
+  - description: "Fehlerhafte Migration + ungesicherte API-Route + Farb-Literale -> failed"
+    vars:
+      diff: file://fixtures/known-bad.diff
+      title: "feat: Notizen-Feature"
+      body: "Fuegt eine notes-Tabelle, eine API-Route zum Anlegen und eine NoteCard-Komponente hinzu."
+    assert:
+      - type: javascript
+        value: JSON.parse(output).verdict === "failed"
+      - type: javascript
+        value: JSON.parse(output).scores.dataSafety < 5
+      # Die beiden kritischen RLS-Regeln muessen erkannt werden.
+      - type: javascript
+        value: |
+          const rules = JSON.parse(output).findings.map((f) => f.rule);
+          const fehlend = ["missing-rls", "blanket-policy"].filter((r) => !rules.includes(r));
+          const pass = fehlend.length === 0;
+          return { pass, score: pass ? 1 : 0, reason: pass ? "ok" : `nicht erkannt: ${fehlend}` };
+      # Die ungesicherte Route muss mindestens eine kritische Quartett-Regel ausloesen.
+      - type: javascript
+        value: |
+          const rules = JSON.parse(output).findings.map((f) => f.rule);
+          const kritisch = ["missing-auth-guard", "missing-input-validation"];
+          return kritisch.some((r) => rules.includes(r));
+      - type: javascript
+        value: JSON.parse(output).scores.uiConventions < 10
+
+  - description: "Mustergueltiger Diff (RLS, Quartett, Tokens, Test) -> passed, keine Falsch-Positive"
+    vars:
+      diff: file://fixtures/clean.diff
+      title: "feat: Lesezeichen"
+      body: "Fuegt eine bookmarks-Tabelle mit RLS, eine POST /api/bookmarks-Route, einen Service und eine BookmarkBadge-Komponente hinzu."
+    assert:
+      - type: javascript
+        value: JSON.parse(output).verdict === "passed"
+      # Kein einziges kritisches Finding auf sauberem Code.
+      - type: javascript
+        value: |
+          const kritisch = JSON.parse(output).findings.filter((f) => f.severity === "critical");
+          const pass = kritisch.length === 0;
+          return { pass, score: pass ? 1 : 0, reason: pass ? "ok" : `Falsch-Positiv: ${kritisch.map((f) => f.rule)}` };
+      # Die Migration ist vorbildlich — dataSafety darf nicht fallen.
+      - type: javascript
+        value: JSON.parse(output).scores.dataSafety === 10
+      - type: javascript
+        value: JSON.parse(output).scores.apiQuartet === 10
+
+  - description: "Vorbildliche Policies, aber RLS nie aktiviert -> failed (statisch geprueft)"
+    vars:
+      diff: file://fixtures/rls-not-enabled.diff
+      title: "feat: Labels"
+      body: "Fuegt eine labels-Tabelle mit Policies und Index hinzu."
+    assert:
+      # Das gemeinsame Falsch-Negativ: glm-5.2 uebersah die fehlende
+      # RLS-Aktivierung in 1 von 3 Laeufen (mit geschaerftem Prompt in 5 von 5).
+      # Seit `static-checks.ts` die Regel deterministisch prueft: 5 von 5 erkannt.
+      - type: javascript
+        value: JSON.parse(output).verdict === "failed"
+      - type: javascript
+        value: JSON.parse(output).findings.some((f) => f.rule === "missing-rls")
+      - type: javascript
+        value: JSON.parse(output).scores.dataSafety < 5
+      # Die Policies sind granular — `blanket-policy` waere ein Falsch-Positiv.
+      - type: javascript
+        value: |
+          const rules = JSON.parse(output).findings.map((f) => f.rule);
+          const pass = !rules.includes("blanket-policy") && !rules.includes("uncached-auth-uid");
+          return { pass, score: pass ? 1 : 0, reason: pass ? "ok" : `Falsch-Positiv: ${rules}` };
+
+  - description: "Grenzfall ohne Migration -> passed; dataSafety darf NICHT erfunden werden"
+    vars:
+      diff: file://fixtures/borderline.diff
+      title: "feat: Tags"
+      body: "Fuegt eine POST /api/tags-Route, eine TagBadge-Komponente und einen slugify-Test hinzu."
+    assert:
+      - type: javascript
+        value: JSON.parse(output).verdict === "passed"
+      # Der Kern-Regressionstest gegen das Falsch-Positiv, das die Noten-Variante
+      # produzierte: ohne Migration im Diff gibt es keinen RLS-Verstoss.
+      - type: javascript
+        value: |
+          const r = JSON.parse(output);
+          const rls = r.findings.filter((f) => f.criterion === "dataSafety");
+          const pass = rls.length === 0;
+          return { pass, score: pass ? 1 : 0, reason: pass ? "ok" : `erfundene dataSafety-Findings: ${rls.map((f) => f.rule)}` };
+      - type: javascript
+        value: JSON.parse(output).scores.dataSafety === 10
+      # `prerender = false` fehlt in der Route — das muss auffallen.
+      - type: javascript
+        value: JSON.parse(output).findings.some((f) => f.rule === "missing-prerender")

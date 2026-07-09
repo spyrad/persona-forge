@@ -17,7 +17,7 @@
  */
 
 /** Ein einzelner Datei-Block aus `git diff`, inklusive `diff --git`-Kopfzeile. */
-interface DiffFile {
+export interface DiffFile {
   path: string;
   body: string;
 }
@@ -105,8 +105,11 @@ function isBinaryBlock(body: string): boolean {
 /**
  * Zerlegt den Roh-Diff an den `diff --git`-Grenzen. Alles vor dem ersten
  * Marker (z. B. Commit-Header) wird verworfen.
+ *
+ * Exportiert, weil `static-checks.ts` dieselbe Zerlegung braucht — ein zweiter
+ * Parser waere eine Quelle stiller Divergenz.
  */
-function splitFiles(rawDiff: string): DiffFile[] {
+export function splitFiles(rawDiff: string): DiffFile[] {
   const files: DiffFile[] = [];
   // (?=...) haelt die `diff --git`-Zeile am Kopf jedes Blocks.
   const blocks = rawDiff.split(/^(?=diff --git )/m);

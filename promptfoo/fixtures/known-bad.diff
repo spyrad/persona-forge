@@ -1,0 +1,46 @@
+diff --git a/supabase/migrations/20260709120000_notes.sql b/supabase/migrations/20260709120000_notes.sql
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/supabase/migrations/20260709120000_notes.sql
+@@ -0,0 +1,9 @@
++create table notes (
++  id uuid primary key default gen_random_uuid(),
++  owner_id uuid not null references auth.users(id),
++  body text not null,
++  created_at timestamptz not null default now()
++);
++
++-- Zugriff fuer alle, damit das Frontend einfacher wird
++create policy "notes_all" on notes for all using (true);
+diff --git a/src/pages/api/notes/index.ts b/src/pages/api/notes/index.ts
+new file mode 100644
+index 0000000..2222222
+--- /dev/null
++++ b/src/pages/api/notes/index.ts
+@@ -0,0 +1,12 @@
++import type { APIRoute } from "astro";
++
++export const post: APIRoute = async ({ request, locals }) => {
++  const body = await request.json();
++  const { data } = await locals.supabase
++    .from("notes")
++    .insert({ body: body.text, owner_id: body.ownerId })
++    .select()
++    .single();
++
++  return new Response(JSON.stringify(data), { status: 200 });
++};
+diff --git a/src/components/NoteCard.tsx b/src/components/NoteCard.tsx
+new file mode 100644
+index 0000000..3333333
+--- /dev/null
++++ b/src/components/NoteCard.tsx
+@@ -0,0 +1,8 @@
++export function NoteCard({ text }: { text: string }) {
++  return (
++    <div className={"rounded-lg bg-white/10 p-4 " + "text-white"}>
++      <p className="text-blue-400">{text}</p>
++    </div>
++  );
++}

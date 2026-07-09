@@ -48,10 +48,26 @@ export const CRITERION_TITLES: Record<Criterion, string> = {
  */
 export type Severity = "critical" | "warning" | "observation";
 
+/**
+ * Wer die Regel prueft.
+ *
+ * `static` = syntaktisch am Diff entscheidbar, wird in `static-checks.ts` per
+ * Regex geprueft und **nicht** ins Modell gegeben. Gemessen (2026-07-09):
+ * glm-5.2 uebersah `missing-rls` in 1 von 3 Laeufen — ein Falsch-Negativ bei
+ * einem Sicherheits-Check. Eine praezisere Prompt-Beschreibung machte es
+ * schlimmer (0 von 5 erkannt). Wer eine Frage abzaehlen kann, soll sie nicht
+ * einem Sprachmodell stellen.
+ *
+ * `llm` = braucht Kontext oder Urteilsvermoegen (steckt Logik in der Route?
+ * kuendigt der PR-Body die Aenderung an?).
+ */
+export type Detector = "static" | "llm";
+
 export interface RuleSpec {
   criterion: Criterion;
   severity: Severity;
-  /** Was das Modell suchen soll — wird woertlich in den Prompt gerendert. */
+  detector: Detector;
+  /** Was das Modell suchen soll — wird woertlich in den Prompt gerendert (nur `llm`). */
   description: string;
 }
 
@@ -66,16 +82,19 @@ export const RULES = {
   "color-literal": {
     criterion: "uiConventions",
     severity: "warning",
+    detector: "static",
     description: "Farb-Literal statt semantischem Token (text-white, bg-white/10, *-blue-*, Gradient-Headline)",
   },
   "manual-class-concat": {
     criterion: "uiConventions",
     severity: "observation",
+    detector: "llm",
     description: "Tailwind-Klassen per String-Konkatenation gemerged statt mit cn()",
   },
   "needless-client-load": {
     criterion: "uiConventions",
     severity: "warning",
+    detector: "llm",
     description: "client:load auf einer Komponente ohne State, Effect, Handler oder Browser-API",
   },
 
@@ -83,21 +102,25 @@ export const RULES = {
   "missing-prerender": {
     criterion: "apiQuartet",
     severity: "warning",
+    detector: "static",
     description: "API-Route ohne `export const prerender = false`",
   },
   "lowercase-handler": {
     criterion: "apiQuartet",
     severity: "warning",
+    detector: "static",
     description: "HTTP-Handler in Kleinschreibung exportiert (get/post statt GET/POST)",
   },
   "missing-input-validation": {
     criterion: "apiQuartet",
     severity: "critical",
+    detector: "llm",
     description: "Request-Body oder Query wird ohne zod-safeParse verwendet",
   },
   "missing-auth-guard": {
     criterion: "apiQuartet",
     severity: "critical",
+    detector: "llm",
     description: "Geschuetzte API-Route ohne requireUser",
   },
 
@@ -105,31 +128,37 @@ export const RULES = {
   "missing-rls": {
     criterion: "dataSafety",
     severity: "critical",
+    detector: "static",
     description: "Neue Tabelle ohne `enable row level security`",
   },
   "blanket-policy": {
     criterion: "dataSafety",
     severity: "critical",
+    detector: "static",
     description: "RLS-Policy als `for all` oder mit `using (true)` statt granular je Operation und Rolle",
   },
   "uncached-auth-uid": {
     criterion: "dataSafety",
     severity: "observation",
+    detector: "static",
     description: "Nacktes auth.uid() in einer Policy statt (select auth.uid())",
   },
   "missing-owner-index": {
     criterion: "dataSafety",
     severity: "observation",
+    detector: "static",
     description: "Neue Tabelle mit owner_id, aber ohne Index darauf",
   },
   "hardcoded-secret": {
     criterion: "dataSafety",
     severity: "critical",
+    detector: "llm",
     description: "Schluessel, Token oder Passwort im Klartext im Code",
   },
   "unguarded-external-url": {
     criterion: "dataSafety",
     severity: "critical",
+    detector: "llm",
     description: "Externe URL wird ohne isPublicHttpsUrl aufgerufen (SSRF)",
   },
 
@@ -137,11 +166,13 @@ export const RULES = {
   "missing-test-for-risky-change": {
     criterion: "testCoverage",
     severity: "warning",
+    detector: "llm",
     description: "Sicherheits- oder DB-nahe Aenderung ohne zugehoerigen Test im Diff",
   },
   "wrong-test-glob": {
     criterion: "testCoverage",
     severity: "warning",
+    detector: "llm",
     description:
       "Test im falschen Glob (*.test.ts, der Supabase braucht — gehoert als *.itest.ts nach src/test/integration/)",
   },
@@ -150,6 +181,7 @@ export const RULES = {
   "undeclared-change": {
     criterion: "scopeDiscipline",
     severity: "warning",
+    detector: "llm",
     description: "Der Diff enthaelt Umbauten, die PR-Titel und -Body nicht ankuendigen",
   },
 
@@ -157,16 +189,19 @@ export const RULES = {
   "logic-in-route": {
     criterion: "architectureConsistency",
     severity: "warning",
+    detector: "llm",
     description: "Business-Logik direkt in der API-Route statt in src/lib/services/",
   },
   "duplicated-type": {
     criterion: "architectureConsistency",
     severity: "observation",
+    detector: "llm",
     description: "Shared Type lokal dupliziert statt in src/types.ts",
   },
   "duplicated-helper": {
     criterion: "architectureConsistency",
     severity: "observation",
+    detector: "llm",
     description: "Vorhandener Helper per Copy-Paste nachgebaut statt wiederverwendet",
   },
 } as const satisfies Record<string, RuleSpec>;
@@ -175,9 +210,18 @@ export type RuleId = keyof typeof RULES;
 
 export const RULE_IDS = Object.keys(RULES) as [RuleId, ...RuleId[]];
 
-/** Alle Regeln eines Kriteriums — fuer den Prompt-Katalog. */
+/** Regel-IDs, die `static-checks.ts` selbst am Diff prueft. */
+export const STATIC_RULE_IDS = RULE_IDS.filter((id) => RULES[id].detector === "static");
+/** Regel-IDs, nach denen das Modell suchen soll. */
+export const LLM_RULE_IDS = RULE_IDS.filter((id) => RULES[id].detector === "llm");
+
+/**
+ * Regeln eines Kriteriums fuer den Prompt-Katalog — **nur die `llm`-Regeln**.
+ * Statische Regeln dem Modell zu zeigen, hiesse es nach etwas zu fragen, das der
+ * Code schon sicher weiss; es wuerde nur Duplikate und Rauschen erzeugen.
+ */
 export function rulesFor(criterion: Criterion): RuleId[] {
-  return RULE_IDS.filter((id) => RULES[id].criterion === criterion);
+  return LLM_RULE_IDS.filter((id) => RULES[id].criterion === criterion);
 }
 
 const findingSchema = z.object({

@@ -1,0 +1,54 @@
+diff --git a/src/pages/api/tags/index.ts b/src/pages/api/tags/index.ts
+new file mode 100644
+index 0000000..2222222
+--- /dev/null
++++ b/src/pages/api/tags/index.ts
+@@ -0,0 +1,20 @@
++import type { APIRoute } from "astro";
++import { z } from "zod";
++import { requireUser } from "@/lib/api-auth";
++import { badRequest, ok } from "@/lib/api-responses";
++
++const createTagSchema = z.object({ name: z.string().min(1).max(40) });
++
++export const POST: APIRoute = async ({ request, locals }) => {
++  const user = requireUser(locals);
++  const parsed = createTagSchema.safeParse(await request.json());
++  if (!parsed.success) return badRequest("Ungueltiger Name");
++
++  const slug = parsed.data.name.toLowerCase().replace(/\s+/g, "-");
++  const { data } = await locals.supabase
++    .from("tags")
++    .insert({ name: parsed.data.name, slug, owner_id: user.id })
++    .select()
++    .single();
++
++  return ok(data);
++};
+diff --git a/src/components/TagBadge.tsx b/src/components/TagBadge.tsx
+new file mode 100644
+index 0000000..3333333
+--- /dev/null
++++ b/src/components/TagBadge.tsx
+@@ -0,0 +1,7 @@
++import { cn } from "@/lib/utils";
++
++export function TagBadge({ label, className }: { label: string; className?: string }) {
++  return (
++    <span className={cn("rounded-md bg-muted px-2 py-1 text-muted-foreground", className)}>{label}</span>
++  );
++}
+diff --git a/src/lib/tags.test.ts b/src/lib/tags.test.ts
+new file mode 100644
+index 0000000..4444444
+--- /dev/null
++++ b/src/lib/tags.test.ts
+@@ -0,0 +1,8 @@
++import { describe, expect, it } from "vitest";
++import { slugify } from "@/lib/tags";
++
++describe("slugify", () => {
++  it("ersetzt Leerzeichen durch Bindestriche", () => {
++    expect(slugify("Hallo Welt")).toBe("hallo-welt");
++  });
++});

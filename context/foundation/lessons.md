@@ -16,6 +16,13 @@
 - **Rule**: Lass ein LLM nie eine Bewertungszahl erfinden, die eine Automatik dann als Schwelle liest. Gib ihm einen geschlossenen Katalog objektiv nachweisbarer Regeln (`z.enum`) und lass es nur **Findings** melden — Regel-ID, Datei, Beleg. Schweregrad und Score leitest du im Code ab. „Fehlt `export const prerender = false`?" ist abzählbar, „ist das eine 3 oder eine 8?" nicht. Nebeneffekt: „Kriterium nicht berührt" und „Kriterium erfüllt" ergeben beide _kein_ Finding und damit volle Punktzahl — das Falsch-Positiv verschwindet strukturell statt per Prompt-Bitte.
 - **Applies to**: jede LLM-gestützte Bewertung, deren Ergebnis ein automatisches Gate steuert (`src/lib/ai-review/**`, künftige Scorer/Judges).
 
+## LLM-Regeln: was abzählbar ist, gehört in Code — nicht in den Prompt
+
+- **Context**: `src/lib/ai-review/static-checks.ts` (ci-review-agent Phase 4, 2026-07-09)
+- **Problem**: Der Reviewer liess glm-5.2 nach `missing-rls` suchen — "gibt es zu jedem `create table` ein `enable row level security`?". Gemessen an einer Migration mit vorbildlichen, granularen Policies, der nur die enable-Zeile fehlte: in **1 von 3** Läufen als sauber durchgewunken. Der Versuch, die Regel-Beschreibung im Prompt zu präzisieren, verschlechterte es auf **0 von 5** erkannt. Ein Falsch-Negativ bei einem Sicherheits-Check ist das teuerste Versagen, das ein Review-Werkzeug haben kann — es meldet grün über eine offene Tabelle.
+- **Rule**: Bevor du eine Regel an ein LLM gibst, frage: ist sie am Text entscheidbar? "Steht Zeichenkette X im Diff?", "hat jede neue API-Route `export const prerender = false`?", "enthält der className ein Farb-Literal?" — das sind Regex-Fragen mit 100 % Trefferquote, null Tokens und Unit-Tests. Prompt-Tuning kann eine syntaktische Prüfung nicht ersetzen; es macht sie oft schlechter, weil längere Beschreibungen das Signal verwässern. Markiere jede Regel im Katalog mit einem `detector` (`static` | `llm`), prüfe die statischen im Code, und zeige sie dem Modell gar nicht erst — sonst erzeugt es Duplikate und Falsch-Positive. Dem LLM bleibt, was Kontext braucht: "steckt Business-Logik in der Route?", "kündigt der PR-Body diese Änderung an?".
+- **Applies to**: `src/lib/ai-review/**`, jeder LLM-gestützte Linter/Scorer/Extraktor. Verwandt mit [[LLM-Scoring]]: erst wanderten die Noten in den Code, dann ein Teil der Faktenextraktion.
+
 ## Diff-Parser: Binärmarker nur in Metazeilen erkennen, nie im Dateiinhalt
 
 - **Context**: `src/lib/ai-review/diff.ts:isBinaryBlock` (ci-review-agent Phase 2, 2026-07-09)

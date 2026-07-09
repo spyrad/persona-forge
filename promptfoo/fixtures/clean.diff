@@ -1,0 +1,107 @@
+diff --git a/supabase/migrations/20260710120000_bookmarks.sql b/supabase/migrations/20260710120000_bookmarks.sql
+new file mode 100644
+index 0000000..1111111
+--- /dev/null
++++ b/supabase/migrations/20260710120000_bookmarks.sql
+@@ -0,0 +1,24 @@
++create table bookmarks (
++  id uuid primary key default gen_random_uuid(),
++  owner_id uuid not null references auth.users(id) on delete cascade,
++  label text not null,
++  created_at timestamptz not null default now()
++);
++
++create index bookmarks_owner_id_idx on bookmarks (owner_id);
++
++alter table bookmarks enable row level security;
++
++create policy "bookmarks_select_own" on bookmarks
++  for select to authenticated
++  using ((select auth.uid()) = owner_id);
++
++create policy "bookmarks_insert_own" on bookmarks
++  for insert to authenticated
++  with check ((select auth.uid()) = owner_id);
++
++create policy "bookmarks_update_own" on bookmarks
++  for update to authenticated
++  using ((select auth.uid()) = owner_id)
++  with check ((select auth.uid()) = owner_id);
++
++create policy "bookmarks_delete_own" on bookmarks
++  for delete to authenticated
++  using ((select auth.uid()) = owner_id);
+diff --git a/src/pages/api/bookmarks/index.ts b/src/pages/api/bookmarks/index.ts
+new file mode 100644
+index 0000000..2222222
+--- /dev/null
++++ b/src/pages/api/bookmarks/index.ts
+@@ -0,0 +1,16 @@
++import type { APIRoute } from "astro";
++import { z } from "zod";
++import { requireUser } from "@/lib/api-auth";
++import { badRequest, ok } from "@/lib/api-responses";
++import { createBookmark } from "@/lib/services/bookmarks";
++
++export const prerender = false;
++
++const createBookmarkSchema = z.object({ label: z.string().min(1).max(80) });
++
++export const POST: APIRoute = async ({ request, locals }) => {
++  const user = requireUser(locals);
++  const parsed = createBookmarkSchema.safeParse(await request.json());
++  if (!parsed.success) return badRequest("Ungueltiges Label");
++
++  return ok(await createBookmark(locals.supabase, user.id, parsed.data.label));
++};
+diff --git a/src/lib/services/bookmarks.ts b/src/lib/services/bookmarks.ts
+new file mode 100644
+index 0000000..3333333
+--- /dev/null
++++ b/src/lib/services/bookmarks.ts
+@@ -0,0 +1,12 @@
++import type { SupabaseClient } from "@supabase/supabase-js";
++import type { Bookmark } from "@/types";
++
++export async function createBookmark(sb: SupabaseClient, ownerId: string, label: string): Promise<Bookmark> {
++  const { data, error } = await sb
++    .from("bookmarks")
++    .insert({ owner_id: ownerId, label })
++    .select()
++    .single();
++  if (error) throw new Error(error.message);
++  return data as Bookmark;
++}
+diff --git a/src/components/BookmarkBadge.tsx b/src/components/BookmarkBadge.tsx
+new file mode 100644
+index 0000000..4444444
+--- /dev/null
++++ b/src/components/BookmarkBadge.tsx
+@@ -0,0 +1,7 @@
++import { cn } from "@/lib/utils";
++
++export function BookmarkBadge({ label, className }: { label: string; className?: string }) {
++  return (
++    <span className={cn("rounded-md bg-muted px-2 py-1 text-muted-foreground", className)}>{label}</span>
++  );
++}
+diff --git a/src/lib/services/bookmarks.test.ts b/src/lib/services/bookmarks.test.ts
+new file mode 100644
+index 0000000..5555555
+--- /dev/null
++++ b/src/lib/services/bookmarks.test.ts
+@@ -0,0 +1,14 @@
++import { describe, expect, it, vi } from "vitest";
++import { createBookmark } from "@/lib/services/bookmarks";
++
++describe("createBookmark", () => {
++  it("wirft bei einem Supabase-Fehler", async () => {
++    const sb = {
++      from: () => ({
++        insert: () => ({ select: () => ({ single: () => ({ data: null, error: { message: "boom" } }) }) }),
++      }),
++    };
++
++    await expect(createBookmark(sb as never, "u1", "x")).rejects.toThrow("boom");
++  });
++});

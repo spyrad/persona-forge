@@ -23,7 +23,8 @@ import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import { prepareDiff } from "../src/lib/ai-review/diff";
 import { buildPrompt, REVIEW_INSTRUCTIONS } from "../src/lib/ai-review/prompt";
 import type { ReviewOutput } from "../src/lib/ai-review/report";
-import { RULES, reviewSchema } from "../src/lib/ai-review/schema";
+import { RULES, reviewSchema, type Finding } from "../src/lib/ai-review/schema";
+import { staticFindings } from "../src/lib/ai-review/static-checks";
 import { decideVerdict, severityOf } from "../src/lib/ai-review/verdict";
 import { isZaiEndpoint } from "../src/lib/llm/openai-compatible";
 
@@ -116,6 +117,11 @@ async function main(): Promise<void> {
       "\n",
   );
 
+  // Bewusst auf dem ROHEN Diff: eine Migration, die dem Zeichen-Budget zum Opfer
+  // fiele, wuerde sonst ungeprueft durchrutschen.
+  const staticResults = staticFindings(rawDiff);
+  process.stderr.write(`ai-review: statische Pruefung: ${staticResults.length} Finding(s)\n`);
+
   // `supportsStructuredOutputs: false` ist keine Bequemlichkeit, sondern Pflicht:
   // der z.ai-Coding-Endpunkt kennt nur `response_format: json_object`, kein
   // `json_schema`. Mit `true` sendet das SDK ein Schema, das z.ai ignoriert —
@@ -153,11 +159,22 @@ async function main(): Promise<void> {
   const elapsedMs = Date.now() - started;
 
   const review = result.output;
-  const { verdict, reasons, average, scores } = decideVerdict(review);
+
+  // Das Modell wird nur nach `llm`-Regeln gefragt. Meldet es dennoch eine
+  // statische, verwerfen wir sie: `static-checks.ts` hat sie bereits geprueft
+  // und weiss es sicher — eine LLM-Meldung waere hier bestenfalls ein Duplikat,
+  // schlimmstenfalls ein Falsch-Positiv.
+  const llmFindings = review.findings.filter((f) => RULES[f.rule].detector === "llm");
+  const ignored = review.findings.length - llmFindings.length;
+
+  const findings: Finding[] = [...staticResults, ...llmFindings];
+  const { verdict, reasons, average, scores } = decideVerdict({ findings, summary: review.summary });
 
   process.stderr.write(
-    `ai-review: ${verdict} (Schnitt ${average.toFixed(1)}, ${review.findings.length} Finding(s)) ` +
-      `in ${(elapsedMs / 1000).toFixed(1)}s, ${result.usage.totalTokens ?? "?"} Tokens\n`,
+    `ai-review: ${verdict} (Schnitt ${average.toFixed(1)}, ${findings.length} Finding(s): ` +
+      `${staticResults.length} statisch, ${llmFindings.length} vom Modell` +
+      (ignored > 0 ? `, ${ignored} verworfen` : "") +
+      `) in ${(elapsedMs / 1000).toFixed(1)}s, ${result.usage.totalTokens ?? "?"} Tokens\n`,
   );
 
   // Typ festgenagelt: driftet die Ausgabe, bricht der Typecheck — nicht erst
@@ -170,7 +187,7 @@ async function main(): Promise<void> {
     summary: review.summary,
     // Findings mit dem im Code abgeleiteten Schweregrad angereichert —
     // die Action rendert daraus den PR-Kommentar.
-    findings: review.findings.map((f) => ({
+    findings: findings.map((f) => ({
       ...f,
       criterion: RULES[f.rule].criterion,
       severity: severityOf(f),

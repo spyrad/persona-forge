@@ -1,15 +1,23 @@
 import { describe, expect, it } from "vitest";
 import { buildPrompt, REVIEW_INSTRUCTIONS } from "@/lib/ai-review/prompt";
-import { RULES, RULE_IDS } from "@/lib/ai-review/schema";
+import { LLM_RULE_IDS, RULES, STATIC_RULE_IDS } from "@/lib/ai-review/schema";
 
 describe("REVIEW_INSTRUCTIONS", () => {
-  it("rendert jede Regel-ID aus dem Katalog", () => {
+  it("rendert jede llm-Regel aus dem Katalog", () => {
     // Der z.ai-Endpunkt kann kein json_schema — die Regel-IDs erreichen das Modell
     // NUR ueber den Prompt. Waechst RULES, muss dieser Test brechen, nicht der
     // erste LLM-Lauf in CI.
-    for (const id of RULE_IDS) {
+    for (const id of LLM_RULE_IDS) {
       expect(REVIEW_INSTRUCTIONS).toContain(`"${id}"`);
       expect(REVIEW_INSTRUCTIONS).toContain(RULES[id].description);
+    }
+  });
+
+  it("zeigt dem Modell KEINE statisch geprueften Regeln", () => {
+    // Sie deterministisch zu pruefen und trotzdem danach zu fragen, erzeugt nur
+    // Duplikate und Falsch-Positive.
+    for (const id of STATIC_RULE_IDS) {
+      expect(REVIEW_INSTRUCTIONS).not.toContain(`"${id}"`);
     }
   });
 

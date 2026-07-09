@@ -1,7 +1,7 @@
 ---
 change_id: ci-review-agent
 title: CI-Review-Agent — LLM-PR-Reviewer in der Pipeline (Champion-Projekt M5L3)
-status: implementing
+status: implemented
 created: 2026-07-08
 updated: 2026-07-09
 archived_at: null
@@ -67,8 +67,20 @@ Repo-Setup: Secret `ZAI_API_KEY`, Variablen `ZAI_BASE_URL`/`REVIEW_MODEL`, drei
 **Nachjustiert nach dem ersten echten Lauf (`95efbc0`):** Doku (`.md`) und Manifeste
 rangieren hinter jedem Code; Diff-Budget 60k → 120k Zeichen.
 
-**Offen (Phase 4):** promptfoo-Regressions-Gate; Restschwankung bei
-`architectureConsistency`/Beobachtungen systematisch messen; kein Timeout gesetzt —
-ein hängender z.ai-Call blockiert den Job bis zum Job-Limit.
+**Phase 4 (2026-07-09): promptfoo-Gate + statische Regel-Prüfung.** `npm run eval:review`
+fährt den echten Scorer gegen vier Fixtures (12/12 Assertions über 3 Wiederholungen).
+
+Dabei aufgedeckt: glm-5.2 übersah `missing-rls` in 1 von 3 Läufen; eine geschärfte
+Prompt-Beschreibung verschlechterte es auf 0 von 5. Ein Falsch-Negativ bei einem
+Sicherheits-Check. Konsequenz: **sieben der 18 Regeln sind syntaktisch entscheidbar**
+und werden seither in `static-checks.ts` per Regex geprüft (`detector: "static"`) —
+`missing-rls`, `blanket-policy`, `uncached-auth-uid`, `missing-owner-index`,
+`missing-prerender`, `lowercase-handler`, `color-literal`. Trefferquote 5/5. Das
+Modell sieht sie nicht mehr und beurteilt nur noch, was Kontext braucht.
+
+**Bewusst nicht getan:** kein Modellvergleich (nur z.ai/glm-5.2) — der zweite Provider
+ist zwei Zeilen `promptfooconfig.yaml` entfernt. Kein Timeout im Scorer; ein hängender
+z.ai-Call blockiert den Job bis zum Job-Limit. Die LLM-Seite streut weiter
+(`logic-in-route` 2/3, einmal ein folgenloses `wrong-test-glob`-Falsch-Positiv).
 
 Deadline-Anker: Termin 2 = 10.08. Beweise (Pipeline-View, Job-Logs, PR-Kommentar) für L3 sammeln.

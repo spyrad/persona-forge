@@ -58,9 +58,12 @@ NICHT melden (mechanisch bereits abgedeckt, jede Erwaehnung ist Rauschen):
 - React-Hook-Regeln, Memoization (react-compiler, react-hooks)
 - Barrierefreiheits-Basics (jsx-a11y)
 - Fehlende Semikolons, unbenutzte Variablen, console.log
+- Fehlende RLS-Aktivierung, Sammelpolicies, nacktes auth.uid(), fehlender owner_id-Index,
+  fehlendes \`prerender = false\`, kleingeschriebene HTTP-Handler, Farb-Literale
+  — diese Regeln prueft der Reviewer bereits deterministisch im Code.
 
-Ausnahme: generierte shadcn/ui-Komponenten unter src/components/ui/ duerfen Farb-Literale
-enthalten — dort keinen "color-literal" melden.
+Generierte shadcn/ui-Komponenten unter src/components/ui/ sind von den UI-Konventionen
+ausgenommen.
 
 REGEL-KATALOG:
 
