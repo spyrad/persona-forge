@@ -1,23 +1,25 @@
 /**
- * zod-Schema der sechs Review-Kriterien (CI-Review-Agent, Champion-Projekt M5L3).
+ * Regel-Katalog und zod-Schema des CI-Review-Agenten (Champion-Projekt M5L3).
  *
- * Dieses Modul ist die **Single Source** der Kriterien-Namen: Prompt-Bau
- * (`prompt.ts`), Verdict-Schwelle (`verdict.ts`) und das Kommentar-Rendering
- * lesen alle `CRITERIA` bzw. den abgeleiteten Typ, statt Strings zu duplizieren.
+ * **Warum Findings statt Noten.** Ein erster Entwurf liess das LLM je Kriterium
+ * eine Note 1–10 vergeben. Gemessen (2026-07-09, glm-5.2, `temperature: 0`,
+ * derselbe Diff dreimal): `apiQuartet` schwankte zwischen 3 und 8, und das
+ * Verdict kippte von `failed` auf `passed`. Eine deterministische Schwelle auf
+ * einer gewuerfelten Zahl ist Scheinsicherheit.
  *
- * Das Schema wird dem LLM per `Output.object` als Struktur-Vorgabe gereicht.
- * Die Kriterien-Definitionen samt "1"-/"10"-Zustand stehen kanonisch in
- * `context/changes/ci-review-agent/requirements.md`.
+ * Deshalb extrahiert das Modell jetzt nur noch **Fakten**: welche Regel wurde
+ * in welcher Datei verletzt. Ob `export const prerender = false` fehlt, ist
+ * abzaehlbar. Schweregrad und Score leitet `verdict.ts` daraus im Code ab —
+ * das LLM benotet nicht mehr.
  *
- * Bewusst rein: kein `process`, kein Netz, kein `astro:env` — dieses Modul laeuft
- * sowohl unter Vitest als auch unter plain `tsx` im CI.
+ * Bewusst rein: kein `process`, kein Netz, kein `astro:env`.
  */
 import { z } from "zod";
 
 /**
  * Die sechs Kriterien in fester Reihenfolge. Reihenfolge ist Teil des Vertrags:
- * Prompt und PR-Kommentar praesentieren sie so, damit Diffs zwischen Laeufen
- * zeilenweise vergleichbar bleiben.
+ * Prompt und PR-Kommentar praesentieren sie so, damit Laeufe zeilenweise
+ * vergleichbar bleiben.
  */
 export const CRITERIA = [
   "uiConventions",
@@ -40,32 +42,165 @@ export const CRITERION_TITLES: Record<Criterion, string> = {
   architectureConsistency: "Architektur- & Pattern-Konsistenz",
 };
 
-/** Score-Grenzen. Das LLM darf nur ganze Zahlen 1..10 liefern. */
-export const MIN_SCORE = 1;
-export const MAX_SCORE = 10;
+/**
+ * Schweregrad. Wird **nicht** vom Modell geliefert, sondern aus der Regel
+ * abgeleitet — sonst waere die Subjektivitaet nur eine Ebene tiefer gerutscht.
+ */
+export type Severity = "critical" | "warning" | "observation";
 
-const scoreSchema = z.object({
-  score: z.number().int().min(MIN_SCORE).max(MAX_SCORE),
-  /** Kurze Begruendung, die konkrete Dateien/Zeilen des Diffs nennt. */
-  reasoning: z.string().min(1),
-});
+export interface RuleSpec {
+  criterion: Criterion;
+  severity: Severity;
+  /** Was das Modell suchen soll — wird woertlich in den Prompt gerendert. */
+  description: string;
+}
 
 /**
- * Erwartete LLM-Ausgabe. Jedes Kriterium ist ein Pflichtfeld — fehlt eines,
- * schlaegt `safeParse` fehl, statt still eine Luecke als "gut" durchzuwinken.
+ * Der Regel-Katalog. Jede Regel ist im Diff objektiv nachweisbar; das Modell
+ * darf ausschliesslich aus diesen IDs waehlen (`z.enum`), nichts erfinden.
+ *
+ * `critical` = blockt allein (Score faellt unter die Einzelschwelle).
+ */
+export const RULES = {
+  // --- 1. Konventions-Konformitaet (UI) ---
+  "color-literal": {
+    criterion: "uiConventions",
+    severity: "warning",
+    description: "Farb-Literal statt semantischem Token (text-white, bg-white/10, *-blue-*, Gradient-Headline)",
+  },
+  "manual-class-concat": {
+    criterion: "uiConventions",
+    severity: "observation",
+    description: "Tailwind-Klassen per String-Konkatenation gemerged statt mit cn()",
+  },
+  "needless-client-load": {
+    criterion: "uiConventions",
+    severity: "warning",
+    description: "client:load auf einer Komponente ohne State, Effect, Handler oder Browser-API",
+  },
+
+  // --- 2. API-Route-Quartett ---
+  "missing-prerender": {
+    criterion: "apiQuartet",
+    severity: "warning",
+    description: "API-Route ohne `export const prerender = false`",
+  },
+  "lowercase-handler": {
+    criterion: "apiQuartet",
+    severity: "warning",
+    description: "HTTP-Handler in Kleinschreibung exportiert (get/post statt GET/POST)",
+  },
+  "missing-input-validation": {
+    criterion: "apiQuartet",
+    severity: "critical",
+    description: "Request-Body oder Query wird ohne zod-safeParse verwendet",
+  },
+  "missing-auth-guard": {
+    criterion: "apiQuartet",
+    severity: "critical",
+    description: "Geschuetzte API-Route ohne requireUser",
+  },
+
+  // --- 3. Datensicherheit & RLS ---
+  "missing-rls": {
+    criterion: "dataSafety",
+    severity: "critical",
+    description: "Neue Tabelle ohne `enable row level security`",
+  },
+  "blanket-policy": {
+    criterion: "dataSafety",
+    severity: "critical",
+    description: "RLS-Policy als `for all` oder mit `using (true)` statt granular je Operation und Rolle",
+  },
+  "uncached-auth-uid": {
+    criterion: "dataSafety",
+    severity: "observation",
+    description: "Nacktes auth.uid() in einer Policy statt (select auth.uid())",
+  },
+  "missing-owner-index": {
+    criterion: "dataSafety",
+    severity: "observation",
+    description: "Neue Tabelle mit owner_id, aber ohne Index darauf",
+  },
+  "hardcoded-secret": {
+    criterion: "dataSafety",
+    severity: "critical",
+    description: "Schluessel, Token oder Passwort im Klartext im Code",
+  },
+  "unguarded-external-url": {
+    criterion: "dataSafety",
+    severity: "critical",
+    description: "Externe URL wird ohne isPublicHttpsUrl aufgerufen (SSRF)",
+  },
+
+  // --- 4. Test-Abdeckung nach Risikoklasse ---
+  "missing-test-for-risky-change": {
+    criterion: "testCoverage",
+    severity: "warning",
+    description: "Sicherheits- oder DB-nahe Aenderung ohne zugehoerigen Test im Diff",
+  },
+  "wrong-test-glob": {
+    criterion: "testCoverage",
+    severity: "warning",
+    description:
+      "Test im falschen Glob (*.test.ts, der Supabase braucht — gehoert als *.itest.ts nach src/test/integration/)",
+  },
+
+  // --- 5. Scope- & Plan-Treue ---
+  "undeclared-change": {
+    criterion: "scopeDiscipline",
+    severity: "warning",
+    description: "Der Diff enthaelt Umbauten, die PR-Titel und -Body nicht ankuendigen",
+  },
+
+  // --- 6. Architektur- & Pattern-Konsistenz ---
+  "logic-in-route": {
+    criterion: "architectureConsistency",
+    severity: "warning",
+    description: "Business-Logik direkt in der API-Route statt in src/lib/services/",
+  },
+  "duplicated-type": {
+    criterion: "architectureConsistency",
+    severity: "observation",
+    description: "Shared Type lokal dupliziert statt in src/types.ts",
+  },
+  "duplicated-helper": {
+    criterion: "architectureConsistency",
+    severity: "observation",
+    description: "Vorhandener Helper per Copy-Paste nachgebaut statt wiederverwendet",
+  },
+} as const satisfies Record<string, RuleSpec>;
+
+export type RuleId = keyof typeof RULES;
+
+export const RULE_IDS = Object.keys(RULES) as [RuleId, ...RuleId[]];
+
+/** Alle Regeln eines Kriteriums — fuer den Prompt-Katalog. */
+export function rulesFor(criterion: Criterion): RuleId[] {
+  return RULE_IDS.filter((id) => RULES[id].criterion === criterion);
+}
+
+const findingSchema = z.object({
+  /** Muss aus dem Katalog stammen — kein Freitext. */
+  rule: z.enum(RULE_IDS),
+  /** Betroffener Pfad, genau wie im Diff. */
+  file: z.string().min(1),
+  /** Woertliches Zitat oder knappe Beschreibung der Fundstelle. */
+  evidence: z.string().min(1),
+});
+
+export type Finding = z.infer<typeof findingSchema>;
+
+/**
+ * Erwartete LLM-Ausgabe. Keine Scores: ein sauberer Diff liefert schlicht ein
+ * leeres `findings`-Array. Damit verschwindet auch das Falsch-Positiv-Problem —
+ * "Kriterium nicht beruehrt" und "Kriterium erfuellt" fuehren beide zu keinem
+ * Finding und damit zu voller Punktzahl.
  */
 export const reviewSchema = z.object({
-  criteria: z.object({
-    uiConventions: scoreSchema,
-    apiQuartet: scoreSchema,
-    dataSafety: scoreSchema,
-    testCoverage: scoreSchema,
-    scopeDiscipline: scoreSchema,
-    architectureConsistency: scoreSchema,
-  }),
+  findings: z.array(findingSchema),
   /** Ein bis drei Saetze Gesamteindruck — Kopf des PR-Kommentars. */
   summary: z.string().min(1),
 });
 
-/** Aus dem Schema abgeleiteter Typ (Single Source). */
 export type ReviewResult = z.infer<typeof reviewSchema>;

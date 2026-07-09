@@ -35,6 +35,29 @@ Regressions-Gate (z.ai/GLM + 1–2 Modelle via OpenRouter).
 RLS/Safety, Architektur-Platzierung), dazu Test-Abdeckung nach Risikoklasse und
 Scope-Treue.
 
+**Design-Korrektur in Phase 2 (2026-07-09): Findings statt Noten.** Der Plan liess
+das LLM je Kriterium eine Note 1–10 vergeben. Gemessen (glm-5.2, `temperature: 0`,
+derselbe Diff dreimal): `apiQuartet` schwankte zwischen 3 und 8, das Verdict kippte
+`failed`→`passed`. Eine deterministische Schwelle auf einer gewürfelten Zahl ist
+Scheinsicherheit. Jetzt liefert das Modell nur noch **Findings** aus einem festen
+Regel-Katalog (18 Regeln, `z.enum`), je mit Datei und Beleg; Schweregrad und Score
+leitet `verdict.ts` im Code ab. Ein Kriterium ohne Finding bekommt volle Punktzahl —
+damit fällt auch das Falsch-Positiv weg, dass „nicht berührt" als Mangel gewertet wurde.
+
+**Weitere Phase-2-Befunde:**
+
+- z.ai-Coding-Endpunkt unterstützt **kein** `response_format: json_schema`, nur
+  `json_object`. `Output.object` validiert deshalb nur; die Formvorgabe muss in den
+  Prompt (`supportsStructuredOutputs: false`).
+- SDK-Warnungen gehen per `console.warn` auf **stdout** und zerstörten das JSON →
+  via `AI_SDK_LOG_WARNINGS` nach stderr umgeleitet.
+- `process.exit()` löst auf Windows einen libuv-Assert aus, solange stdin schliesst →
+  `process.exitCode` setzen.
+- Installiert wurde `ai@7` (nicht 6); `ToolLoopAgent`/`Output`/`stepCountIs` unverändert,
+  aber System-Prompt gehört in `instructions` (`role: "system"` wird abgelehnt).
+- Kein Timeout gesetzt (bewusste Entscheidung) — ein hängender z.ai-Call blockiert den
+  CI-Job bis zum Job-Limit. Offenes Risiko.
+
 **Offen für den Plan:** Diff-Größe/Token-Budget (Kappung/Segmentierung) und das
 Trigger-Modell (nur `ai-cr:review`-Label vs. auch automatisch auf `pull_request`;
 Fork-PRs ohne Secrets).

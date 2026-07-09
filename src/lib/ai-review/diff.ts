@@ -66,9 +66,23 @@ function isNoise(path: string): boolean {
   return NOISE_PATTERNS.some((re) => re.test(path));
 }
 
-/** Binaerdateien tragen kein lesbares Signal, kosten aber Zeichen. */
+/**
+ * Binaerdateien tragen kein lesbares Signal, kosten aber Zeichen.
+ *
+ * Geprueft werden **nur Metazeilen** — also solche ohne `+`/`-`-Praefix. Ein
+ * naiver `body.includes("GIT binary patch")` verwirft sonst jede Datei, die den
+ * Marker als *Inhalt* hinzufuegt: dieser Parser selbst, seine Tests, oder Doku
+ * ueber Diff-Formate. Genau das passierte (2026-07-09): `diff.ts` wurde aus dem
+ * eigenen Review geworfen, und der Reviewer meldete gruen, ohne sie gesehen zu
+ * haben.
+ */
 function isBinaryBlock(body: string): boolean {
-  return body.includes("GIT binary patch") || /^Binary files .* differ$/m.test(body);
+  for (const line of body.split("\n")) {
+    if (line.startsWith("+") || line.startsWith("-")) continue;
+    if (line.startsWith("GIT binary patch")) return true;
+    if (/^Binary files .* differ$/.test(line)) return true;
+  }
+  return false;
 }
 
 /**

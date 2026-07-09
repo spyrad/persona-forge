@@ -39,6 +39,25 @@ describe("prepareDiff", () => {
     expect(result.diff).toContain("src/lib/utils.ts");
   });
 
+  it("erkennt auch einen GIT-binary-patch-Block", () => {
+    const raw = `diff --git a/a.bin b/a.bin\nGIT binary patch\nliteral 12\nzcmZ?w\n` + block("src/lib/utils.ts");
+    expect(prepareDiff(raw, 10_000).droppedFiles).toEqual(["a.bin"]);
+  });
+
+  it("verwirft KEINE Datei, die Binaer-Marker nur als Inhalt hinzufuegt", () => {
+    // Gefunden 2026-07-09: diff.ts flog aus dem eigenen Review, weil ihr Quelltext
+    // den String "GIT binary patch" enthaelt. Der Reviewer meldete gruen, ohne die
+    // Datei je gesehen zu haben. Marker zaehlen nur ohne +/- -Praefix.
+    const raw =
+      `diff --git a/src/lib/parser.ts b/src/lib/parser.ts\n--- a/src/lib/parser.ts\n+++ b/src/lib/parser.ts\n@@ -0,0 +1,2 @@\n` +
+      `+const MARKER = "GIT binary patch";\n+const RE = /^Binary files .* differ$/;\n`;
+    const result = prepareDiff(raw, 10_000);
+
+    expect(result.droppedFiles).toEqual([]);
+    expect(result.truncated).toBe(false);
+    expect(result.diff).toContain("src/lib/parser.ts");
+  });
+
   it("sortiert Migrationen und API-Routen nach vorne", () => {
     const raw =
       block("README.md") +

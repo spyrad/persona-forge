@@ -1,64 +1,151 @@
 import { describe, expect, it } from "vitest";
-import { CRITERIA, type Criterion, type ReviewResult } from "@/lib/ai-review/schema";
-import { averageScore, decideVerdict } from "@/lib/ai-review/verdict";
+import { RULES, RULE_IDS, type Finding, type RuleId } from "@/lib/ai-review/schema";
+import { MIN_CRITERION_SCORE, decideVerdict, scoreFor, scoresFrom, severityOf } from "@/lib/ai-review/verdict";
 
-/** Baut ein ReviewResult; `overrides` setzt einzelne Kriterien abweichend. */
-function result(base: number, overrides: Partial<Record<Criterion, number>> = {}): ReviewResult {
-  const criteria = Object.fromEntries(
-    CRITERIA.map((key) => [key, { score: overrides[key] ?? base, reasoning: "Begruendung." }]),
-  ) as ReviewResult["criteria"];
+const f = (rule: RuleId, file = "src/x.ts"): Finding => ({ rule, file, evidence: "Beleg." });
 
-  return { criteria, summary: "Zusammenfassung." };
-}
+const review = (findings: Finding[]) => ({ findings, summary: "Zusammenfassung." });
 
-describe("averageScore", () => {
-  it("mittelt ueber alle sechs Kriterien", () => {
-    expect(averageScore(result(8))).toBe(8);
-    expect(averageScore(result(9, { dataSafety: 3 }))).toBe((9 * 5 + 3) / 6);
+describe("Regel-Katalog", () => {
+  it("ordnet jede Regel genau einem Kriterium und Schweregrad zu", () => {
+    for (const id of RULE_IDS) {
+      expect(RULES[id].criterion).toBeTruthy();
+      expect(["critical", "warning", "observation"]).toContain(RULES[id].severity);
+      expect(RULES[id].description.length).toBeGreaterThan(10);
+    }
+  });
+});
+
+describe("scoreFor", () => {
+  it("gibt volle Punktzahl ohne Findings", () => {
+    expect(scoreFor([], "dataSafety")).toBe(10);
+  });
+
+  it("zaehlt nur Findings des eigenen Kriteriums", () => {
+    // Ein UI-Verstoss darf die Datensicherheit nicht beruehren.
+    expect(scoreFor([f("color-literal")], "dataSafety")).toBe(10);
+    expect(scoreFor([f("color-literal")], "uiConventions")).toBe(7);
+  });
+
+  it("druckt ein einzelnes critical unter die Einzelschwelle", () => {
+    const score = scoreFor([f("missing-rls", "supabase/migrations/x.sql")], "dataSafety");
+    expect(score).toBe(4);
+    expect(score).toBeLessThan(MIN_CRITERION_SCORE);
+  });
+
+  it("summiert mehrere Findings und begrenzt nach unten auf 1", () => {
+    expect(scoreFor([f("color-literal"), f("manual-class-concat")], "uiConventions")).toBe(6);
+    const viele = [f("missing-rls"), f("blanket-policy"), f("hardcoded-secret")];
+    expect(scoreFor(viele, "dataSafety")).toBe(1);
+  });
+});
+
+describe("scoresFrom", () => {
+  it("liefert fuer einen leeren Diff ueberall volle Punktzahl", () => {
+    const scores = scoresFrom([]);
+    expect(Object.values(scores)).toEqual([10, 10, 10, 10, 10, 10]);
   });
 });
 
 describe("decideVerdict", () => {
-  it("laesst einen sauberen PR durch", () => {
-    const verdict = decideVerdict(result(9));
+  it("laesst einen Diff ohne Findings durch", () => {
+    const v = decideVerdict(review([]));
 
-    expect(verdict.verdict).toBe("passed");
-    expect(verdict.reasons).toEqual([]);
+    expect(v.verdict).toBe("passed");
+    expect(v.reasons).toEqual([]);
+    expect(v.average).toBe(10);
   });
 
-  it("blockt bei einem einzelnen Ausreisser, auch wenn der Schnitt hoch ist", () => {
-    // 4 bei dataSafety, sonst 10 → Schnitt 9.0, aber ein RLS-Loch bleibt ein RLS-Loch.
-    const verdict = decideVerdict(result(10, { dataSafety: 4 }));
+  it("blockt bei einem einzelnen critical, obwohl der Schnitt hoch bleibt", () => {
+    // Der Kernfall: fehlende RLS blockt allein. Schnitt (10*5+4)/6 = 9.0.
+    const v = decideVerdict(review([f("missing-rls", "supabase/migrations/x.sql")]));
 
-    expect(verdict.verdict).toBe("failed");
-    expect(verdict.average).toBeGreaterThan(8);
-    expect(verdict.reasons).toHaveLength(1);
-    expect(verdict.reasons[0]).toContain("Datensicherheit");
+    expect(v.verdict).toBe("failed");
+    expect(v.average).toBe(9);
+    expect(v.reasons).toHaveLength(1);
+    expect(v.reasons[0]).toContain("Datensicherheit");
+    expect(v.reasons[0]).toContain("1x kritisch");
   });
 
-  it("blockt bei zu niedrigem Durchschnitt, obwohl jedes Kriterium die Mindestpunktzahl haelt", () => {
-    // Alle exakt 5: kein Einzel-Verstoss, aber Schnitt 5 < 7.
-    const verdict = decideVerdict(result(5));
+  it("laesst eine einzelne Warnung durch", () => {
+    // Ein fehlendes prerender ist ein Hinweis, kein Merge-Blocker: 10-3 = 7.
+    const v = decideVerdict(review([f("missing-prerender", "src/pages/api/x.ts")]));
 
-    expect(verdict.verdict).toBe("failed");
-    expect(verdict.reasons).toHaveLength(1);
-    expect(verdict.reasons[0]).toContain("Durchschnitt");
+    expect(v.scores.apiQuartet).toBe(7);
+    expect(v.verdict).toBe("passed");
   });
 
-  it("nennt Einzel- und Durchschnitts-Verstoss getrennt", () => {
-    const verdict = decideVerdict(result(6, { dataSafety: 2, apiQuartet: 3 }));
+  it("blockt, wenn zwei Warnungen dasselbe Kriterium unter die Schwelle druecken", () => {
+    const v = decideVerdict(review([f("missing-prerender"), f("lowercase-handler")]));
 
-    expect(verdict.verdict).toBe("failed");
-    expect(verdict.reasons).toHaveLength(3); // zwei Ausreisser + Durchschnitt
+    expect(v.scores.apiQuartet).toBe(4);
+    expect(v.verdict).toBe("failed");
   });
 
-  it("laesst die Grenzfaelle exakt auf der Schwelle durch", () => {
-    // Ein Kriterium exakt auf 5 (nicht darunter), Summe 42 → Schnitt exakt 7.0.
-    // 8 + 8 + 5 + 8 + 6 + 7 = 42
-    const verdict = decideVerdict(result(8, { dataSafety: 5, scopeDiscipline: 6, architectureConsistency: 7 }));
+  it("laesst eine einzelne Beobachtung folgenlos", () => {
+    const v = decideVerdict(review([f("manual-class-concat")]));
 
-    expect(verdict.average).toBe(7);
-    expect(verdict.verdict).toBe("passed");
-    expect(verdict.reasons).toEqual([]);
+    expect(v.scores.uiConventions).toBe(9);
+    expect(v.verdict).toBe("passed");
+  });
+
+  it("laesst je eine Warnung pro Kriterium gerade noch durch (Schnitt exakt 7)", () => {
+    const jeEineWarnung = [
+      f("color-literal"),
+      f("missing-prerender"),
+      f("missing-test-for-risky-change"),
+      f("undeclared-change"),
+      f("logic-in-route"),
+    ];
+    // dataSafety bleibt ohne Finding bei 10: (7+7+10+7+7+7)/6 = 7.5
+    const v = decideVerdict(review(jeEineWarnung));
+    expect(v.average).toBeGreaterThanOrEqual(7);
+    expect(v.verdict).toBe("passed");
+  });
+
+  it("blockt bei zu niedrigem Durchschnitt, obwohl jedes Kriterium die Einzelschwelle haelt", () => {
+    const breitVerteilt = [
+      f("color-literal"), // warning  -> uiConventions 10-3-1 = 6
+      f("manual-class-concat"), // observation
+      f("missing-prerender"), // warning  -> apiQuartet 7
+      f("uncached-auth-uid", "supabase/migrations/a.sql"), // 3x observation
+      f("uncached-auth-uid", "supabase/migrations/b.sql"), // -> dataSafety 7
+      f("uncached-auth-uid", "supabase/migrations/c.sql"),
+      f("missing-test-for-risky-change"), // warning -> testCoverage 7
+      f("undeclared-change"), // warning -> scopeDiscipline 7
+      f("logic-in-route"), // warning -> architectureConsistency 7
+    ];
+    const v = decideVerdict(review(breitVerteilt));
+
+    // (6+7+7+7+7+7)/6 = 6.83 — kein Kriterium unter 5, aber der Schnitt reisst.
+    expect(Math.min(...Object.values(v.scores))).toBeGreaterThanOrEqual(MIN_CRITERION_SCORE);
+    expect(v.average).toBeLessThan(7);
+    expect(v.verdict).toBe("failed");
+    expect(v.reasons).toHaveLength(1);
+    expect(v.reasons[0]).toContain("Durchschnitt");
+  });
+
+  it("meldet dieselbe Regel mehrfach, wenn mehrere Dateien sie verletzen", () => {
+    const v = decideVerdict(review([f("color-literal", "src/a.tsx"), f("color-literal", "src/b.tsx")]));
+
+    expect(v.scores.uiConventions).toBe(4);
+    expect(v.verdict).toBe("failed");
+  });
+
+  it("ist deterministisch: gleiche Findings, gleiches Urteil", () => {
+    // Das ist der ganze Zweck des Umbaus — die Noten-Variante kippte hier.
+    const findings = [f("missing-prerender"), f("color-literal"), f("logic-in-route")];
+    const a = decideVerdict(review(findings));
+    const b = decideVerdict(review([...findings]));
+
+    expect(a).toEqual(b);
+  });
+});
+
+describe("severityOf", () => {
+  it("liest den Schweregrad aus dem Katalog, nicht aus dem Modell", () => {
+    expect(severityOf(f("missing-rls"))).toBe("critical");
+    expect(severityOf(f("missing-prerender"))).toBe("warning");
+    expect(severityOf(f("manual-class-concat"))).toBe("observation");
   });
 });

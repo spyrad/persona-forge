@@ -22,7 +22,14 @@ was ESLint bereits fängt.
 
 ## Output
 
-JSON: 6 Kriterien mit Score 1–10 + Begründung, plus ein Gesamt-Verdict.
+JSON: 6 Kriterien mit Score 1–10 + Verdict.
+
+**Korrigiert in Phase 2 (2026-07-09):** Die Scores kommen **nicht** vom LLM. Das
+Modell liefert nur Findings aus einem festen Regel-Katalog (Regel-ID, Datei,
+Beleg); `verdict.ts` leitet Schweregrad, Score und Verdict deterministisch ab.
+Grund: gemessene Noten-Streuung liess das Verdict bei identischem Diff kippen
+(siehe `context/foundation/lessons.md`). Die sechs Kriterien unten bleiben
+unverändert — sie strukturieren jetzt den Regel-Katalog statt einer Notenskala.
 
 ## Side-Effects
 

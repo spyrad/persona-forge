@@ -437,27 +437,27 @@ Coding-Plan-Key mit 429.
 
 #### Automated
 
-- [x] 1.1 Unit-Tests grün: `npm run test`
-- [x] 1.2 Linting grün: `npm run lint`
-- [x] 1.3 Typecheck grün: `npx astro check`
+- [x] 1.1 Unit-Tests grün: `npm run test` — fe00683
+- [x] 1.2 Linting grün: `npm run lint` — fe00683
+- [x] 1.3 Typecheck grün: `npx astro check` — fe00683
 
 #### Manual
 
-- [x] 1.4 `prepareDiff` gegen echten Repo-Diff geprüft: Migrationen und API-Routen stehen oben
+- [x] 1.4 `prepareDiff` gegen echten Repo-Diff geprüft: Migrationen und API-Routen stehen oben — fe00683
 
 ### Phase 2: Scorer-Entry (Baustufe 1)
 
 #### Automated
 
-- [ ] 2.1 Unit-Tests weiterhin grün: `npm run test`
-- [ ] 2.2 Linting grün: `npm run lint`
-- [ ] 2.3 Script meldet fehlende Env-Variable, statt durchzulaufen
+- [x] 2.1 Unit-Tests weiterhin grün: `npm run test`
+- [x] 2.2 Linting grün: `npm run lint`
+- [x] 2.3 Script meldet fehlende Env-Variable, statt durchzulaufen
 
 #### Manual
 
-- [ ] 2.4 `git diff main... | npm run ai-review` gibt valides JSON mit sechs Scores
-- [ ] 2.5 RLS-loser Migrations-Diff wird bei Kriterium 3 unter 5 bewertet
-- [ ] 2.6 `thinking:disabled` greift — kein sichtbares Reasoning, vertretbare Latenz
+- [x] 2.4 `git diff main... | npm run ai-review` gibt valides JSON mit sechs Scores
+- [x] 2.5 RLS-loser Migrations-Diff wird bei Kriterium 3 unter 5 bewertet
+- [x] 2.6 `thinking:disabled` greift — kein sichtbares Reasoning, vertretbare Latenz
 
 ### Phase 3: CI + Human-in-the-Loop (Baustufe 2)
 
