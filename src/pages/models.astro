@@ -1,5 +1,5 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import AppLayout from "@/layouts/AppLayout.astro";
 import { createClient } from "@/lib/supabase";
 import { listModelConfigs } from "@/lib/services/model-configs";
 import type { ModelConfigView } from "@/types";
@@ -26,18 +26,11 @@ if (supabase) {
 }
 ---
 
-<Layout title="Model Configs">
-  <div class="min-h-screen px-4 py-10">
-    <div class="mx-auto max-w-3xl">
-      <header class="mb-8">
-        <h1 class="text-foreground text-3xl font-bold">Model Configs</h1>
-        <p class="text-muted-foreground mt-1 text-sm">
-          OpenAI-kompatible Modelle für <span class="text-foreground">{user?.email}</span>. API-Keys werden
-          verschlüsselt gespeichert und nie wieder angezeigt.
-        </p>
-      </header>
-
-      <ModelConfigManager client:load initialConfigs={initialConfigs} loadError={loadError} />
-    </div>
-  </div>
-</Layout>
+<AppLayout
+  title="Model configs"
+  eyebrow="02 — model configs"
+  heading="Model configs"
+  lead={`OpenAI-compatible models for ${user?.email ?? ""}. API keys are stored encrypted and never shown again.`}
+>
+  <ModelConfigManager client:load initialConfigs={initialConfigs} loadError={loadError} />
+</AppLayout>
