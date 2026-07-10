@@ -1,5 +1,5 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import AppLayout from "@/layouts/AppLayout.astro";
 import { createClient } from "@/lib/supabase";
 import { listRuns } from "@/lib/services/runs";
 import { listPersonas } from "@/lib/services/personas";
@@ -33,26 +33,17 @@ if (supabase && user) {
 }
 ---
 
-<Layout title="Läufe">
-  <div class="min-h-screen px-4 py-10">
-    <div class="mx-auto max-w-3xl">
-      <header class="mb-8 flex items-start justify-between gap-4">
-        <div>
-          <h1 class="text-foreground text-3xl font-bold">Läufe</h1>
-          <p class="text-muted-foreground mt-1 text-sm">
-            OEJTS-Messläufe für <span class="text-foreground">{user?.email}</span>. Jede Wiederholung ist eine isolierte
-            Sitzung; der Lauf wird im Browser Schritt für Schritt getrieben.
-          </p>
-        </div>
-      </header>
-
-      <RunRunner
-        client:load
-        initialRuns={initialRuns}
-        personas={personas}
-        modelConfigs={modelConfigs}
-        loadError={loadError}
-      />
-    </div>
-  </div>
-</Layout>
+<AppLayout
+  title="Runs"
+  eyebrow="04 — measurement runs"
+  heading="Runs"
+  lead={`OEJTS measurement runs for ${user?.email ?? ""}. Each repetition is an isolated session, driven step by step in the browser.`}
+>
+  <RunRunner
+    client:load
+    initialRuns={initialRuns}
+    personas={personas}
+    modelConfigs={modelConfigs}
+    loadError={loadError}
+  />
+</AppLayout>

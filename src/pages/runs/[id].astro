@@ -1,5 +1,5 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import AppLayout from "@/layouts/AppLayout.astro";
 import { createClient } from "@/lib/supabase";
 import { getRunResult } from "@/lib/services/runs";
 import type { RunResultView } from "@/types";
@@ -34,36 +34,25 @@ if (notFound) {
 // Untertitel je Test-Typ (run.kind ist immer gesetzt, auch bei unfertigen Läufen).
 const resultSubtitle =
   result?.run.kind === "steadfastness"
-    ? "Standhaftigkeit (Manipulationsresistenz): Kapitulationsrate über die Experimente plus Strategie-Breakdown."
-    : "OEJTS-Verteilung je Achse über die Wiederholungen plus abgeleiteter Typ.";
+    ? "Steadfastness (manipulation resistance): capitulation rate across experiments plus strategy breakdown."
+    : "OEJTS distribution per axis across repetitions plus the derived type.";
 ---
 
-<Layout title="Lauf-Ergebnis">
-  <div class="min-h-screen px-4 py-10">
-    <div class="mx-auto max-w-3xl">
-      <header class="mb-8">
-        <h1 class="text-foreground text-3xl font-bold">Lauf-Ergebnis</h1>
-        <p class="text-muted-foreground mt-1 text-sm">{resultSubtitle}</p>
-      </header>
-
-      {
-        loadError ? (
-          <p class="border-destructive/30 bg-destructive/10 text-destructive rounded-2xl border px-4 py-5 text-sm">
-            Ergebnis konnte nicht geladen werden. Bitte neu laden.
-          </p>
-        ) : notFound ? (
-          <div class="space-y-4">
-            <p class="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-5 text-sm">
-              Lauf nicht gefunden.
-            </p>
-            <a href="/runs" class="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
-              ← Zurück zu den Läufen
-            </a>
-          </div>
-        ) : (
-          result && <RunResult client:load result={result} />
-        )
-      }
-    </div>
-  </div>
-</Layout>
+<AppLayout title="Run result" eyebrow="04 — run result" heading="Run result" lead={resultSubtitle}>
+  {
+    loadError ? (
+      <p class="border-destructive/30 bg-destructive/10 text-destructive rounded-2xl border px-4 py-5 text-sm">
+        Could not load the result. Please reload.
+      </p>
+    ) : notFound ? (
+      <div class="space-y-4">
+        <p class="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-5 text-sm">Run not found.</p>
+        <a href="/runs" class="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
+          ← Back to runs
+        </a>
+      </div>
+    ) : (
+      result && <RunResult client:load result={result} />
+    )
+  }
+</AppLayout>
