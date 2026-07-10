@@ -1,7 +1,4 @@
 ---
-import "@fontsource/instrument-serif";
-import "@fontsource/instrument-serif/400-italic.css";
-import "@fontsource/jetbrains-mono";
 import Hero from "@/components/landing/Hero.astro";
 import Problem from "@/components/landing/Problem.astro";
 import Method from "@/components/landing/Method.astro";
@@ -19,46 +16,6 @@ import Layout from "@/layouts/Layout.astro";
     <Cta />
   </main>
 </Layout>
-
-<style is:global>
-  /* Ruler-Ticks unter der Sektions-Hairline — die Messinstrument-Metapher
-     im Seitenskelett. Farbe aus dem muted-Token, wie die Achsen-Ticks. */
-  .section-ruler {
-    position: absolute;
-    inset-inline: 0;
-    top: 0;
-    height: 6px;
-    background-image: repeating-linear-gradient(
-      to right,
-      color-mix(in oklab, var(--muted-foreground) 40%, transparent) 0 1px,
-      transparent 1px 10%
-    );
-  }
-  .reveal {
-    transition:
-      opacity 0.6s ease,
-      translate 0.6s ease;
-  }
-  /* Startzustand nur mit JS ausblenden (siehe Layout.astro: `js`-Klasse auf
-     <html>) — ohne JS bleibt der Inhalt sichtbar, da nie ein "is-visible"
-     nachtraeglich gesetzt wird. */
-  .js .reveal {
-    opacity: 0;
-    translate: 0 12px;
-  }
-  .reveal.is-visible {
-    opacity: 1;
-    translate: 0 0;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .reveal,
-    .js .reveal {
-      opacity: 1;
-      translate: none;
-      transition: none;
-    }
-  }
-</style>
 
 <script>
   // Scroll-Reveal: einmalig einblenden, dann nicht weiter beobachten.
