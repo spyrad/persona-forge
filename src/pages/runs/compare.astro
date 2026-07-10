@@ -104,6 +104,8 @@ if (pageState === "notFound") {
         Not comparable: {notReadyDetail}. Only completed runs with usable repetitions can be compared.
       </p>
     ) : view ? (
+      // Rein präsentational (keine Interaktivität) → statisch gerendert, kein
+      // Client-JS, keine Hydration.
       <RunComparison view={view} />
     ) : null
   }
