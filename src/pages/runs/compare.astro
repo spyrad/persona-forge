@@ -22,6 +22,8 @@ function resolveSide(result: RunResultView, personas: PersonaView[], models: Mod
   const model = run.modelConfigId ? models.find((m) => m.id === run.modelConfigId) : null;
   return {
     result,
+    // FK auf null → der Bezug wurde geloescht; ID gesetzt aber nicht sichtbar
+    // (z. B. fremde private Persona hinter globalem Lauf) → unbekannt.
     personaName: persona?.name ?? (run.personaId ? "(unknown)" : "(deleted)"),
     modelLabel: model?.label ?? (run.modelConfigId ? "(unknown)" : "(deleted)"),
     modelName: model?.modelName ?? null,
