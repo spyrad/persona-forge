@@ -69,11 +69,15 @@ Jede Stufe geht als eigener PR durch den CI-Review-Agenten.
 
 ### 2. `AppLayout.astro` (neu, `src/layouts/`)
 
-```astro
-<AppLayout title="Runs" <title
-  >, wie bisher an Layout durchgereicht eyebrow="04 — measurement runs" // Mono-Eyebrow heading="Runs" // Serif-h1
-  lead="Each repetition is an isolated session…" width="narrow" // "narrow" (Default) | "full" >
-  <!-- Seiteninhalt -->
+```text
+<AppLayout
+  title="Runs"                      → <title>, wie bisher an Layout durchgereicht
+  eyebrow="04 — measurement runs"   → Mono-Eyebrow
+  heading="Runs"                    → Serif-h1
+  lead="Each repetition is an isolated session…"
+  width="narrow"                    → "narrow" (Default) | "full"
+>
+  (Seiteninhalt im Slot)
 </AppLayout>
 ```
 
