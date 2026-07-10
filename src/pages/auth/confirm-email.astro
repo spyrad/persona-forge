@@ -5,13 +5,11 @@ const isAutoConfirmed = import.meta.env.DEV;
 
 const content = isAutoConfirmed
   ? {
-      emoji: "✅",
       heading: "Registration successful",
       description: "Your account has been created. You can now sign in.",
       linkText: "Go to sign in",
     }
   : {
-      emoji: "📧",
       heading: "Check your email",
       description: "We've sent a confirmation link to your email address. Click it to activate your account.",
       linkText: "Back to sign in",
@@ -21,8 +19,39 @@ const content = isAutoConfirmed
 <Layout title={content.heading}>
   <div class="flex min-h-screen items-center justify-center p-4">
     <div class="border-border bg-card text-foreground w-full max-w-sm rounded-2xl border p-8 text-center">
-      <div class="mb-4 text-5xl">{content.emoji}</div>
-      <h1 class="text-foreground mb-3 text-2xl font-bold">
+      {
+        isAutoConfirmed ? (
+          <svg
+            class="text-primary mx-auto mb-4 h-10 w-10"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="m8.5 12.5 2.5 2.5 4.5-5" />
+          </svg>
+        ) : (
+          <svg
+            class="text-primary mx-auto mb-4 h-10 w-10"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="3" y="5" width="18" height="14" rx="2" />
+            <path d="m3 7 9 6 9-6" />
+          </svg>
+        )
+      }
+      <p class="text-muted-foreground mb-2 font-mono text-xs tracking-[0.2em] uppercase">account</p>
+      <h1 class="font-display text-foreground mb-3 text-3xl">
         {content.heading}
       </h1>
       <p class="text-muted-foreground mb-6">{content.description}</p>
