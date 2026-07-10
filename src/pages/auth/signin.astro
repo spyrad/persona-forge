@@ -8,7 +8,8 @@ const error = Astro.url.searchParams.get("error");
 <Layout title="Sign in">
   <div class="flex min-h-screen items-center justify-center p-4">
     <div class="border-border bg-card text-foreground w-full max-w-sm rounded-2xl border p-8">
-      <h1 class="text-foreground mb-6 text-center text-2xl font-bold">Sign in</h1>
+      <p class="text-muted-foreground mb-2 text-center font-mono text-xs tracking-[0.2em] uppercase">account</p>
+      <h1 class="font-display text-foreground mb-6 text-center text-3xl">Sign in</h1>
       <SignInForm serverError={error} client:load />
       <p class="text-muted-foreground mt-4 text-center text-sm">
         Don't have an account? <a href="/auth/signup" class="text-primary hover:underline">Sign up</a>

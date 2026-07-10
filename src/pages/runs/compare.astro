@@ -1,5 +1,5 @@
 ---
-import Layout from "@/layouts/Layout.astro";
+import AppLayout from "@/layouts/AppLayout.astro";
 import { createClient } from "@/lib/supabase";
 import { getRunResult } from "@/lib/services/runs";
 import { listPersonas } from "@/lib/services/personas";
@@ -24,15 +24,15 @@ function resolveSide(result: RunResultView, personas: PersonaView[], models: Mod
     result,
     // FK auf null → der Bezug wurde geloescht; ID gesetzt aber nicht sichtbar
     // (z. B. fremde private Persona hinter globalem Lauf) → unbekannt.
-    personaName: persona?.name ?? (run.personaId ? "(unbekannt)" : "(gelöscht)"),
-    modelLabel: model?.label ?? (run.modelConfigId ? "(unbekannt)" : "(gelöscht)"),
+    personaName: persona?.name ?? (run.personaId ? "(unknown)" : "(deleted)"),
+    modelLabel: model?.label ?? (run.modelConfigId ? "(unknown)" : "(deleted)"),
     modelName: model?.modelName ?? null,
   };
 }
 
-/** Erklaerung fuer einen nicht-vergleichbaren (nicht `ready`) Lauf. */
+/** Explanation for a run that is not comparable (not `ready`). */
 function notReadyReason(result: RunResultView): string {
-  return result.state === "unfinished" ? "ist noch nicht abgeschlossen" : "lieferte keine verwertbaren Wiederholungen";
+  return result.state === "unfinished" ? "is not finished yet" : "produced no usable repetitions";
 }
 
 type PageState = "missing" | "same" | "notFound" | "notReady" | "loadError" | "ready";
@@ -57,8 +57,8 @@ if (!supabase || !user) {
     } else if (ra.state !== "ready" || rb.state !== "ready") {
       pageState = "notReady";
       const parts: string[] = [];
-      if (ra.state !== "ready") parts.push(`Lauf A ${notReadyReason(ra)}`);
-      if (rb.state !== "ready") parts.push(`Lauf B ${notReadyReason(rb)}`);
+      if (ra.state !== "ready") parts.push(`Run A ${notReadyReason(ra)}`);
+      if (rb.state !== "ready") parts.push(`Run B ${notReadyReason(rb)}`);
       notReadyDetail = parts.join("; ");
     } else {
       const [personas, models] = await Promise.all([listPersonas(supabase, user.id), listModelConfigs(supabase)]);
@@ -76,48 +76,41 @@ if (pageState === "notFound") {
 }
 ---
 
-<Layout title="Läufe vergleichen">
-  <div class="min-h-screen px-4 py-10">
-    <div class="mx-auto max-w-3xl">
-      <header class="mb-8">
-        <h1 class="text-foreground text-3xl font-bold">Läufe vergleichen</h1>
-        <p class="text-muted-foreground mt-1 text-sm">
-          Zwei abgeschlossene OEJTS-Läufe nebeneinander — Verteilung je Achse mit ihren Streuungen.
-        </p>
-      </header>
+<AppLayout
+  title="Compare runs"
+  eyebrow="04 — comparison"
+  heading="Compare runs"
+  lead="Two completed OEJTS runs side by side — distribution per axis with their spreads."
+>
+  {
+    pageState === "loadError" ? (
+      <p class="border-destructive/30 bg-destructive/10 text-destructive rounded-2xl border px-4 py-5 text-sm">
+        Could not load the comparison. Please reload.
+      </p>
+    ) : pageState === "missing" ? (
+      <p class="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-5 text-sm">
+        Select two runs to compare — use the “Compare” checkboxes in the runs list.
+      </p>
+    ) : pageState === "same" ? (
+      <p class="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-5 text-sm">
+        Select two <em>different</em> runs — a run cannot be compared with itself.
+      </p>
+    ) : pageState === "notFound" ? (
+      <p class="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-5 text-sm">
+        At least one of the runs was not found (deleted or not visible).
+      </p>
+    ) : pageState === "notReady" ? (
+      <p class="border-chart-2/40 bg-chart-2/10 text-chart-2 rounded-2xl border px-4 py-5 text-sm">
+        Not comparable: {notReadyDetail}. Only completed runs with usable repetitions can be compared.
+      </p>
+    ) : view ? (
+      // Rein präsentational (keine Interaktivität) → statisch gerendert, kein
+      // Client-JS, keine Hydration.
+      <RunComparison view={view} />
+    ) : null
+  }
 
-      {
-        pageState === "loadError" ? (
-          <p class="border-destructive/30 bg-destructive/10 text-destructive rounded-2xl border px-4 py-5 text-sm">
-            Vergleich konnte nicht geladen werden. Bitte neu laden.
-          </p>
-        ) : pageState === "missing" ? (
-          <p class="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-5 text-sm">
-            Bitte zwei Läufe zum Vergleich auswählen — wähle sie in der Lauf-Liste über die „Vergleichen"-Haken aus.
-          </p>
-        ) : pageState === "same" ? (
-          <p class="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-5 text-sm">
-            Bitte zwei <em>verschiedene</em> Läufe auswählen — ein Lauf lässt sich nicht mit sich selbst vergleichen.
-          </p>
-        ) : pageState === "notFound" ? (
-          <p class="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-5 text-sm">
-            Mindestens einer der Läufe wurde nicht gefunden (gelöscht oder nicht sichtbar).
-          </p>
-        ) : pageState === "notReady" ? (
-          <p class="border-chart-2/40 bg-chart-2/10 text-chart-2 rounded-2xl border px-4 py-5 text-sm">
-            Nicht vergleichbar: {notReadyDetail}. Nur abgeschlossene Läufe mit verwertbaren Wiederholungen lassen sich
-            vergleichen.
-          </p>
-        ) : view ? (
-          // Rein präsentational (keine Interaktivität) → statisch gerendert, kein
-          // Client-JS, keine Hydration.
-          <RunComparison view={view} />
-        ) : null
-      }
-
-      <a href="/runs" class="text-primary hover:text-primary/80 mt-6 inline-flex items-center gap-1 text-sm">
-        ← Zurück zu den Läufen
-      </a>
-    </div>
-  </div>
-</Layout>
+  <a href="/runs" class="text-primary hover:text-primary/80 mt-6 inline-flex items-center gap-1 text-sm">
+    ← Back to runs
+  </a>
+</AppLayout>

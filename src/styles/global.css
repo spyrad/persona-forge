@@ -126,3 +126,57 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Ruler-Ticks unter einer Hairline — die Messinstrument-Metapher im
+   Seitenskelett (Landing-Sektionen und App-Topbar). Position absolute:
+   braucht einen relativen Parent mit Höhe. Farbe aus dem muted-Token. */
+.section-ruler {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 6px;
+  background-image: repeating-linear-gradient(
+    to right,
+    color-mix(in oklab, var(--muted-foreground) 40%, transparent) 0 1px,
+    transparent 1px 10%
+  );
+}
+
+/* Scroll-Reveal der Landing: Startzustand nur mit JS ausblenden (`js`-Klasse
+   auf <html>, siehe Layout.astro) — ohne JS bleibt der Inhalt sichtbar. */
+.reveal {
+  transition:
+    opacity 0.6s ease,
+    translate 0.6s ease;
+}
+.js .reveal {
+  opacity: 0;
+  translate: 0 12px;
+}
+.reveal.is-visible {
+  opacity: 1;
+  translate: 0 0;
+}
+
+/* Entrance-Reveal der App-Seiten-Header: zeitbasiert und CSS-only — läuft
+   ohne JS und endet immer sichtbar, daher kein `.js`-Gating nötig. */
+@media (prefers-reduced-motion: no-preference) {
+  .page-enter {
+    animation: page-enter 0.4s ease both;
+  }
+}
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    translate: 0 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .js .reveal {
+    opacity: 1;
+    translate: none;
+    transition: none;
+  }
+}
