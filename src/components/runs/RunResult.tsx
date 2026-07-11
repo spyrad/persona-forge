@@ -14,7 +14,8 @@ function failureRate(failed: number, total: number): string {
   return `${String(failed)}/${String(total)} (${String(pct)} %)`;
 }
 
-function AxisCard({ axis }: { axis: AxisDistribution }) {
+/** Achsen-Karte (Verteilung + Kennzahlen) — auch vom Modell-Profil wiederverwendet. */
+export function AxisCard({ axis }: { axis: AxisDistribution }) {
   const reliable = axis.usableCount >= RELIABLE_MIN;
   return (
     <div className="border-border bg-card space-y-3 rounded-2xl border p-5">

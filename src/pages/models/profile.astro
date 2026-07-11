@@ -1,0 +1,85 @@
+---
+import AppLayout from "@/layouts/AppLayout.astro";
+import ModelProfile from "@/components/models/ModelProfile";
+import { getModelProfiles } from "@/lib/services/model-profiles";
+import { createClient } from "@/lib/supabase";
+import type { ModelProfileView } from "@/types";
+
+// /models/profile ist via PROTECTED_ROUTES (startsWith "/models") geschuetzt.
+// Query-Param `?m={modelName}` statt Pfad-Param — Modellnamen enthalten `/` und
+// `:` (z. B. `openai/gpt-5.5`). Alle Edge-Cases enden in einem erklaerenden
+// Zustand statt einem 500 (Muster `runs/compare.astro`).
+const { user } = Astro.locals;
+const rawParam = Astro.url.searchParams.get("m") ?? "";
+const modelName = rawParam.trim();
+
+type PageState = "missing" | "notFound" | "loadError" | "ready";
+
+let pageState: PageState = "ready";
+let profile: ModelProfileView | null = null;
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+
+// Param-Validierung VOR dem Laden (leer/ueberlang → erklaerender Zustand).
+if (!supabase || !user) {
+  pageState = "loadError";
+} else if (modelName === "" || modelName.length > 200) {
+  pageState = "missing";
+} else {
+  try {
+    // `.at(0)` statt Destrukturierung: liefert `| undefined` — sonst meldet
+    // no-unnecessary-condition den if-Zweig als immer wahr.
+    const found = (await getModelProfiles(supabase, [modelName])).at(0);
+    if (found) {
+      profile = found;
+    } else {
+      pageState = "notFound";
+    }
+  } catch {
+    pageState = "loadError";
+  }
+}
+
+// Kein Profil (unbekanntes Modell oder keine Baseline-Laeufe) → 404-Status
+// (ohne Top-Level-`return`; ein `return` im Astro-Frontmatter crasht die
+// getypte no-misused-promises-Regel).
+if (pageState === "notFound") {
+  Astro.response.status = 404;
+}
+---
+
+<AppLayout
+  title="Model profile"
+  eyebrow="02 — model profile"
+  heading="Model profile"
+  lead="Aggregated baseline results per instrument — all completed runs without a persona, pooled per repetition."
+>
+  {
+    pageState === "loadError" ? (
+      <p class="border-destructive/30 bg-destructive/10 text-destructive rounded-2xl border px-4 py-5 text-sm">
+        Could not load the model profile. Please reload.
+      </p>
+    ) : pageState === "missing" ? (
+      <p class="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-5 text-sm">
+        Select a model — open a profile from the model configs page.
+      </p>
+    ) : pageState === "notFound" ? (
+      <p class="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-5 text-sm">
+        No profile for this model — it has no completed baseline runs yet. Start a run with “No persona (baseline)” to
+        build one.
+      </p>
+    ) : profile ? (
+      // Rein praesentational (keine Interaktivitaet) → statisch gerendert, kein
+      // Client-JS, keine Hydration (Muster RunComparison).
+      <ModelProfile profile={profile} />
+    ) : null
+  }
+
+  {
+    pageState !== "ready" ? (
+      <a href="/models" class="text-primary hover:text-primary/80 mt-6 inline-flex items-center gap-1 text-sm">
+        ← Back to model configs
+      </a>
+    ) : null
+  }
+</AppLayout>
