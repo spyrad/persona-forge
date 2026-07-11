@@ -109,12 +109,14 @@ git checkout main && git pull && git checkout -b feat/island-design-display
 In `src/lib/runs/run-timing.test.ts` die Erwartungen ändern:
 
 ```ts
-// vorher                                          // nachher
+// ALT (loeschen):
 expect(formatDuration(3200)).toBe("3,2 s");
-expect(formatDuration(3200)).toBe("3.2 s");
 expect(formatDuration(9900)).toBe("9,9 s");
-expect(formatDuration(9900)).toBe("9.9 s");
 expect(formatDateTime("2026-07-01T20:15:00.000Z")).toBe("01.07.2026 22:15");
+
+// NEU (stattdessen):
+expect(formatDuration(3200)).toBe("3.2 s");
+expect(formatDuration(9900)).toBe("9.9 s");
 expect(formatDateTime("2026-07-01T20:15:00.000Z")).toBe("01 Jul 2026, 22:15");
 ```
 
