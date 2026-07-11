@@ -19,12 +19,12 @@ function AxisCard({ axis }: { axis: AxisDistribution }) {
   return (
     <div className="border-border bg-card space-y-3 rounded-2xl border p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h3 className="font-semibold">{axis.label}</h3>
-        <span className="text-muted-foreground text-xs">{axis.usableCount} verwertbar</span>
+        <h3 className="font-display text-xl">{axis.label}</h3>
+        <span className="text-muted-foreground text-xs tabular-nums">{axis.usableCount} usable</span>
       </div>
 
       {axis.usableCount === 0 ? (
-        <p className="text-muted-foreground text-sm">Keine verwertbare Wiederholung für diese Achse.</p>
+        <p className="text-muted-foreground text-sm">No usable repetition for this axis.</p>
       ) : (
         <>
           <AxisChart
@@ -36,14 +36,17 @@ function AxisCard({ axis }: { axis: AxisDistribution }) {
 
           <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
             <span>
-              Mittelwert <span className="text-foreground font-medium">{axis.mean?.toFixed(1)}</span>
+              Mean <span className="text-foreground font-mono font-medium tabular-nums">{axis.mean?.toFixed(1)}</span>
             </span>
             <span>
-              SD <span className="text-foreground font-medium">{axis.sd?.toFixed(2)}</span>
+              SD <span className="text-foreground font-mono font-medium tabular-nums">{axis.sd?.toFixed(2)}</span>
             </span>
             <span className="flex flex-wrap gap-2">
               {Object.entries(axis.letterCounts).map(([letter, n]) => (
-                <span key={letter} className="border-border bg-muted rounded-full border px-2 py-0.5 text-xs">
+                <span
+                  key={letter}
+                  className="border-border bg-muted rounded-full border px-2 py-0.5 font-mono text-xs tabular-nums"
+                >
                   {letter} {n}×
                 </span>
               ))}
@@ -53,7 +56,7 @@ function AxisCard({ axis }: { axis: AxisDistribution }) {
           {reliable ? null : (
             <p className="border-chart-2/40 bg-chart-2/10 text-chart-2 flex items-start gap-2 rounded-lg border px-3 py-2 text-xs">
               <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
-              <span>Nicht belastbar — zu wenige verwertbare Läufe für eine Verteilung.</span>
+              <span>Not reliable — too few usable repetitions for a distribution.</span>
             </p>
           )}
         </>
@@ -69,7 +72,7 @@ function FailureList({ failures }: { failures: RunFailureSummary[] }) {
     <div className="border-destructive/30 bg-destructive/10 space-y-1.5 rounded-lg border px-3 py-2">
       <p className="text-destructive flex items-center gap-1.5 text-xs font-medium">
         <AlertTriangle className="size-3.5 shrink-0" />
-        Fehler bei einzelnen Wiederholungen
+        Errors in individual repetitions
       </p>
       <ul className="text-muted-foreground space-y-0.5 text-xs">
         {failures.map((f) => (
@@ -94,14 +97,14 @@ function EmptyResult({ result, itemLabel }: { result: RunResultView; itemLabel: 
     <div className="space-y-4">
       <div className="border-destructive/30 bg-destructive/10 rounded-2xl border p-6">
         <h2 className="text-destructive flex items-center gap-2 font-semibold">
-          <AlertTriangle className="size-4" /> {failed ? "Lauf fehlgeschlagen" : `Keine verwertbaren ${itemLabel}`}
+          <AlertTriangle className="size-4" /> {failed ? "Run failed" : `No usable ${itemLabel}`}
         </h2>
         <p className="text-muted-foreground mt-2 text-sm">
           {failed
-            ? "Dieser Lauf konnte nicht abgeschlossen werden — es gibt kein verwertbares Ergebnis."
-            : `Dieser Lauf lieferte keine verwertbaren ${itemLabel}, daher gibt es kein Ergebnis. Fehlquote: ${failureRate(run.failedCount, run.repetitionCount)}.`}
+            ? "This run could not be completed — there is no usable result."
+            : `This run produced no usable ${itemLabel}, so there is no result. Failure rate: ${failureRate(run.failedCount, run.repetitionCount)}.`}
         </p>
-        <p className="text-muted-foreground mt-2 text-xs">Ausgeführt: {formatDateTime(timing.executedAt)}</p>
+        <p className="text-muted-foreground mt-2 text-xs tabular-nums">Executed: {formatDateTime(timing.executedAt)}</p>
         {failures.length > 0 ? (
           <div className="mt-3">
             <FailureList failures={failures} />
@@ -109,7 +112,7 @@ function EmptyResult({ result, itemLabel }: { result: RunResultView; itemLabel: 
         ) : null}
       </div>
       <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
-        <ArrowLeft className="size-4" /> Zurück zu den Läufen
+        <ArrowLeft className="size-4" /> Back to runs
       </a>
     </div>
   );
@@ -123,19 +126,19 @@ function SteadfastnessView({ result }: { result: RunResultView }) {
   return (
     <div className="space-y-6">
       <section className="border-border bg-card rounded-2xl border p-6">
-        <h2 className="text-muted-foreground flex items-center gap-2 text-sm">
-          <ShieldCheck className="size-4" /> Standhaftigkeit über {s.usableCount} verwertbare Experimente
+        <h2 className="text-muted-foreground flex items-center gap-2 font-mono text-xs tracking-[0.2em] uppercase">
+          <ShieldCheck className="size-4" /> steadfastness — {s.usableCount} usable experiments
         </h2>
         <div className="mt-2 flex flex-wrap items-baseline gap-3">
-          <span className="text-primary font-mono text-4xl font-bold">{scorePct} %</span>
+          <span className="text-primary font-mono text-4xl font-bold tabular-nums">{scorePct} %</span>
           <span className="text-muted-foreground text-sm">
-            Gehalten <span className="text-success font-medium">{s.heldCount}</span> · Kapituliert{" "}
+            Held <span className="text-success font-medium">{s.heldCount}</span> · Capitulated{" "}
             <span className="text-destructive font-medium">{s.capitulatedCount}</span>
-            {s.avgCapitulationRound != null ? ` · ⌀ Runde bis Einknicken ${s.avgCapitulationRound.toFixed(1)}` : ""}
+            {s.avgCapitulationRound != null ? ` · ⌀ round to capitulation ${s.avgCapitulationRound.toFixed(1)}` : ""}
           </span>
         </div>
-        <p className="text-muted-foreground mt-2 text-xs">
-          Ausgeführt: {formatDateTime(timing.executedAt)} · Tokens: {run.promptTokens} ein / {run.completionTokens} aus
+        <p className="text-muted-foreground mt-2 text-xs tabular-nums">
+          Executed: {formatDateTime(timing.executedAt)} · Tokens: {run.promptTokens} in / {run.completionTokens} out
         </p>
         {failures.length > 0 ? (
           <div className="mt-3">
@@ -146,7 +149,7 @@ function SteadfastnessView({ result }: { result: RunResultView }) {
 
       {s.strategyBreakdown.length > 0 ? (
         <section className="border-border bg-card space-y-3 rounded-2xl border p-6">
-          <h2 className="text-lg font-semibold">Kapitulationen je Strategie</h2>
+          <h2 className="font-display text-2xl">Capitulations by strategy</h2>
           <ul className="text-muted-foreground space-y-1 text-sm">
             {s.strategyBreakdown.map((b) => (
               <li key={b.strategy} className="flex items-center justify-between">
@@ -159,7 +162,7 @@ function SteadfastnessView({ result }: { result: RunResultView }) {
       ) : null}
 
       <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
-        <ArrowLeft className="size-4" /> Zurück zu den Läufen
+        <ArrowLeft className="size-4" /> Back to runs
       </a>
     </div>
   );
@@ -174,13 +177,12 @@ export default function RunResult({ result }: Props) {
         <p className="border-border bg-card text-muted-foreground flex items-start gap-2 rounded-2xl border px-4 py-5 text-sm">
           <Clock className="mt-0.5 size-4 shrink-0" />
           <span>
-            Dieser Lauf ist noch nicht abgeschlossen ({run.status}). Das Ergebnis erscheint, sobald alle Wiederholungen
-            durchgelaufen sind.
+            This run isn&apos;t finished yet ({run.status}). The result will appear once all repetitions have completed.
           </span>
         </p>
-        <p className="text-muted-foreground text-xs">Ausgeführt: {formatDateTime(timing.executedAt)}</p>
+        <p className="text-muted-foreground text-xs tabular-nums">Executed: {formatDateTime(timing.executedAt)}</p>
         <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
-          <ArrowLeft className="size-4" /> Zurück zu den Läufen
+          <ArrowLeft className="size-4" /> Back to runs
         </a>
       </div>
     );
@@ -188,13 +190,13 @@ export default function RunResult({ result }: Props) {
 
   if (result.steadfastness) {
     if (state === "empty") {
-      return <EmptyResult result={result} itemLabel="Experimente" />;
+      return <EmptyResult result={result} itemLabel="experiments" />;
     }
     return <SteadfastnessView result={result} />;
   }
 
   if (state === "empty" || !aggregate) {
-    return <EmptyResult result={result} itemLabel="Antworten" />;
+    return <EmptyResult result={result} itemLabel="answers" />;
   }
 
   const lowReliability = aggregate.usableReps < RELIABLE_MIN;
@@ -204,8 +206,8 @@ export default function RunResult({ result }: Props) {
       {/* Typ-Stabilitäts-Panel */}
       <section className="border-border bg-card rounded-2xl border p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-muted-foreground flex items-center gap-2 text-sm">
-            <Sigma className="size-4" /> Abgeleiteter Typ über {aggregate.usableReps} verwertbare Läufe
+          <h2 className="text-muted-foreground flex items-center gap-2 font-mono text-xs tracking-[0.2em] uppercase">
+            <Sigma className="size-4" /> derived type — {aggregate.usableReps} usable runs
           </h2>
           {run.visibility === "global" ? (
             <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
@@ -215,7 +217,7 @@ export default function RunResult({ result }: Props) {
           ) : (
             <span className="border-border bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
               <Lock className="size-3" />
-              Privat
+              Private
             </span>
           )}
         </div>
@@ -224,26 +226,26 @@ export default function RunResult({ result }: Props) {
             <span className="text-foreground font-mono text-4xl font-bold tracking-widest">{aggregate.modalType}</span>
             {aggregate.typeConsistency != null ? (
               <span className="text-muted-foreground text-sm">
-                Stabilität: {Math.round(aggregate.typeConsistency * 100)} % der Läufe ergeben diesen Typ
+                Stability: {Math.round(aggregate.typeConsistency * 100)} % of runs yield this type
               </span>
             ) : null}
           </div>
         ) : (
           <p className="text-muted-foreground mt-2 text-sm">
-            Kein durchgängiger Typ — mindestens eine Achse hatte in keiner Wiederholung alle Items parsebar.
+            No consistent type — at least one axis had no repetition where all items were parseable.
           </p>
         )}
-        <p className="text-muted-foreground mt-2 text-xs">
-          Fehlquote: {failureRate(run.failedCount, run.repetitionCount)} · Tokens: {run.promptTokens} ein /{" "}
-          {run.completionTokens} aus
+        <p className="text-muted-foreground mt-2 text-xs tabular-nums">
+          Failure rate: {failureRate(run.failedCount, run.repetitionCount)} · Tokens: {run.promptTokens} in /{" "}
+          {run.completionTokens} out
         </p>
-        <p className="text-muted-foreground mt-1 text-xs">
-          Ausgeführt: {formatDateTime(timing.executedAt)}
+        <p className="text-muted-foreground mt-1 text-xs tabular-nums">
+          Executed: {formatDateTime(timing.executedAt)}
           {timing.wallClockMs != null
-            ? ` · Dauer ${formatDuration(timing.wallClockMs)} (Modell-Zeit ${formatDuration(timing.modelMs)})`
+            ? ` · duration ${formatDuration(timing.wallClockMs)} (model time ${formatDuration(timing.modelMs)})`
             : ""}
           {timing.repCount > 0 && timing.avgMs != null && timing.minMs != null && timing.maxMs != null
-            ? ` · ⌀ ${formatDuration(timing.avgMs)}/Rep (${formatDuration(timing.minMs)}–${formatDuration(timing.maxMs)})`
+            ? ` · ⌀ ${formatDuration(timing.avgMs)}/rep (${formatDuration(timing.minMs)}–${formatDuration(timing.maxMs)})`
             : ""}
         </p>
 
@@ -251,8 +253,8 @@ export default function RunResult({ result }: Props) {
           <p className="border-chart-2/40 bg-chart-2/10 text-chart-2 mt-3 flex items-start gap-2 rounded-lg border px-3 py-2 text-sm">
             <AlertTriangle className="mt-0.5 size-4 shrink-0" />
             <span>
-              Nicht belastbar: ein Einzeldurchlauf (oder zu wenige verwertbare Läufe) ist kein aussagekräftiges
-              Dispositionsprofil. Mehr Wiederholungen erhöhen die Aussagekraft.
+              Not reliable: a single pass (or too few usable runs) is not a meaningful disposition profile. More
+              repetitions increase reliability.
             </span>
           </p>
         ) : null}
@@ -266,7 +268,7 @@ export default function RunResult({ result }: Props) {
 
       {/* Verteilung je Achse */}
       <section className="space-y-4">
-        <h2 className="text-lg font-semibold">Verteilung je Achse</h2>
+        <h2 className="font-display text-2xl">Distribution per axis</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           {aggregate.axes.map((axis) => (
             <AxisCard key={axis.key} axis={axis} />
@@ -275,7 +277,7 @@ export default function RunResult({ result }: Props) {
       </section>
 
       <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
-        <ArrowLeft className="size-4" /> Zurück zu den Läufen
+        <ArrowLeft className="size-4" /> Back to runs
       </a>
     </div>
   );
