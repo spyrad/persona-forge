@@ -31,12 +31,16 @@ export async function makePersona(account: TestAccount, visibility: Visibility):
   return persona;
 }
 
-/** Legt eine Modellkonfig mit gegebenem (Sentinel-)Key an. */
-export async function makeModelConfig(account: TestAccount, apiKey = "sk-rls-fixture"): Promise<ModelConfigView> {
+/** Legt eine Modellkonfig mit gegebenem (Sentinel-)Key an; Metadaten per Overrides variierbar. */
+export async function makeModelConfig(
+  account: TestAccount,
+  apiKey = "sk-rls-fixture",
+  overrides: Partial<{ label: string; baseUrl: string; modelName: string }> = {},
+): Promise<ModelConfigView> {
   return createModelConfig(account.client, {
-    label: "RLS-Fixture-Model",
-    baseUrl: "https://api.example.com/v1",
-    modelName: "test-model",
+    label: overrides.label ?? "RLS-Fixture-Model",
+    baseUrl: overrides.baseUrl ?? "https://api.example.com/v1",
+    modelName: overrides.modelName ?? "test-model",
     apiKey,
   });
 }
@@ -48,7 +52,7 @@ export async function makeModelConfig(account: TestAccount, apiKey = "sk-rls-fix
  */
 export async function makeCompletedRun(
   account: TestAccount,
-  personaId: string,
+  personaId: string | null, // null = Baseline-Lauf (ohne Persona)
   modelConfigId: string,
   visibility: Visibility,
 ): Promise<RunView> {
@@ -113,7 +117,7 @@ async function insertRepetition(
 /** Legt einen Lauf an und lässt ihn `pending` (0 Repetitions) — Ausgangslage für Abort/Result-Tests. */
 export async function makePendingRun(
   account: TestAccount,
-  personaId: string,
+  personaId: string | null, // null = Baseline-Lauf (ohne Persona)
   modelConfigId: string,
   repetitionCount = 3,
 ): Promise<RunView> {
@@ -154,7 +158,7 @@ export async function makeRunningRun(
  */
 export async function makeFailedRun(
   account: TestAccount,
-  personaId: string,
+  personaId: string | null, // null = Baseline-Lauf (ohne Persona)
   modelConfigId: string,
   okReps: number,
   failedReps: number,

@@ -439,3 +439,57 @@ export interface RunComparisonView {
   a: RunComparisonSide;
   b: RunComparisonSide;
 }
+
+// ─── Modell-Profil & Modell-Vergleich (Model Compare) ────────────────────────
+
+/**
+ * Meta-Infos eines Modell-Profils. Ein "Modell" ist der kanonische `modelName`
+ * ueber alle EIGENEN Konfigurationen hinweg (Provider-Streuung wird ausgewiesen,
+ * nicht getrennt). Ins Profil fliessen nur abgeschlossene Baseline-Laeufe
+ * (`isBaselineRun`); alle anderen werden gezaehlt ausgeschlossen.
+ */
+export interface ModelProfileMeta {
+  /** Kanonischer Modellname — der Gruppierungs-Schluessel. */
+  modelName: string;
+  /** Labels der Konfigurationen, deren Laeufe einflossen. */
+  configLabels: string[];
+  /** Hosts der beteiligten base_urls (Provider-Streuung; >1 = gemischt). */
+  providerHosts: string[];
+  /** Abgeschlossene Baseline-Laeufe, die einflossen (alle Instrumente). */
+  runCount: number;
+  /** Abgeschlossene NICHT-Baseline-Laeufe dieses Modells (inkl. geloeschter Persona) — ausgeschlossen. */
+  excludedPersonaRuns: number;
+  /** Zeitraum der eingeflossenen Laeufe (created_at min / finished_at bzw. created_at max). */
+  firstRunAt: string | null;
+  lastRunAt: string | null;
+}
+
+/**
+ * Instrument-Sektion eines Profils, diskriminiert ueber `kind` — neue Instrumente
+ * docken als weitere Union-Glieder an (instrument-agnostische Anlage).
+ * `usableReps` traegt die gepoolte Verwertbarkeits-Zahl (OEJTS: Wiederholungen,
+ * Steadfastness: fertig gemessene Experimente) — Basis fuer den Duenn-Daten-Hinweis (<5).
+ */
+export type ModelProfileSection =
+  | { kind: "oejts"; runCount: number; usableReps: number; aggregate: RunAggregate }
+  | { kind: "steadfastness"; runCount: number; usableReps: number; aggregate: SteadfastnessAggregate };
+
+/** Profil eines Modells: Meta + eine Sektion je Instrument mit mind. 1 Baseline-Lauf. */
+export interface ModelProfileView {
+  meta: ModelProfileMeta;
+  sections: ModelProfileSection[];
+}
+
+/** Listen-Eintrag fuer Auswahl-Flaechen — nur Modelle mit mind. 1 Baseline-Lauf erscheinen. */
+export interface ModelProfileListItem {
+  modelName: string;
+  runCount: number;
+  /** Summe der usableReps ueber alle Sektionen. */
+  usableReps: number;
+  instruments: ModelProfileSection["kind"][];
+}
+
+/** Modell-Vergleich: 2–4 Profile nebeneinander (Kappung erzwingt die Route). */
+export interface ModelCompareView {
+  profiles: ModelProfileView[];
+}
