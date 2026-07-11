@@ -15,6 +15,7 @@
 import { OEJTS } from "@/lib/instruments/oejts";
 import { STEADFASTNESS_ID } from "@/lib/instruments/steadfastness";
 import { chatCompletion } from "@/lib/llm/openai-compatible";
+import { isBaselineRun } from "@/lib/runs/baseline";
 import { aggregateRun } from "@/lib/runs/oejts-aggregate";
 import { buildOejtsMessages, parseOejtsResponse, permuteItems } from "@/lib/runs/oejts-run";
 import { aggregateSteadfastness } from "@/lib/runs/steadfastness-aggregate";
@@ -52,9 +53,13 @@ type SupabaseClient = NonNullable<ReturnType<typeof createClient>>;
 
 const TABLE = "runs";
 
-/** Spalten der View-Projektion (inkl. owner_id fuer `isOwn`) + eingebetteter Wiederholungs-Count. */
+/**
+ * Spalten der View-Projektion (inkl. owner_id fuer `isOwn`) + eingebetteter
+ * Wiederholungs-Count. `persona_prompt_snapshot` dient NUR der server-seitigen
+ * `isBaseline`-Berechnung — die View traegt den Boolean, nie den Snapshot.
+ */
 const VIEW_COLUMNS =
-  "id, owner_id, persona_id, model_config_id, instrument_id, repetition_count, status, prompt_tokens, completion_tokens, failed_count, visibility, created_at, updated_at, finished_at, kind, run_repetitions(count)";
+  "id, owner_id, persona_id, model_config_id, persona_prompt_snapshot, instrument_id, repetition_count, status, prompt_tokens, completion_tokens, failed_count, visibility, created_at, updated_at, finished_at, kind, run_repetitions(count)";
 
 type RunViewRow = Pick<
   Run,
@@ -62,6 +67,7 @@ type RunViewRow = Pick<
   | "owner_id"
   | "persona_id"
   | "model_config_id"
+  | "persona_prompt_snapshot"
   | "instrument_id"
   | "repetition_count"
   | "status"
@@ -93,6 +99,7 @@ function toView(row: RunViewRow, userId: string): RunView {
     updatedAt: row.updated_at,
     finishedAt: row.finished_at,
     kind: row.kind,
+    isBaseline: isBaselineRun(row.persona_id, row.persona_prompt_snapshot),
   };
 }
 

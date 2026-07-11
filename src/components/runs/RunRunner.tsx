@@ -681,6 +681,12 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                     <span className="border-border bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
                       {run.kind === "steadfastness" ? "Steadfastness" : "OEJTS"}
                     </span>
+                    {/* Baseline-Badge: Lauf lief bewusst ohne Persona (Model-Compare-Datenbasis). */}
+                    {run.isBaseline ? (
+                      <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
+                        baseline
+                      </span>
+                    ) : null}
                     {run.visibility === "global" ? (
                       <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
                         <Globe className="size-3" />

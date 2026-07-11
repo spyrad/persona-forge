@@ -51,6 +51,16 @@ describe("runViewSchema", () => {
     expect(runViewSchema.safeParse(v).success).toBe(true);
   });
 
+  it("isBaseline ist additiv: fehlt → default false, gesetzt → uebernommen", () => {
+    const without = runViewSchema.safeParse(goodRunView());
+    expect(without.success).toBe(true);
+    if (without.success) expect(without.data.isBaseline).toBe(false);
+
+    const withFlag = runViewSchema.safeParse({ ...goodRunView(), isBaseline: true });
+    expect(withFlag.success).toBe(true);
+    if (withFlag.success) expect(withFlag.data.isBaseline).toBe(true);
+  });
+
   it("weist Drift ab: umbenanntes Feld (failedCount → failures)", () => {
     const { failedCount: _drop, ...rest } = goodRunView();
     const drifted = { ...rest, failures: 0 };
