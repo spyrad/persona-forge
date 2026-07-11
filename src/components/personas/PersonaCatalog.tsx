@@ -138,10 +138,10 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
     if (mode === "freeform") {
       if (!form.systemPrompt.trim()) next.systemPrompt = "System prompt is required";
     } else {
-      if (parseLines(form.coreThinking).length === 0) next.coreThinking = "Mind. ein Eintrag (§1)";
-      if (parseLines(form.voice).length === 0) next.voice = "Mind. ein Eintrag (§2)";
-      if (parseLines(form.decisionFilters).length === 0) next.decisionFilters = "Mind. ein Eintrag (§3)";
-      if (parseLines(form.risks).length === 0) next.risks = "Mind. ein Eintrag (§4)";
+      if (parseLines(form.coreThinking).length === 0) next.coreThinking = "At least one entry (§1)";
+      if (parseLines(form.voice).length === 0) next.voice = "At least one entry (§2)";
+      if (parseLines(form.decisionFilters).length === 0) next.decisionFilters = "At least one entry (§3)";
+      if (parseLines(form.risks).length === 0) next.risks = "At least one entry (§4)";
     }
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -241,7 +241,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
   function adapt(persona: PersonaView) {
     const base: FormState = {
       ...EMPTY_FORM,
-      name: `${persona.name} (Kopie)`,
+      name: `${persona.name} (copy)`,
       description: persona.description,
       tags: persona.tags.join(", "),
     };
@@ -294,7 +294,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
   }
 
   async function remove(id: string) {
-    if (!window.confirm("Diese Persona löschen?")) return;
+    if (!window.confirm("Delete this persona?")) return;
     setBusyId(id);
     setServerError(null);
     try {
@@ -319,7 +319,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
       <form onSubmit={handleSubmit} noValidate className="border-border bg-card space-y-4 rounded-2xl border p-6">
         <h2 className="flex items-center gap-2 text-lg font-semibold">
           <Plus className="size-4" />
-          Neue Persona
+          New persona
         </h2>
 
         {/* Modus-Umschaltung */}
@@ -335,7 +335,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
             )}
           >
             <FileText className="size-3.5" />
-            Freitext
+            Freeform
           </button>
           <button
             type="button"
@@ -348,7 +348,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
             )}
           >
             <ListChecks className="size-3.5" />
-            Strukturiert
+            Structured
           </button>
         </div>
 
@@ -359,14 +359,14 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
           onChange={(v) => {
             setField("name", v);
           }}
-          placeholder="z. B. Skeptiker"
+          placeholder="e.g. Skeptic"
           error={errors.name}
           icon={<FileText className="size-4" />}
         />
 
         <div>
           <label htmlFor="description" className="text-muted-foreground mb-1 block text-sm">
-            Beschreibung
+            Description
           </label>
           <textarea
             id="description"
@@ -374,7 +374,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
             onChange={(e) => {
               setField("description", e.target.value);
             }}
-            placeholder="Wofür ist diese Persona da? (optional)"
+            placeholder="What is this persona for? (optional)"
             rows={2}
             className={cn(textAreaClass, "border-border focus-visible:ring-ring")}
           />
@@ -387,7 +387,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
           onChange={(v) => {
             setField("tags", v);
           }}
-          placeholder="kommagetrennt, z. B. review, kritisches-denken"
+          placeholder="comma-separated, e.g. review, critical-thinking"
           error={errors.tags}
           icon={<Tag className="size-4" />}
         />
@@ -395,7 +395,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
         {mode === "freeform" ? (
           <div>
             <label htmlFor="systemPrompt" className="text-muted-foreground mb-1 block text-sm">
-              System-Prompt
+              System prompt
             </label>
             <textarea
               id="systemPrompt"
@@ -403,7 +403,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
               onChange={(e) => {
                 setField("systemPrompt", e.target.value);
               }}
-              placeholder="Der System-Prompt, der diese Persona aktiviert…"
+              placeholder="The system prompt that activates this persona…"
               rows={8}
               className={cn(
                 textAreaClass,
@@ -418,12 +418,12 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
         ) : (
           <div className="space-y-4">
             <p className="text-muted-foreground text-xs">
-              Strukturiert nach Spec (§§1–4 Pflicht, §§5–6 optional). Ein Eintrag pro Zeile. Der System-Prompt wird
-              daraus erzeugt.
+              Structured per spec (§§1–4 required, §§5–6 optional). One entry per line. The system prompt is generated
+              from these.
             </p>
             <StructuredListField
               id="coreThinking"
-              label="§1 Kerndenken"
+              label="§1 Core thinking"
               value={form.coreThinking}
               error={errors.coreThinking}
               onChange={(v) => {
@@ -432,7 +432,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
             />
             <StructuredListField
               id="voice"
-              label="§2 Stimme"
+              label="§2 Voice"
               value={form.voice}
               error={errors.voice}
               onChange={(v) => {
@@ -441,7 +441,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
             />
             <StructuredListField
               id="decisionFilters"
-              label="§3 Entscheidungsfilter"
+              label="§3 Decision filters"
               value={form.decisionFilters}
               error={errors.decisionFilters}
               onChange={(v) => {
@@ -450,7 +450,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
             />
             <StructuredListField
               id="risks"
-              label="§4 Bekannte Risiken"
+              label="§4 Known risks"
               value={form.risks}
               error={errors.risks}
               onChange={(v) => {
@@ -459,7 +459,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
             />
             <div>
               <label htmlFor="exampleDialog" className="text-muted-foreground mb-1 block text-sm">
-                §5 Stimme in Aktion <span className="text-muted-foreground">(optional)</span>
+                §5 Voice in action <span className="text-muted-foreground">(optional)</span>
               </label>
               <textarea
                 id="exampleDialog"
@@ -473,7 +473,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
             </div>
             <div>
               <label htmlFor="usage" className="text-muted-foreground mb-1 block text-sm">
-                §6 Nutzung <span className="text-muted-foreground">(optional)</span>
+                §6 Usage <span className="text-muted-foreground">(optional)</span>
               </label>
               <textarea
                 id="usage"
@@ -493,7 +493,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
         <div className="flex flex-wrap gap-2">
           <Button type="submit" disabled={pending}>
             <Plus className="size-4" />
-            {pending ? "Anlegen…" : "Anlegen"}
+            {pending ? "Creating…" : "Create"}
           </Button>
           {hasInput ? (
             <Button
@@ -503,7 +503,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
               className="text-muted-foreground hover:bg-accent hover:text-foreground"
             >
               <X className="size-4" />
-              Zurücksetzen
+              Reset
             </Button>
           ) : null}
         </div>
@@ -525,7 +525,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
                 : "border-border bg-muted text-muted-foreground hover:bg-accent",
             )}
           >
-            Alle
+            All
           </button>
           {allTags.map((tag) => (
             <button
@@ -549,10 +549,10 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
 
       {/* Liste */}
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Katalog</h2>
+        <h2 className="text-lg font-semibold">Catalog</h2>
         {visiblePersonas.length === 0 ? (
           <p className="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-6 text-center text-sm">
-            {personas.length === 0 ? "Noch keine Persona angelegt." : "Keine Persona mit diesem Tag."}
+            {personas.length === 0 ? "No personas yet." : "No persona with this tag."}
           </p>
         ) : (
           <ul className="space-y-3">
@@ -572,13 +572,13 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
                     ) : persona.isOwn ? (
                       <span className="border-border bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
                         <Lock className="size-3" />
-                        Privat
+                        Private
                       </span>
                     ) : null}
                     {persona.sourceKind === "structured" ? (
                       <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
                         <ListChecks className="size-3" />
-                        Strukturiert
+                        Structured
                       </span>
                     ) : null}
                   </p>
@@ -610,7 +610,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
                     className="border-border bg-muted text-foreground hover:bg-accent"
                   >
                     <Copy className="size-3.5" />
-                    Kopieren
+                    Duplicate
                   </Button>
                   <Button
                     type="button"
@@ -622,7 +622,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
                     className="border-border bg-muted text-foreground hover:bg-accent"
                   >
                     <Pencil className="size-3.5" />
-                    Anpassen
+                    Adapt
                   </Button>
                   {persona.isOwn ? (
                     <Button
@@ -632,8 +632,8 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
                       disabled={busyId === persona.id}
                       title={
                         persona.visibility === "global"
-                          ? "Auf privat schalten (nur du siehst sie)"
-                          : "Auf global schalten (org-weit sichtbar)"
+                          ? "Set to private (only you can see it)"
+                          : "Set to global (visible org-wide)"
                       }
                       onClick={() => {
                         void setVisibility(persona);
@@ -641,7 +641,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
                       className="border-border bg-muted text-foreground hover:bg-accent"
                     >
                       {persona.visibility === "global" ? <Lock className="size-3.5" /> : <Globe className="size-3.5" />}
-                      {persona.visibility === "global" ? "Privat" : "Global"}
+                      {persona.visibility === "global" ? "Private" : "Global"}
                     </Button>
                   ) : null}
                   {persona.isOwn ? (
@@ -655,7 +655,7 @@ export default function PersonaCatalog({ initialPersonas, loadError = false }: P
                       }}
                     >
                       <Trash2 className="size-3.5" />
-                      Löschen
+                      Delete
                     </Button>
                   ) : null}
                 </div>
@@ -681,7 +681,7 @@ function StructuredListField({ id, label, value, error, onChange }: StructuredLi
   return (
     <div>
       <label htmlFor={id} className="text-muted-foreground mb-1 block text-sm">
-        {label} <span className="text-muted-foreground">(ein Eintrag pro Zeile)</span>
+        {label} <span className="text-muted-foreground">(one entry per line)</span>
       </label>
       <textarea
         id={id}
