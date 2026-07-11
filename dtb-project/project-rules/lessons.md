@@ -1,0 +1,10 @@
+# Lektionen (lessons.md)
+
+> Append-only Sammlung nicht-offensichtlicher, wiederverwendbarer Regeln.
+> Erfasst mit `/dtb:lesson`, gelesen als Prior von impl-plan, debug-plan, plan-review, code-review.
+> **Nicht** manuell editieren/loeschen (append-only); Kuratierung geschieht bewusst.
+> Kompakt halten — Soft-Limit ~150 Zeilen (danach aeltere, ueberholte Lektionen aussortieren).
+
+| #   | Datum      | Context                                                                                        | Problem                                                                                                                                                                                                                                                                   | Rule                                                                                                                                                                     | Applies-to             |
+| --- | ---------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------- |
+| 1   | 2026-07-11 | Feature-Planung Model Compare: Discovery-Entscheidung „Basis-Profil = nur Laeufe ohne Persona" | Die Annahme, es gaebe Laeufe ohne Persona, war falsch — jeder Lauf-Start verlangt eine personaId; `persona_id null` bedeutet „Persona nachtraeglich geloescht" (Snapshot gefuellt), nicht „ohne Persona". Der Filter haette alle bzw. genau die falschen Laeufe getroffen | Datenmodell-Annahmen aus Discovery/Spec (Existenz von Datenlagen, Null-Semantik, Pflichtfelder) immer gegen Code und DB-Bestand verifizieren, BEVOR der Plan darauf baut | impl-plan, plan-review |
