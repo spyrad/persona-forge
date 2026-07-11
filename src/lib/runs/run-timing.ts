@@ -1,7 +1,7 @@
 /**
  * Reine Timing-Helfer für den Run-Flow (kein I/O, Node-unit-testbar):
  *   - summarizeTiming: Rep-Dauern + Timestamps → aggregierte RunTiming-Kennzahlen.
- *   - formatDuration/formatDateTime: deutsche Anzeige (ms/s/min bzw. Datum+Zeit).
+ *   - formatDuration/formatDateTime: englische Anzeige (en-GB; ms/s/min bzw. Datum+Zeit).
  */
 
 /** Aggregierte Zeit-Kennzahlen eines Laufs (client-sicher). */
@@ -44,7 +44,7 @@ export function summarizeTiming(
   };
 }
 
-/** Millisekunden → deutsche Kurzform: „300 ms" / „3,2 s" / „33 s" / „3 m 05 s". */
+/** Millisekunden → Kurzform: „300 ms" / „3.2 s" / „33 s" / „3 m 05 s". */
 export function formatDuration(ms: number): string {
   if (!Number.isFinite(ms) || ms < 0) return "—";
   if (ms < 1000) return `${String(Math.round(ms))} ms`;
@@ -52,7 +52,7 @@ export function formatDuration(ms: number): string {
   if (totalSec < 60) {
     // Unter 10 s eine Nachkommastelle (feiner), darüber ganze Sekunden.
     if (ms < 10000) {
-      const oneDecimal = (Math.round(ms / 100) / 10).toString().replace(".", ",");
+      const oneDecimal = (Math.round(ms / 100) / 10).toString();
       return `${oneDecimal} s`;
     }
     return `${String(totalSec)} s`;
@@ -62,16 +62,14 @@ export function formatDuration(ms: number): string {
   return `${String(m)} m ${String(s).padStart(2, "0")} s`;
 }
 
-/** ISO-Timestamp → „01.07.2026 22:15" (de-DE, Europe/Berlin). */
+/** ISO-Timestamp → „01 Jul 2026, 22:15" (en-GB, Europe/Berlin). */
 export function formatDateTime(iso: string): string {
-  const formatted = new Intl.DateTimeFormat("de-DE", {
+  return new Intl.DateTimeFormat("en-GB", {
     timeZone: "Europe/Berlin",
     day: "2-digit",
-    month: "2-digit",
+    month: "short",
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
   }).format(new Date(iso));
-  // de-DE liefert „01.07.2026, 22:15" — das Komma für die Kurzform entfernen.
-  return formatted.replace(", ", " ");
 }
