@@ -32,8 +32,8 @@ export default function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggle}
-      aria-label={isDark ? "Zu hellem Modus wechseln" : "Zu dunklem Modus wechseln"}
-      title={isDark ? "Heller Modus" : "Dunkler Modus"}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      title={isDark ? "Light mode" : "Dark mode"}
     >
       {isDark ? <Moon className="size-4" /> : <Sun className="size-4" />}
     </Button>
