@@ -258,17 +258,17 @@ Einstieg über die Modell-Liste.
 > Single Source of Truth fuer den Umsetzungsstand (Regeln: `project-rules/DERIVED_STATE_RULES.md`).
 > Nach jedem umgesetzten Schritt sofort abhaken; Commit-SHA als Beleg (optional bei Schritten ohne Commit).
 
-- [ ] 1.1 Typen + Validierung (personaId optional, isBaselineRun-Helper)
-- [ ] 1.2 Lauf-Erstellung + Prompt-Pfad (Provider-Spike zuerst)
-- [ ] 1.3 RunRunner-UI + Unit-Tests
+- [x] 1.1 Typen + Validierung (personaId optional, isBaselineRun-Helper) — `53c5a00`
+- [x] 1.2 Lauf-Erstellung + Prompt-Pfad (Provider-Spike zuerst) — `53c5a00`
+- [x] 1.3 RunRunner-UI + Unit-Tests — `53c5a00`
 - [ ] 1.4 Baseline-Daten fahren (je Modell ≥ 5 Reps)
-- [ ] 2.1 View-Typen (ModelProfileView, ModelCompareView)
-- [ ] 2.2 Service model-profiles (Batch-Query, Pooling, Ausschluss-Zählung)
-- [ ] 2.3 Unit- + Integration-Tests Aggregation
-- [ ] 3.1 Profil-Route (/models/profile?m=)
-- [ ] 3.2 Profil-Darstellung (ModelProfile, Attribution)
-- [ ] 3.3 Einstieg Modell-Liste (View-profile-Links)
-- [ ] 3.4 Anzeige-Fallbacks „baseline" + ENTSCHEIDUNGSPUNKT Phase 4
+- [x] 2.1 View-Typen (ModelProfileView, ModelCompareView) — `b65f35e`
+- [x] 2.2 Service model-profiles (Batch-Query, Pooling, Ausschluss-Zählung) — `b65f35e`
+- [x] 2.3 Unit- + Integration-Tests Aggregation — `b65f35e`
+- [x] 3.1 Profil-Route (/models/profile?m=) — `479f7b6`
+- [x] 3.2 Profil-Darstellung (ModelProfile, Attribution) — `479f7b6`
+- [x] 3.3 Einstieg Modell-Liste (View-profile-Links) — `479f7b6`
+- [x] 3.4 Anzeige-Fallbacks „baseline" (Flag/Badge/Compare-Label) — `048dcb5` · ENTSCHEIDUNGSPUNKT Phase 4 steht aus (braucht 1.4 + Sichtprüfung)
 - [ ] 4.1 Auswahl-UI (Checkboxen, 2–4)
 - [ ] 4.2 Compare-Route + Rendering (N Spalten)
 - [ ] 4.3 Randfälle + Tests (Param-Parsing, Grenzen)
