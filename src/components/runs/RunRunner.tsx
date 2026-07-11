@@ -78,22 +78,22 @@ function messageFromPayload(payload: unknown): string {
 
 const STATUS_META: Record<RunStatus, { label: string; className: string; icon: React.ReactNode }> = {
   pending: {
-    label: "Wartet",
+    label: "Pending",
     className: "border-border bg-muted text-muted-foreground",
     icon: <CircleDashed className="size-3" />,
   },
   running: {
-    label: "Läuft",
+    label: "Running",
     className: "border-chart-2/40 bg-chart-2/10 text-chart-2",
     icon: <Loader2 className="size-3 animate-spin" />,
   },
   completed: {
-    label: "Fertig",
+    label: "Completed",
     className: "border-success/30 bg-success/10 text-success",
     icon: <CheckCircle2 className="size-3" />,
   },
   failed: {
-    label: "Fehlgeschlagen",
+    label: "Failed",
     className: "border-destructive/30 bg-destructive/10 text-destructive",
     icon: <XCircle className="size-3" />,
   },
@@ -139,7 +139,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
   const [maxRounds, setMaxRounds] = useState<number>(DEFAULT_ROUNDS);
   const [formError, setFormError] = useState<string | null>(null);
   const [serverError, setServerError] = useState<string | null>(
-    loadError ? "Laufliste konnte nicht geladen werden. Bitte neu laden." : null,
+    loadError ? "Couldn't load the run list. Please reload." : null,
   );
   const [starting, setStarting] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -199,7 +199,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
     if (res.ok) {
       const parsed = runViewArraySchema.safeParse(await res.json().catch(() => null));
       if (!parsed.success) {
-        setServerError("Laufliste konnte nicht geladen werden. Bitte neu laden.");
+        setServerError("Couldn't load the run list. Please reload.");
         return;
       }
       const fresh = parsed.data;
@@ -207,7 +207,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       // Geloeschte/verschwundene Laeufe aus der Vergleichs-Auswahl entfernen.
       setCompareIds((prev) => prev.filter((id) => fresh.some((r) => r.id === id)));
     } else {
-      setServerError("Laufliste konnte nicht geladen werden. Bitte neu laden.");
+      setServerError("Couldn't load the run list. Please reload.");
     }
   }
 
@@ -236,7 +236,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
     const parsed = runProgressSchema.safeParse(await res.json().catch(() => null));
     if (isCancelled()) return;
     if (!parsed.success) {
-      setServerError("Unerwartete Server-Antwort.");
+      setServerError("Unexpected server response.");
       stopLoop();
       await refetch();
       return;
@@ -273,20 +273,20 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
     setFormError(null);
     setServerError(null);
     if (!personaId || !modelConfigId) {
-      setFormError("Persona und Modellkonfiguration wählen.");
+      setFormError("Select a persona and a model configuration.");
       return;
     }
     if (!Number.isInteger(reps) || reps < MIN_REPS || reps > MAX_REPS) {
-      setFormError(`Wiederholungen müssen zwischen ${String(MIN_REPS)} und ${String(MAX_REPS)} liegen.`);
+      setFormError(`Repetitions must be between ${String(MIN_REPS)} and ${String(MAX_REPS)}.`);
       return;
     }
     if (kind === "steadfastness") {
       if (!adversaryId) {
-        setFormError("Gegenspieler-Modell wählen.");
+        setFormError("Select an adversary model.");
         return;
       }
       if (!Number.isInteger(maxRounds) || maxRounds < MIN_ROUNDS || maxRounds > MAX_ROUNDS) {
-        setFormError(`Runden müssen zwischen ${String(MIN_ROUNDS)} und ${String(MAX_ROUNDS)} liegen.`);
+        setFormError(`Rounds must be between ${String(MIN_ROUNDS)} and ${String(MAX_ROUNDS)}.`);
         return;
       }
     }
@@ -311,7 +311,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       }
       const parsed = runViewSchema.safeParse(await res.json());
       if (!parsed.success) {
-        setServerError("Unerwartete Server-Antwort.");
+        setServerError("Unexpected server response.");
         return;
       }
       const view = parsed.data;
@@ -369,7 +369,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
    */
   async function cancelActive() {
     if (activeRunId === null) return;
-    if (!window.confirm("Lauf abbrechen? Alle bereits erhobenen Messdaten gehen verloren.")) return;
+    if (!window.confirm("Cancel this run? All measurement data collected so far will be lost.")) return;
     const id = activeRunId;
     stopLoop();
     setProgress(null);
@@ -378,7 +378,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
 
   /** Loescht einen abgeschlossenen/fehlgeschlagenen Lauf (mit Bestaetigung). */
   async function remove(id: string) {
-    if (!window.confirm("Diesen Lauf löschen?")) return;
+    if (!window.confirm("Delete this run?")) return;
     await deleteRunRequest(id);
   }
 
@@ -420,20 +420,20 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       <form onSubmit={handleSubmit} noValidate className="border-border bg-card space-y-4 rounded-2xl border p-6">
         <h2 className="flex items-center gap-2 text-lg font-semibold">
           <Play className="size-4" />
-          Neuer Lauf
+          New run
         </h2>
 
         {canRun ? null : (
           <p className="border-chart-2/40 bg-chart-2/10 text-chart-2 flex items-start gap-2 rounded-lg border px-3 py-2 text-sm">
             <AlertCircle className="mt-0.5 size-4 shrink-0" />
             <span>
-              Ein Lauf braucht mindestens eine{" "}
+              A run needs at least one{" "}
               <a href="/personas" className="hover:text-foreground underline">
-                Persona
+                persona
               </a>{" "}
-              und eine{" "}
+              and one{" "}
               <a href="/models" className="hover:text-foreground underline">
-                Modellkonfiguration
+                model configuration
               </a>
               .
             </span>
@@ -442,7 +442,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
 
         <div>
           <label htmlFor="kind" className="text-muted-foreground mb-1 block text-sm">
-            Test-Typ
+            Test type
           </label>
           <select
             id="kind"
@@ -454,10 +454,10 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
             className={selectClass}
           >
             <option value="oejts" className="bg-muted">
-              Persönlichkeit (OEJTS)
+              Personality (OEJTS)
             </option>
             <option value="steadfastness" className="bg-muted">
-              Standhaftigkeit
+              Steadfastness
             </option>
           </select>
         </div>
@@ -485,7 +485,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
 
         <div>
           <label htmlFor="modelConfigId" className="text-muted-foreground mb-1 block text-sm">
-            Modellkonfiguration
+            Model configuration
           </label>
           <select
             id="modelConfigId"
@@ -508,7 +508,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
           <>
             <div>
               <label htmlFor="adversaryId" className="text-muted-foreground mb-1 block text-sm">
-                Gegenspieler-Modell (Manipulator + Generator)
+                Adversary model (manipulator + generator)
               </label>
               <select
                 id="adversaryId"
@@ -528,7 +528,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
             </div>
             <div>
               <label htmlFor="maxRounds" className="text-muted-foreground mb-1 block text-sm">
-                Max. Runden je Fakt{" "}
+                Max. rounds per fact{" "}
                 <span className="text-muted-foreground">
                   ({MIN_ROUNDS}–{MAX_ROUNDS})
                 </span>
@@ -552,7 +552,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
 
         <div>
           <label htmlFor="reps" className="text-muted-foreground mb-1 block text-sm">
-            {kind === "steadfastness" ? "Fakten" : "Wiederholungen"}{" "}
+            {kind === "steadfastness" ? "Facts" : "Repetitions"}{" "}
             <span className="text-muted-foreground">
               ({MIN_REPS}–{MAX_REPS})
             </span>
@@ -589,7 +589,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
 
         <Button type="submit" disabled={!canRun || isRunning || starting}>
           {isRunning ? <Loader2 className="size-4 animate-spin" /> : <Play className="size-4" />}
-          {starting ? "Starte…" : isRunning ? "Lauf aktiv…" : "Lauf starten"}
+          {starting ? "Starting…" : isRunning ? "Run active…" : "Start run"}
         </Button>
       </form>
 
@@ -599,7 +599,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
           <div className="flex items-center justify-between gap-3">
             <h2 className="flex items-center gap-2 text-lg font-semibold">
               <Loader2 className="size-4 animate-spin" />
-              Lauf läuft…
+              Run in progress…
             </h2>
             <Button
               type="button"
@@ -611,31 +611,31 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
               }}
             >
               <Ban className="size-3.5" />
-              Abbrechen
+              Cancel
             </Button>
           </div>
-          <p className="text-muted-foreground text-sm">
-            {progress.completedReps} von {progress.totalReps} Wiederholungen
-            {progress.failedCount > 0 ? ` · ${String(progress.failedCount)} fehlgeschlagen` : ""}
+          <p className="text-muted-foreground text-sm tabular-nums">
+            {progress.completedReps} of {progress.totalReps} repetitions
+            {progress.failedCount > 0 ? ` · ${String(progress.failedCount)} failed` : ""}
           </p>
           {progress.phase === "generating" ? (
-            <p className="text-muted-foreground text-xs">Generiere Szenarien…</p>
+            <p className="text-muted-foreground text-xs">Generating scenarios…</p>
           ) : progress.phase === "experimenting" && progress.currentScenario != null ? (
-            <p className="text-muted-foreground text-xs">
-              Fakt {progress.currentScenario}/{progress.totalScenarios ?? progress.totalReps}
-              {progress.currentRound ? ` · Runde ${progress.currentRound}` : ""}
-              {progress.lastStrategy ? ` · Strategie: ${progress.lastStrategy}` : ""}
+            <p className="text-muted-foreground text-xs tabular-nums">
+              Fact {progress.currentScenario}/{progress.totalScenarios ?? progress.totalReps}
+              {progress.currentRound ? ` · round ${progress.currentRound}` : ""}
+              {progress.lastStrategy ? ` · strategy: ${progress.lastStrategy}` : ""}
             </p>
           ) : null}
-          <p className="text-muted-foreground text-xs">
-            Tokens: {progress.promptTokens} ein / {progress.completionTokens} aus
+          <p className="text-muted-foreground text-xs tabular-nums">
+            Tokens: {progress.promptTokens} in / {progress.completionTokens} out
           </p>
           {lastRepMs != null ? (
-            <p className="text-muted-foreground text-xs">
-              Letzte Wiederholung {formatDuration(lastRepMs)} · Modell-Zeit gesamt {formatDuration(modelMsSoFar)}
+            <p className="text-muted-foreground text-xs tabular-nums">
+              Last repetition {formatDuration(lastRepMs)} · total model time {formatDuration(modelMsSoFar)}
             </p>
           ) : null}
-          {lastRepError != null ? <p className="text-destructive text-xs">Letzter Fehler: {lastRepError}</p> : null}
+          {lastRepError != null ? <p className="text-destructive text-xs">Last error: {lastRepError}</p> : null}
           <div className="bg-muted h-2 overflow-hidden rounded-full">
             <div
               className="bg-primary h-full rounded-full transition-all"
@@ -649,10 +649,10 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
 
       {/* Lauf-Liste */}
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Deine Läufe</h2>
+        <h2 className="text-lg font-semibold">Your runs</h2>
         {runs.length === 0 ? (
           <p className="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-6 text-center text-sm">
-            Noch kein Lauf gestartet.
+            No runs yet.
           </p>
         ) : (
           <ul className="space-y-3">
@@ -665,7 +665,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                   <div className="flex flex-wrap items-center gap-2">
                     <StatusBadge status={run.status} />
                     <span className="border-border bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
-                      {run.kind === "steadfastness" ? "Standhaftigkeit" : "OEJTS"}
+                      {run.kind === "steadfastness" ? "Steadfastness" : "OEJTS"}
                     </span>
                     {run.visibility === "global" ? (
                       <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
@@ -675,17 +675,17 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                     ) : run.isOwn ? (
                       <span className="border-border bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
                         <Lock className="size-3" />
-                        Privat
+                        Private
                       </span>
                     ) : null}
-                    <span className="text-muted-foreground text-sm">
-                      {run.completedReps}/{run.repetitionCount} Wiederholungen
+                    <span className="text-muted-foreground text-sm tabular-nums">
+                      {run.completedReps}/{run.repetitionCount} repetitions
                     </span>
                   </div>
-                  <p className="text-muted-foreground mt-1 text-xs">
-                    Ausgeführt: {formatDateTime(run.createdAt)} · Fehlquote:{" "}
-                    {failureRate(run.failedCount, run.repetitionCount)} · Tokens: {run.promptTokens} ein /{" "}
-                    {run.completionTokens} aus
+                  <p className="text-muted-foreground mt-1 text-xs tabular-nums">
+                    Executed: {formatDateTime(run.createdAt)} · Failure rate:{" "}
+                    {failureRate(run.failedCount, run.repetitionCount)} · Tokens: {run.promptTokens} in /{" "}
+                    {run.completionTokens} out
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -694,7 +694,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                   {run.status === "completed" && run.id !== activeRunId ? (
                     <label
                       className="border-border bg-muted hover:bg-accent inline-flex cursor-pointer items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors has-disabled:cursor-not-allowed has-disabled:opacity-40"
-                      title="Für Vergleich auswählen (max. 2)"
+                      title="Select for comparison (max. 2)"
                     >
                       <input
                         type="checkbox"
@@ -706,7 +706,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                         className="accent-primary size-3.5"
                       />
                       <GitCompare className="size-3.5" />
-                      Vergleichen
+                      Compare
                     </label>
                   ) : null}
                   {/* Ergebnis-Detailansicht (Verteilung je Achse). Bei noch nicht
@@ -717,7 +717,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                       className="border-border bg-muted hover:bg-accent inline-flex items-center gap-1 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors"
                     >
                       <BarChart3 className="size-3.5" />
-                      Ergebnis
+                      Result
                     </a>
                   ) : null}
                   {/* Sichtbarkeits-Toggle nur fuer eigene, nicht-aktive Laeufe. */}
@@ -729,8 +729,8 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                       disabled={busyId === run.id}
                       title={
                         run.visibility === "global"
-                          ? "Auf privat schalten (nur du siehst ihn)"
-                          : "Auf global schalten (org-weit sichtbar)"
+                          ? "Set to private (only you can see it)"
+                          : "Set to global (visible org-wide)"
                       }
                       onClick={() => {
                         void setVisibility(run);
@@ -738,7 +738,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                       className="border-border bg-muted text-foreground hover:bg-accent"
                     >
                       {run.visibility === "global" ? <Lock className="size-3.5" /> : <Globe className="size-3.5" />}
-                      {run.visibility === "global" ? "Privat" : "Global"}
+                      {run.visibility === "global" ? "Private" : "Global"}
                     </Button>
                   ) : null}
                   {/* Aktiver Lauf wird ueber das Fortschritts-Panel abgebrochen (kein doppelter Button). */}
@@ -753,7 +753,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                       }}
                     >
                       <Trash2 className="size-3.5" />
-                      Löschen
+                      Delete
                     </Button>
                   ) : null}
                 </div>
@@ -769,8 +769,8 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
         <div className="border-primary/30 bg-muted sticky bottom-4 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl border px-4 py-3">
           <span className="text-muted-foreground text-sm">
             {compareIds.length === 2
-              ? "Zwei Läufe gewählt — bereit zum Vergleich."
-              : "Ein Lauf gewählt — wähle einen zweiten zum Vergleichen."}
+              ? "Two runs selected — ready to compare."
+              : "One run selected — select a second one to compare."}
           </span>
           <div className="flex items-center gap-2">
             <Button
@@ -782,7 +782,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
               }}
               className="border-border bg-muted text-foreground hover:bg-accent"
             >
-              Auswahl aufheben
+              Clear selection
             </Button>
             <Button
               type="button"
@@ -794,7 +794,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
               }}
             >
               <GitCompare className="size-3.5" />
-              Vergleichen
+              Compare
             </Button>
           </div>
         </div>

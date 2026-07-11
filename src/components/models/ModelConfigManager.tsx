@@ -154,7 +154,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
   }
 
   async function remove(id: string) {
-    if (!window.confirm("Diese Konfiguration löschen?")) return;
+    if (!window.confirm("Delete this configuration?")) return;
     setBusyId(id);
     try {
       const res = await fetch(`/api/models/${id}`, { method: "DELETE", headers: { Accept: "application/json" } });
@@ -208,11 +208,11 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
         setModelOptions(Array.isArray(result.models) ? result.models : []);
         setTestResult({
           ok: true,
-          message: `Verbindung ok${typeof result.modelCount === "number" ? ` — ${result.modelCount} Modelle` : ""}.`,
+          message: `Connection ok${typeof result.modelCount === "number" ? ` — ${result.modelCount} models` : ""}.`,
         });
       } else {
         setModelOptions([]);
-        setTestResult({ ok: false, message: result.reason ?? "Verbindung fehlgeschlagen." });
+        setTestResult({ ok: false, message: result.reason ?? "Connection failed." });
       }
     } catch {
       setTestResult({ ok: false, message: "Network error — please try again." });
@@ -227,7 +227,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
       <form onSubmit={handleSubmit} noValidate className="border-border bg-card space-y-4 rounded-2xl border p-6">
         <h2 className="flex items-center gap-2 text-lg font-semibold">
           {isEditing ? <Pencil className="size-4" /> : <Plus className="size-4" />}
-          {isEditing ? "Konfiguration bearbeiten" : "Neue Konfiguration"}
+          {isEditing ? "Edit configuration" : "New configuration"}
         </h2>
 
         <FormField
@@ -237,7 +237,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
           onChange={(v) => {
             setField("label", v);
           }}
-          placeholder="z. B. OpenAI GPT-4o"
+          placeholder="e.g. OpenAI GPT-4o"
           error={errors.label}
           icon={<Tag className="size-4" />}
         />
@@ -254,7 +254,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
         />
         <FormField
           id="modelName"
-          label="Modellname"
+          label="Model name"
           value={form.modelName}
           onChange={(v) => {
             setField("modelName", v);
@@ -266,7 +266,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
           hint={
             modelOptions.length ? (
               <span className="text-muted-foreground mt-1 block text-xs">
-                {modelOptions.length} Modelle aus dem Verbindungstest — tippen zum Filtern oder frei eingeben.
+                {modelOptions.length} models from the connection test — type to filter or enter freely.
               </span>
             ) : undefined
           }
@@ -280,13 +280,13 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
         ) : null}
         <FormField
           id="apiKey"
-          label="API-Key"
+          label="API key"
           type="password"
           value={form.apiKey}
           onChange={(v) => {
             setField("apiKey", v);
           }}
-          placeholder={isEditing ? "leer lassen = Key behalten" : "sk-…"}
+          placeholder={isEditing ? "leave empty to keep the key" : "sk-…"}
           error={errors.apiKey}
           icon={<KeyRound className="size-4" />}
         />
@@ -309,7 +309,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
         <div className="flex flex-wrap gap-2">
           <Button type="submit" disabled={pending}>
             {isEditing ? <Save className="size-4" /> : <Plus className="size-4" />}
-            {pending ? "Speichern…" : isEditing ? "Speichern" : "Anlegen"}
+            {pending ? "Saving…" : isEditing ? "Save" : "Create"}
           </Button>
           <Button
             type="button"
@@ -321,7 +321,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
             className="border-border bg-muted text-foreground hover:bg-accent"
           >
             <PlugZap className="size-4" />
-            {testing ? "Teste…" : "Verbindung testen"}
+            {testing ? "Testing…" : "Test connection"}
           </Button>
           {isEditing ? (
             <Button
@@ -331,7 +331,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
               className="text-muted-foreground hover:bg-accent hover:text-foreground"
             >
               <X className="size-4" />
-              Abbrechen
+              Cancel
             </Button>
           ) : null}
         </div>
@@ -339,10 +339,10 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
 
       {/* Liste */}
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Deine Konfigurationen</h2>
+        <h2 className="text-lg font-semibold">Your configurations</h2>
         {configs.length === 0 ? (
           <p className="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-6 text-center text-sm">
-            Noch keine Konfiguration angelegt.
+            No configurations yet.
           </p>
         ) : (
           <ul className="space-y-3">
@@ -359,7 +359,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
                   <p className="text-muted-foreground mt-1 flex items-center gap-1 text-xs">
                     <KeyRound className="size-3" />
                     <span className="tracking-widest">••••••••</span>
-                    <span>Key hinterlegt</span>
+                    <span>Key stored</span>
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -373,7 +373,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
                     className="border-border bg-muted text-foreground hover:bg-accent"
                   >
                     <Pencil className="size-3.5" />
-                    Bearbeiten
+                    Edit
                   </Button>
                   <Button
                     type="button"
@@ -385,7 +385,7 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
                     }}
                   >
                     <Trash2 className="size-3.5" />
-                    Löschen
+                    Delete
                   </Button>
                 </div>
               </li>

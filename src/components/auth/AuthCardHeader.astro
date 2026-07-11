@@ -1,0 +1,22 @@
+---
+/**
+ * Auth-Karten-Kopf: Mono-Eyebrow „account" + Serif-Headline (Stufe-A-Sprache),
+ * vorher 3x dupliziert in signin/signup/confirm-email.
+ * variant "form" (signin/signup): explizit zentriert, mb-6 unter der Headline.
+ * variant "message" (confirm-email): erbt die Zentrierung der Karte, mb-3.
+ */
+interface Props {
+  heading: string;
+  variant?: "form" | "message";
+}
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- false positive spezifisch beim Prop-Namen "variant" (astro-eslint-parser, project:true-Fallback); kein generelles Astro-Props-Pattern, vgl. AppLayout.astro ohne disable
+const { heading, variant = "form" } = Astro.props;
+const isForm = variant === "form";
+---
+
+<p class:list={["text-muted-foreground mb-2 font-mono text-xs tracking-[0.2em] uppercase", isForm && "text-center"]}>
+  account
+</p>
+<h1 class:list={["font-display text-foreground text-3xl", isForm ? "mb-6 text-center" : "mb-3"]}>
+  {heading}
+</h1>

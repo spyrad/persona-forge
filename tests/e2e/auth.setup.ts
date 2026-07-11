@@ -37,6 +37,12 @@ setup("authenticate", async ({ page }) => {
 
   // 2. Über das echte Formular einloggen.
   await page.goto("/auth/signin");
+  // Erst nach abgeschlossener Insel-Hydration füllen (Astro entfernt dann das
+  // ssr-Attribut): vor der Hydration gefüllte kontrollierte Inputs setzt React
+  // beim Hydratisieren auf leeren State zurück → Submit mit leeren Feldern
+  // (Race, auf beladener Maschine deterministisch verloren). State-basiert,
+  // kein Timeout.
+  await page.locator('astro-island[component-url*="SignInForm"]:not([ssr])').waitFor();
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password", { exact: true }).fill(TEST_PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();
