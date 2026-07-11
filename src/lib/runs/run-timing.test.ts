@@ -34,10 +34,10 @@ describe("summarizeTiming", () => {
 });
 
 describe("formatDuration", () => {
-  it("formatiert ms/Sekunden/Minuten deutsch", () => {
+  it("formatiert ms/Sekunden/Minuten englisch (en-GB)", () => {
     expect(formatDuration(300)).toBe("300 ms");
-    expect(formatDuration(3200)).toBe("3,2 s");
-    expect(formatDuration(9900)).toBe("9,9 s");
+    expect(formatDuration(3200)).toBe("3.2 s");
+    expect(formatDuration(9900)).toBe("9.9 s");
     expect(formatDuration(33000)).toBe("33 s");
     expect(formatDuration(185000)).toBe("3 m 05 s");
   });
@@ -49,7 +49,7 @@ describe("formatDuration", () => {
 });
 
 describe("formatDateTime", () => {
-  it("formatiert ISO als de-DE Datum+Zeit (Europe/Berlin)", () => {
-    expect(formatDateTime("2026-07-01T20:15:00.000Z")).toBe("01.07.2026 22:15");
+  it("formatiert ISO als en-GB Datum+Zeit (Europe/Berlin)", () => {
+    expect(formatDateTime("2026-07-01T20:15:00.000Z")).toBe("01 Jul 2026, 22:15");
   });
 });

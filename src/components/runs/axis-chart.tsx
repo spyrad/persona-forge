@@ -63,7 +63,9 @@ export function AxisChart({ scale, low, high, series }: Props) {
           className="border-muted-foreground/40 absolute inset-y-0 border-l border-dashed"
           style={{ left: `${String(cutoffPct)}%` }}
         >
-          <span className="text-muted-foreground absolute -top-px left-1 text-[10px]">{scale.cutoff}</span>
+          <span className="text-muted-foreground absolute -top-px left-1 font-mono text-[10px] tabular-nums">
+            {scale.cutoff}
+          </span>
         </div>
 
         {series.map((s, si) => {
@@ -115,7 +117,7 @@ export function AxisChart({ scale, low, high, series }: Props) {
                 <div
                   className={`absolute inset-y-0 border-l-2 ${s.meanClass}`}
                   style={{ left: `${String(toPct(s.mean, scale.min, scale.max))}%` }}
-                  title={`Mittelwert ${s.mean.toFixed(1)}`}
+                  title={`Mean ${s.mean.toFixed(1)}`}
                 />
               ) : null}
             </div>
@@ -124,7 +126,7 @@ export function AxisChart({ scale, low, high, series }: Props) {
       </div>
 
       {/* Pol-Beschriftung + Skalen-Endpunkte */}
-      <div className="text-muted-foreground mt-1 flex items-center justify-between text-xs">
+      <div className="text-muted-foreground mt-1 flex items-center justify-between font-mono text-xs tabular-nums">
         <span>
           {low} <span className="text-muted-foreground">({scale.min})</span>
         </span>
@@ -134,7 +136,7 @@ export function AxisChart({ scale, low, high, series }: Props) {
         </span>
       </div>
       {/* overallMaxStack normiert die Säulenhöhe (s. o.) und wird hier für AT ausgewiesen. */}
-      <span className="sr-only">Maximale Häufigkeit eines Wertes: {overallMaxStack}</span>
+      <span className="sr-only">Highest frequency of a single value: {overallMaxStack}</span>
     </div>
   );
 }
