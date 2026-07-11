@@ -619,7 +619,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
             {progress.failedCount > 0 ? ` · ${String(progress.failedCount)} failed` : ""}
           </p>
           {progress.phase === "generating" ? (
-            <p className="text-muted-foreground text-xs tabular-nums">Generating scenarios…</p>
+            <p className="text-muted-foreground text-xs">Generating scenarios…</p>
           ) : progress.phase === "experimenting" && progress.currentScenario != null ? (
             <p className="text-muted-foreground text-xs tabular-nums">
               Fact {progress.currentScenario}/{progress.totalScenarios ?? progress.totalReps}
