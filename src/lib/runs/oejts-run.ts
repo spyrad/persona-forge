@@ -46,6 +46,10 @@ export function permuteItems(items: InstrumentItem[], seed: number): { ordered: 
  * User = OEJTS-Instruktion + (permutierte) Items + Aufforderung zu striktem JSON.
  * Die Item-Id wird je Zeile mitgegeben, damit das Parsing ueber die Id (nicht die
  * Position) zurueckmappt.
+ *
+ * Baseline (leerer System-Prompt): die System-Message wird KOMPLETT weggelassen
+ * statt leer gesendet — manche OpenAI-kompatible Provider lehnen leere
+ * System-Messages ab; Weglassen ist ueberall wohldefiniert.
  */
 export function buildOejtsMessages(systemPrompt: string, orderedItems: InstrumentItem[]): ChatMessage[] {
   const lines = orderedItems.map((it) => `${it.id}: 1 = "${it.left}"  …  5 = "${it.right}"`).join("\n");
@@ -63,10 +67,10 @@ export function buildOejtsMessages(systemPrompt: string, orderedItems: Instrumen
     "Include every item id exactly once.",
   ].join("\n");
 
-  return [
-    { role: "system", content: systemPrompt },
-    { role: "user", content: user },
-  ];
+  const messages: ChatMessage[] = [];
+  if (systemPrompt.trim() !== "") messages.push({ role: "system", content: systemPrompt });
+  messages.push({ role: "user", content: user });
+  return messages;
 }
 
 /** Validiert einen rohen Wert zu einer Ganzzahl 1–5 oder null. */

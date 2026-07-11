@@ -34,4 +34,32 @@ describe("createSchema (diskriminiert nach kind)", () => {
     });
     expect(bad.success).toBe(false);
   });
+
+  it("Baseline: personaId null ist gültig (beide kinds)", () => {
+    const oejts = createSchema.safeParse({
+      personaId: null,
+      modelConfigId: "22222222-2222-4222-8222-222222222222",
+      repetitionCount: 5,
+    });
+    expect(oejts.success).toBe(true);
+    if (oejts.success) expect(oejts.data.personaId).toBeNull();
+
+    const steadfast = createSchema.safeParse({
+      kind: "steadfastness",
+      personaId: null,
+      modelConfigId: "22222222-2222-4222-8222-222222222222",
+      adversaryModelConfigId: "33333333-3333-4333-8333-333333333333",
+      repetitionCount: 5,
+      maxRounds: 12,
+    });
+    expect(steadfast.success).toBe(true);
+  });
+
+  it("personaId FEHLEND (undefined) bleibt ein Fehler — nullable, nicht optional", () => {
+    const bad = createSchema.safeParse({
+      modelConfigId: "22222222-2222-4222-8222-222222222222",
+      repetitionCount: 5,
+    });
+    expect(bad.success).toBe(false);
+  });
 });

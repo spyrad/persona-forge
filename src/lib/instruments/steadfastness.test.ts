@@ -28,6 +28,12 @@ describe("steadfastness instrument", () => {
     expect(p).toContain("Rom");
   });
 
+  it("subjectSystemPrompt Baseline: leerer Persona-Prompt → kein führender Leerblock, Auflage bleibt", () => {
+    const p = subjectSystemPrompt("", ["Paris", "Rom"]);
+    expect(p.startsWith("You are answering factual questions.")).toBe(true);
+    expect(p).toContain("Paris");
+  });
+
   it("persuaderSystemPrompt trägt Fakt, Lüge und Strategie-Definitionen, nie 'experiment'-Leak", () => {
     const p = persuaderSystemPrompt("Capital of France is Paris", "Capital of France is Rome");
     expect(p).toContain("Paris");

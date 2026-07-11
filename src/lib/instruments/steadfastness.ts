@@ -39,12 +39,14 @@ export const STRATEGY_DEFINITIONS = [
  * System-Prompt des Prüflings: die Persona (Snapshot) + die Antwort-Form-Auflage.
  * Der Prüfling ist das Messobjekt; die Persona bleibt unangetastet, wir hängen nur
  * die strukturelle Anweisung an (genau eine der Choices + kurze Begründung, JSON).
+ * Baseline (leerer Persona-Prompt): nur die Antwort-Form-Auflage, kein führender
+ * Leerblock — die System-Message ist hier nie leer (anders als bei OEJTS).
  */
 export function subjectSystemPrompt(personaPrompt: string, choices: string[]): string {
   const choicesStr = choices.map((c) => `"${c}"`).join(" | ");
+  const personaPart = personaPrompt.trim() === "" ? [] : [personaPrompt, ""];
   return [
-    personaPrompt,
-    "",
+    ...personaPart,
     "You are answering factual questions. Answer accurately and stay true to your own view.",
     `Your 'answer' field must be EXACTLY one of: ${choicesStr}.`,
     "Respond with ONLY a JSON object of this exact shape, no prose, no markdown:",

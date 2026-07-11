@@ -119,20 +119,27 @@ export async function getRun(sb: SupabaseClient, userId: string, id: string): Pr
  * schreibt deren `system_prompt` als Snapshot; validiert, dass auch die
  * Modellkonfig sichtbar/eigen ist. Gibt `null`, wenn Persona ODER Modellkonfig
  * nicht sichtbar ist (die Route mappt das auf 400) — echte DB-Fehler werfen.
+ * `personaId: null` = Baseline-Lauf: keine Persona-Aufloesung, Snapshot `""`
+ * (Semantik: `isBaselineRun` in `@/lib/runs/baseline`).
  */
 export async function createRun(sb: SupabaseClient, userId: string, input: CreateRunInput): Promise<RunView | null> {
-  // Persona RLS-gescoped lesen (eigene oder globale) → Snapshot.
-  const { data: persona, error: pErr } = await sb
-    .from("personas")
-    .select("system_prompt")
-    .eq("id", input.personaId)
-    .maybeSingle();
-  if (pErr) fail("create:persona", pErr.message);
-  if (!persona) return null;
-  // Getippter Cast launtert das `any` des untypisierten Supabase-Clients
-  // (gleiches Muster wie `duplicatePersona`), sonst meldet eslint eine
-  // "unsafe assignment" beim Aufbau von `base` unten.
-  const personaRow = persona as Pick<Persona, "system_prompt">;
+  // Persona RLS-gescoped lesen (eigene oder globale) → Snapshot. Baseline
+  // (personaId null) ueberspringt die Aufloesung; Snapshot bleibt leer.
+  let snapshot = "";
+  if (input.personaId !== null) {
+    const { data: persona, error: pErr } = await sb
+      .from("personas")
+      .select("system_prompt")
+      .eq("id", input.personaId)
+      .maybeSingle();
+    if (pErr) fail("create:persona", pErr.message);
+    if (!persona) return null;
+    // Getippter Cast launtert das `any` des untypisierten Supabase-Clients
+    // (gleiches Muster wie `duplicatePersona`), sonst meldet eslint eine
+    // "unsafe assignment" beim Aufbau von `base` unten.
+    const personaRow = persona as Pick<Persona, "system_prompt">;
+    snapshot = personaRow.system_prompt;
+  }
 
   // Modellkonfig-Sichtbarkeit pruefen (RLS: nur eigene).
   const { data: model, error: mErr } = await sb
@@ -147,7 +154,7 @@ export async function createRun(sb: SupabaseClient, userId: string, input: Creat
   const base = {
     persona_id: input.personaId,
     model_config_id: input.modelConfigId,
-    persona_prompt_snapshot: personaRow.system_prompt,
+    persona_prompt_snapshot: snapshot,
     repetition_count: input.repetitionCount,
     visibility: "global" as const,
   };

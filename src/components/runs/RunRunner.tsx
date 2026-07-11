@@ -173,7 +173,9 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
   const cancelledRef = useRef(false);
   const timerRef = useRef<number | null>(null);
 
-  const canRun = personas.length > 0 && modelConfigs.length > 0;
+  // Personas sind seit Baseline-Läufen optional (leere Auswahl = "No persona") —
+  // nur eine Modell-Config ist Pflicht.
+  const canRun = modelConfigs.length > 0;
   const isRunning = activeRunId !== null;
 
   // Ueber eine Funktion lesen (nicht `cancelledRef.current` direkt): nach einem
@@ -272,8 +274,8 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
   async function start() {
     setFormError(null);
     setServerError(null);
-    if (!personaId || !modelConfigId) {
-      setFormError("Select a persona and a model configuration.");
+    if (!modelConfigId) {
+      setFormError("Select a model configuration.");
       return;
     }
     if (!Number.isInteger(reps) || reps < MIN_REPS || reps > MAX_REPS) {
@@ -292,10 +294,19 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
     }
     setStarting(true);
     try {
+      // Leere Auswahl = Baseline-Lauf → explizites null (Schema verlangt das Feld).
+      const personaValue = personaId === "" ? null : personaId;
       const body =
         kind === "steadfastness"
-          ? { kind, personaId, modelConfigId, adversaryModelConfigId: adversaryId, repetitionCount: reps, maxRounds }
-          : { kind, personaId, modelConfigId, instrumentId: "oejts-1.2", repetitionCount: reps };
+          ? {
+              kind,
+              personaId: personaValue,
+              modelConfigId,
+              adversaryModelConfigId: adversaryId,
+              repetitionCount: reps,
+              maxRounds,
+            }
+          : { kind, personaId: personaValue, modelConfigId, instrumentId: "oejts-1.2", repetitionCount: reps };
       const res = await fetch("/api/runs", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -428,14 +439,14 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
             <AlertCircle className="mt-0.5 size-4 shrink-0" />
             <span>
               A run needs at least one{" "}
-              <a href="/personas" className="hover:text-foreground underline">
-                persona
-              </a>{" "}
-              and one{" "}
               <a href="/models" className="hover:text-foreground underline">
                 model configuration
               </a>
-              .
+              . A{" "}
+              <a href="/personas" className="hover:text-foreground underline">
+                persona
+              </a>{" "}
+              is optional — without one, the model runs as baseline.
             </span>
           </p>
         )}
@@ -475,6 +486,9 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
             }}
             className={selectClass}
           >
+            <option value="" className="bg-muted">
+              No persona (baseline)
+            </option>
             {personas.map((p) => (
               <option key={p.id} value={p.id} className="bg-muted">
                 {p.name}

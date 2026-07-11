@@ -333,19 +333,24 @@ type _RunViewStatusGuard = Expect<MutualExtends<RunView["status"], RunStatus>>;
 type _RunViewVisibilityGuard = Expect<MutualExtends<RunView["visibility"], Visibility>>;
 type _RunProgressStatusGuard = Expect<MutualExtends<RunProgress["status"], RunStatus>>;
 
-/** Eingabe beim Starten eines OEJTS-Laufs. */
+/**
+ * Eingabe beim Starten eines OEJTS-Laufs. `personaId: null` = Baseline-Lauf
+ * (ohne Persona, leerer Prompt-Snapshot) — bewusst nullable, NICHT optional,
+ * damit der Client die Entscheidung explizit trifft. Abgrenzung zu
+ * "Persona nachtraeglich geloescht" via `isBaselineRun` (@/lib/runs/baseline).
+ */
 export interface CreateOejtsRunInput {
   kind: "oejts";
-  personaId: string;
+  personaId: string | null;
   modelConfigId: string;
   instrumentId: string;
   repetitionCount: number;
 }
 
-/** Eingabe beim Starten eines Standhaftigkeits-Laufs (zweites Modell + Runden-Deckel). */
+/** Eingabe beim Starten eines Standhaftigkeits-Laufs (zweites Modell + Runden-Deckel); `personaId: null` = Baseline. */
 export interface CreateSteadfastnessRunInput {
   kind: "steadfastness";
-  personaId: string;
+  personaId: string | null;
   modelConfigId: string; // Prüfling
   adversaryModelConfigId: string; // Gegenspieler (Manipulator + Generator)
   repetitionCount: number; // = Anzahl Fakten

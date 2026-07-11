@@ -39,6 +39,14 @@ describe("buildOejtsMessages", () => {
     for (const id of IDS) expect(msgs[1].content).toContain(`${id}:`);
     expect(msgs[1].content).toContain('"answers"');
   });
+
+  it("Baseline: leerer System-Prompt → System-Message wird weggelassen", () => {
+    for (const empty of ["", "  \n "]) {
+      const msgs = buildOejtsMessages(empty, ITEMS);
+      expect(msgs).toHaveLength(1);
+      expect(msgs[0].role).toBe("user");
+    }
+  });
 });
 
 describe("parseOejtsResponse", () => {
