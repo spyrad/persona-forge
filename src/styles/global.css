@@ -27,8 +27,10 @@
   --ring: oklch(0.68 0.11 175);
   --chart-1: oklch(0.68 0.11 175);
   --chart-2: oklch(0.8 0.15 75);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
+  /* chart-3/4: Serien 3+4 im Modell-Vergleich — Blau/Pink statt shadcn-Defaults,
+     CVD-validiert gegen chart-1/2 (Blau↔Lila kollidierte im Deutan-Kanal). */
+  --chart-3: oklch(0.55 0.18 255);
+  --chart-4: oklch(0.59 0.22 356);
   --chart-5: oklch(0.769 0.188 70.08);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -63,8 +65,10 @@
   --ring: oklch(0.77 0.12 175);
   --chart-1: oklch(0.77 0.12 175);
   --chart-2: oklch(0.82 0.15 75);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
+  /* chart-3/4: siehe :root — Dark-Steps heller, chart-3 war hier fast
+     deckungsgleich mit chart-2 (beide Amber). */
+  --chart-3: oklch(0.71 0.14 250);
+  --chart-4: oklch(0.71 0.19 5);
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
