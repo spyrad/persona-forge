@@ -1,0 +1,92 @@
+---
+import AppLayout from "@/layouts/AppLayout.astro";
+import ModelComparison from "@/components/models/ModelComparison";
+import { COMPARE_MAX, COMPARE_MIN, parseCompareParams } from "@/lib/models/compare-params";
+import { getModelProfiles } from "@/lib/services/model-profiles";
+import { createClient } from "@/lib/supabase";
+import type { ModelCompareView } from "@/types";
+
+// /models/compare ist via PROTECTED_ROUTES (startsWith "/models") geschuetzt.
+// Multi-Query-Param `?m=a&m=b…` (Modellnamen enthalten `/` und `:`); Parsing/
+// Dedupe/Grenzen liegen in der reinen Funktion `parseCompareParams` und laufen
+// VOR jedem Laden — bei `tooMany` wird gar nichts geladen (Workers-CPU-
+// Härtung). Alle Edge-Cases enden in einem erklaerenden Zustand statt einem 500
+// (Muster `runs/compare.astro`).
+const { user } = Astro.locals;
+const params = parseCompareParams(Astro.url.searchParams.getAll("m"));
+
+type PageState = "missing" | "tooFew" | "tooMany" | "notFound" | "loadError" | "ready";
+
+let pageState: PageState = "ready";
+let view: ModelCompareView | null = null;
+let missingNames: string[] = [];
+
+const supabase = createClient(Astro.request.headers, Astro.cookies);
+
+if (!supabase || !user) {
+  pageState = "loadError";
+} else if (params.state !== "ready") {
+  pageState = params.state;
+} else {
+  try {
+    const profiles = await getModelProfiles(supabase, params.modelNames);
+    if (profiles.length === params.modelNames.length) {
+      // In Auswahl-Reihenfolge zeigen (der Service sortiert alphabetisch).
+      const byName = new Map(profiles.map((p) => [p.meta.modelName, p]));
+      view = { profiles: params.modelNames.flatMap((n) => byName.get(n) ?? []) };
+    } else {
+      pageState = "notFound";
+      missingNames = params.modelNames.filter((n) => !profiles.some((p) => p.meta.modelName === n));
+    }
+  } catch {
+    pageState = "loadError";
+  }
+}
+
+// Mind. ein Modell ohne Profil (unbekannt oder keine Baseline-Laeufe) → 404
+// (Status ohne Top-Level-`return`; ein `return` im Astro-Frontmatter crasht
+// die getypte no-misused-promises-Regel).
+if (pageState === "notFound") {
+  Astro.response.status = 404;
+}
+---
+
+<AppLayout
+  title="Compare models"
+  eyebrow="02 — model comparison"
+  heading="Compare models"
+  lead={`${String(COMPARE_MIN)}–${String(COMPARE_MAX)} model profiles side by side — pooled baseline distributions per instrument.`}
+>
+  {
+    pageState === "loadError" ? (
+      <p class="border-destructive/30 bg-destructive/10 text-destructive rounded-2xl border px-4 py-5 text-sm">
+        Could not load the model comparison. Please reload.
+      </p>
+    ) : pageState === "missing" ? (
+      <p class="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-5 text-sm">
+        Select models to compare — use the “Compare” checkboxes on the model configs page.
+      </p>
+    ) : pageState === "tooFew" ? (
+      <p class="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-5 text-sm">
+        Select at least {COMPARE_MIN} different models — a model cannot be compared with itself alone.
+      </p>
+    ) : pageState === "tooMany" ? (
+      <p class="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-5 text-sm">
+        Too many models — a comparison supports at most {COMPARE_MAX}. Narrow your selection.
+      </p>
+    ) : pageState === "notFound" ? (
+      <p class="border-border bg-card text-muted-foreground rounded-2xl border px-4 py-5 text-sm">
+        No profile for {missingNames.join(", ")} — no completed baseline runs yet. Start a run with “No persona
+        (baseline)” first.
+      </p>
+    ) : view ? (
+      // Rein praesentational (keine Interaktivitaet) → statisch gerendert, kein
+      // Client-JS, keine Hydration (Muster RunComparison/ModelProfile).
+      <ModelComparison view={view} />
+    ) : null
+  }
+
+  <a href="/models" class="text-primary hover:text-primary/80 mt-6 inline-flex items-center gap-1 text-sm">
+    ← Back to model configs
+  </a>
+</AppLayout>

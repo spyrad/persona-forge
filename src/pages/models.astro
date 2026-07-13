@@ -5,6 +5,7 @@ import { listModelConfigs } from "@/lib/services/model-configs";
 import { listModelProfiles } from "@/lib/services/model-profiles";
 import type { ModelConfigView, ModelProfileListItem } from "@/types";
 import ModelConfigManager from "@/components/models/ModelConfigManager";
+import ModelProfilePicker from "@/components/models/ModelProfilePicker";
 
 // /models ist via PROTECTED_ROUTES geschuetzt — hier ist der User authentifiziert.
 const { user } = Astro.locals;
@@ -58,22 +59,9 @@ if (supabase) {
           No baseline runs yet. Start a run with “No persona (baseline)” to build a model profile.
         </p>
       ) : (
-        <ul class="grid gap-3 sm:grid-cols-2">
-          {profileItems.map((item) => (
-            <li>
-              <a
-                href={`/models/profile?m=${encodeURIComponent(item.modelName)}`}
-                class="border-border bg-card hover:border-primary/40 block rounded-2xl border p-4 transition-colors"
-              >
-                <span class="text-foreground font-mono font-semibold">{item.modelName}</span>
-                <span class="text-muted-foreground mt-1 block text-xs tabular-nums">
-                  {item.runCount} baseline run{item.runCount === 1 ? "" : "s"} · {item.usableReps} usable reps ·{" "}
-                  {item.instruments.join(", ")}
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
+        // Insel (Phase 4.1): Karten + Vergleichs-Auswahl (2–4 Modelle) mit
+        // Sticky-Leiste; Profil-Links bleiben erhalten.
+        <ModelProfilePicker client:load items={profileItems} />
       )
     }
   </section>

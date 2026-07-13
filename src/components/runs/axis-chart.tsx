@@ -81,10 +81,11 @@ export function AxisChart({ scale, low, high, series }: Props) {
           const dotPx = Math.max(2, Math.round(slotPx) - 2);
           const gapPx = Math.max(0, slotPx - dotPx);
 
-          // Bei zwei Serien die Säulen leicht horizontal versetzen, damit
-          // gleiche Scores nicht exakt überlappen; bei einer Serie zentriert
-          // (deckungsgleich zur Einzelansicht).
-          const nudge = multi ? (si === 0 ? -3 : 3) : 0;
+          // Bei mehreren Serien die Säulen symmetrisch horizontal versetzen,
+          // damit gleiche Scores nicht exakt überlappen (2 Serien: ±3px wie
+          // bisher; 3–4 Serien im Modell-Vergleich entsprechend breiter); bei
+          // einer Serie zentriert (deckungsgleich zur Einzelansicht).
+          const nudge = multi ? (si - (series.length - 1) / 2) * 6 : 0;
 
           return (
             <div key={si}>

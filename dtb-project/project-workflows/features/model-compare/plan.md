@@ -261,17 +261,17 @@ Einstieg über die Modell-Liste.
 - [x] 1.1 Typen + Validierung (personaId optional, isBaselineRun-Helper) — `53c5a00`
 - [x] 1.2 Lauf-Erstellung + Prompt-Pfad (Provider-Spike zuerst) — `53c5a00`
 - [x] 1.3 RunRunner-UI + Unit-Tests — `53c5a00`
-- [ ] 1.4 Baseline-Daten fahren (je Modell ≥ 5 Reps)
+- [x] 1.4 Baseline-Daten fahren (je Modell ≥ 5 Reps) — durch Damian in Prod bestätigt 2026-07-12 (kein Commit; Daten in Prod-DB)
 - [x] 2.1 View-Typen (ModelProfileView, ModelCompareView) — `b65f35e`
 - [x] 2.2 Service model-profiles (Batch-Query, Pooling, Ausschluss-Zählung) — `b65f35e`
 - [x] 2.3 Unit- + Integration-Tests Aggregation — `b65f35e`
 - [x] 3.1 Profil-Route (/models/profile?m=) — `479f7b6`
 - [x] 3.2 Profil-Darstellung (ModelProfile, Attribution) — `479f7b6`
 - [x] 3.3 Einstieg Modell-Liste (View-profile-Links) — `479f7b6`
-- [x] 3.4 Anzeige-Fallbacks „baseline" (Flag/Badge/Compare-Label) — `048dcb5` · ENTSCHEIDUNGSPUNKT Phase 4 steht aus (braucht 1.4 + Sichtprüfung)
-- [ ] 4.1 Auswahl-UI (Checkboxen, 2–4)
-- [ ] 4.2 Compare-Route + Rendering (N Spalten)
-- [ ] 4.3 Randfälle + Tests (Param-Parsing, Grenzen)
+- [x] 3.4 Anzeige-Fallbacks „baseline" (Flag/Badge/Compare-Label) — `048dcb5` · ENTSCHEIDUNGSPUNKT Phase 4: Sichtprüfung Prod bestanden (Light+Dark, Badges, Attribution, Fehlzustände), Damian entschied 2026-07-13 „Ja, wie geplant"
+- [x] 4.1 Auswahl-UI (Checkboxen, 2–4) — ModelProfilePicker-Insel, Sticky-Leiste (Commit folgt)
+- [x] 4.2 Compare-Route + Rendering (N Spalten) — models/compare.astro + ModelComparison, überlagerte Achsen-Serien (Commit folgt)
+- [x] 4.3 Randfälle + Tests (Param-Parsing, Grenzen) — compare-params.ts + 7 Tests; 222 Unit-Tests grün (Commit folgt)
 - [ ] 5.1 Querverlinkung Run-Liste
 - [ ] 5.2 E2E-Risiko-Abdeckung
 - [ ] 5.3 Abschluss (Prod-Sichtprüfung, Checkpoint)
