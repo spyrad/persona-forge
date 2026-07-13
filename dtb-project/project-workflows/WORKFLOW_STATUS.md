@@ -1,32 +1,31 @@
 # Workflow-Status: persona-forge
 
 **Letztes Update:** 2026-07-12
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-12.md` (Session 1)
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-12.md` (Session 2)
 
 ---
 
 ## Status (generiert aus Artefakten — nicht manuell editieren)
 
-| Item          | Status (abgeleitet) | Fortschritt | Naechster Schritt                                                                   |
-| ------------- | ------------------- | ----------- | ----------------------------------------------------------------------------------- |
-| Model Compare | In Arbeit           | 10/17       | 1.4 Baseline-Daten fahren (Damian) → dann Sichtprüfung + ENTSCHEIDUNGSPUNKT Phase 4 |
+| Item          | Status (abgeleitet) | Fortschritt | Naechster Schritt                                                       |
+| ------------- | ------------------- | ----------- | ----------------------------------------------------------------------- |
+| Model Compare | In Arbeit           | 11/17       | Sichtprüfung Profil (Light+Dark) → ENTSCHEIDUNGSPUNKT Phase 4 (Compare) |
 
 ---
 
 ## Kontext (manuell)
 
-| Kennzahl            | Wert                                                                                                                                                              |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Laufende Arbeit** | Model Compare: Phasen 1–3 live (CI grün bis `dca871c`). Damian fährt Baseline-Läufe; Anthropic-Config beraten (Compat-Layer, 401-Test-Gotcha, s. Log 2026-07-12). |
-| **Blocker**         | Keine. Sichtprüfung + Entscheidungspunkt warten auf Baseline-Daten (1.4).                                                                                         |
-| **Notizen**         | Champion-Einreichung Termin 2 = **10.08.** weiter offen. Direkte `main`-Pushes bypassen das Verdict-Gate — für Phase 4 ggf. PR-Weg.                               |
+| Kennzahl            | Wert                                                                                                                                                        |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Laufende Arbeit** | Model Compare: Phase 1 komplett (1.4 Baseline-Daten in Prod ✓). Sichtprüfung vorbereitet (Playwright auf Prod, Login stand aus) — als Nächstes durchführen. |
+| **Blocker**         | Keine.                                                                                                                                                      |
+| **Notizen**         | Champion-Einreichung Termin 2 = **10.08.** weiter offen. Direkte `main`-Pushes bypassen das Verdict-Gate — für Phase 4 ggf. PR-Weg.                         |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] **1.4 Baseline-Läufe** — Anthropic-Config speichern (401-Test ignorieren, s. Gotcha), Mini-Lauf als Beweis, dann je Modell ≥ 5 Reps.
-- [ ] **Sichtprüfung + ENTSCHEIDUNGSPUNKT Phase 4** — Profil mit echten Daten (Light+Dark); Entscheidung Compare: ja/anders/später.
+- [ ] **Sichtprüfung + ENTSCHEIDUNGSPUNKT Phase 4** — Profil mit echten Daten (Light+Dark, Badges, Attribution); Entscheidung Compare: ja/anders/später.
 - [ ] **Champion abschließen** — `/10x-archive ci-review-agent`; grüne Läufe PR #3–#7 in `evidence.md` (Run-IDs im Log 2026-07-11 S2). **Job-Logs verfallen ~07.10.**
 - [ ] **Sammel-Einreichung Termin 2 (10.08.):** Builder + Architect + Champion.
 - [ ] **Kit-Drift (optional):** `/dtb:kit-sync sync` — 4 Agents „Update verfügbar" ggü. `66c6f27`.
@@ -81,5 +80,5 @@ Keine.
 
 ## Handoff
 
-**Naechster Befehl:** Weiterarbeit im Plan `features/model-compare/plan.md` — 1.4 Baseline-Läufe abschließen (Anthropic-Config: Save trotz 401-Test), dann Sichtprüfung + ENTSCHEIDUNGSPUNKT Phase 4 (Compare).
+**Naechster Befehl:** Weiterarbeit im Plan `features/model-compare/plan.md` — Sichtprüfung (Playwright auf Prod, Damian loggt sich ein), dann ENTSCHEIDUNGSPUNKT Phase 4 (Compare).
 **Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume` (stellt Kontext her), danach obigen Befehl.
