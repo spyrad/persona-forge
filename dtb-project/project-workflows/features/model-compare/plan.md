@@ -274,7 +274,7 @@ Einstieg über die Modell-Liste.
 - [x] 4.3 Randfälle + Tests (Param-Parsing, Grenzen) — compare-params.ts + 7 Tests; 222 Unit-Tests grün — `4e72bd8` (PR #8); Prod-Sichtprüfung 2026-07-13 komplett (2er/3er/4er, Light+Dark, Mobile, Randfälle)
 - [x] 5.1 Querverlinkung Run-Liste — Modell-Link je Lauf (Liste + Detail-Fuß), `modelProfileHref`-Helper (DRY mit Picker); Link nur bei aufloesbarer Modellkonfig; 225 Unit-Tests grün
 - [x] 5.2 E2E-Risiko-Abdeckung — `model-compare.spec.ts` (Lauf-Liste → Profil → 2-Modell-Vergleich) + `support/seed.ts` (Baseline-Daten per DB-Insert, kein LLM-Call); Gegenprobe: invertierter `isBaselineRun` macht den Test rot; `npm run test:e2e` 5/5 grün
-- [ ] 5.3 Abschluss (Prod-Sichtprüfung, Checkpoint)
+- [x] 5.3 Abschluss (Prod-Sichtprüfung, Checkpoint) — PR #10 squash-gemergt `19a8e8c`, Deploy grün; Prod-Sichtprüfung 2026-07-14 bestanden: Profil-Links in der Run-Liste, Run-Detail-Fuß in allen Zuständen (OEJTS/Steadfastness/failed), Compare-Weg über den Picker, Light+Dark
 
 ---
 

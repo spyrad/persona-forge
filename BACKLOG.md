@@ -6,9 +6,9 @@
 
 ## Aktive Features
 
-| Feature       | Status    | Prio | Datei                                                        | Ziel                                                                                                                                                                               |
-| ------------- | --------- | ---- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Model Compare | In Arbeit | Hoch | dtb-project/project-workflows/features/model-compare/spec.md | Test-Ergebnisse pro Modell aggregieren (Profil je Instrument, nur Baseline-Läufe ohne Persona) und 2–4 Modelle nebeneinander vergleichen; instrument-agnostisch für künftige Tests |
+| Feature       | Status            | Prio | Datei                                                        | Ziel                                                                                                                                                                               |
+| ------------- | ----------------- | ---- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Model Compare | Fertig zum Testen | Hoch | dtb-project/project-workflows/features/model-compare/spec.md | Test-Ergebnisse pro Modell aggregieren (Profil je Instrument, nur Baseline-Läufe ohne Persona) und 2–4 Modelle nebeneinander vergleichen; instrument-agnostisch für künftige Tests |
 
 ---
 
