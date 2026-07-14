@@ -3,7 +3,7 @@
 **Erstellt:** 2026-07-11
 **Ziel:** Test-Ergebnisse pro Modell aggregieren und als Modell-Profil sowie im direkten Modell-Vergleich (2–4 Modelle) darstellen — statt nur Lauf für Lauf.
 **Prioritaet:** Hoch
-**Status:** Fertig zum Testen <!-- abgeleitete Anzeige, wird von dtb:workflow-checkpoint synchronisiert (project-rules/DERIVED_STATE_RULES.md) -->
+**Status:** Abgeschlossen <!-- abgenommen von Damian 2026-07-14 (Prod-Sichtpruefung), archiviert via /dtb:archive -->
 
 ---
 

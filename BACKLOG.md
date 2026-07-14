@@ -6,9 +6,7 @@
 
 ## Aktive Features
 
-| Feature       | Status            | Prio | Datei                                                        | Ziel                                                                                                                                                                               |
-| ------------- | ----------------- | ---- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Model Compare | Fertig zum Testen | Hoch | dtb-project/project-workflows/features/model-compare/spec.md | Test-Ergebnisse pro Modell aggregieren (Profil je Instrument, nur Baseline-Läufe ohne Persona) und 2–4 Modelle nebeneinander vergleichen; instrument-agnostisch für künftige Tests |
+Keine — kein Feature in Arbeit. Neues Feature starten: `/dtb:feature-start`.
 
 ---
 
@@ -23,5 +21,5 @@
 
 ## Abgeschlossen
 
-| Feature | Abgeschlossen | Datei |
-| ------- | ------------- | ----- |
+Abgeschlossene Features werden archiviert und nur noch im Archiv gefuehrt:
+`dtb-project/project-workflows/archive/ARCHIVE_LOG.md` (zuletzt: Model Compare, 2026-07-14).

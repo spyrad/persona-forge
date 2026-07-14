@@ -7,9 +7,9 @@
 
 ## Status (generiert aus Artefakten — nicht manuell editieren)
 
-| Item          | Status (abgeleitet) | Fortschritt | Naechster Schritt                         |
-| ------------- | ------------------- | ----------- | ----------------------------------------- |
-| Model Compare | Fertig zum Testen   | 17/17       | Abnahme durch Damian, dann `/dtb:archive` |
+| Item                | Status (abgeleitet) | Fortschritt | Naechster Schritt                      |
+| ------------------- | ------------------- | ----------- | -------------------------------------- |
+| _kein aktives Item_ | —                   | —           | Neues Feature via `/dtb:feature-start` |
 
 ---
 
@@ -17,7 +17,7 @@
 
 | Kennzahl            | Wert                                                                                                                                                                       |
 | ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Laufende Arbeit** | **Model Compare komplett live** (PR #10 gemergt `19a8e8c`, Deploy grün, Prod-Sichtprüfung bestanden). Feature wartet auf Abnahme; kein anderes Feature aktiv.              |
+| **Laufende Arbeit** | Kein aktives Feature. Model Compare ist abgenommen und archiviert (`archive/model-compare/`, 2026-07-14).                                                                  |
 | **Blocker**         | Keine.                                                                                                                                                                     |
 | **Notizen**         | Champion-Einreichung Termin 2 = **10.08.**. PR #8/#9/#10 sind frische Verdict-Gate-Belege für `evidence.md`. Repo aufgeräumt: nur noch `main`; `.superpowers/` gitignored. |
 
@@ -25,7 +25,7 @@
 
 ## Offene Aufgaben
 
-- [ ] **Model Compare abnehmen** — nach Abnahme `/dtb:archive`; danach neues Feature via `/dtb:feature-start`.
+- [ ] **Neues Feature starten** — `/dtb:feature-start` (Ideen-Inbox #1/#3/#4/#5).
 - [ ] **Champion abschließen** — `/10x-archive ci-review-agent`; grüne Läufe PR #3–#10 in `evidence.md`. **Job-Logs verfallen ~07.10.**
 - [ ] **Sammel-Einreichung Termin 2 (10.08.):** Builder + Architect + Champion.
 - [ ] **Kit-Drift (optional):** `/dtb:kit-sync sync` — 4 Agents „Update verfügbar" ggü. `66c6f27`.
@@ -36,16 +36,16 @@
 
 ## Abgeschlossene Meilensteine (kompakt)
 
-| Datum      | Meilenstein                                          | Ergebnis                                                                                       | Details                                                |
-| ---------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| 2026-07-14 | **Model Compare fertig (17/17)** — Phase 5 live      | PR #10 (10.0/10) gemergt `19a8e8c`; Prod-Sichtprüfung bestanden; E2E 5/5 + 225 Unit-Tests grün | `2026-07-14.md` (S1), `features/model-compare/plan.md` |
-| 2026-07-13 | Model Compare Phase 4 live (Compare 2–4 Modelle)     | PR #8 (9.5/10) + Farb-Fix PR #9 (10.0/10); Prod-Sichtprüfung komplett                          | `2026-07-13.md` (S1), `features/model-compare/plan.md` |
-| 2026-07-11 | Model Compare Phasen 1–3 live                        | Baseline-Läufe + model-profiles-Service + Profil-Seite                                         | `2026-07-11.md` (S4), `features/model-compare/plan.md` |
-| 2026-07-11 | Model Compare geplant (Discovery→Spec→Plan→Review)   | Plan Reviewed, 5 Phasen/17 Schritte; Lektion L1                                                | `2026-07-11.md` (S3), `features/model-compare/`        |
-| 2026-07-11 | Design-Angleich Stufe B+C live — App einsprachig     | 6 Inseln editorial/EN; 3 PRs à 10.0/10                                                         | `2026-07-11.md` (S1), PR #5/#6/#7                      |
-| 2026-07-10 | Design-Angleich Stufe A (Chrome) live                | AppLayout, 9 Seiten, Copy EN                                                                   | `2026-07-10.md`, PR #4                                 |
-| 2026-07-09 | Landing „Live Instrument" + CI-Review-Agent komplett | PR #3; Gate beide Richtungen belegt                                                            | `2026-07-09.md`, `evidence.md`                         |
-| 2026-07-05 | Zertifizierungs-Entscheidung: Champion               | Alle 3 Badges zusammen bei Termin 2/3                                                          | `2026-07-05.md`                                        |
+| Datum      | Meilenstein                                          | Ergebnis                                                                                       | Details                                               |
+| ---------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| 2026-07-14 | **Model Compare fertig (17/17)** — Phase 5 live      | PR #10 (10.0/10) gemergt `19a8e8c`; Prod-Sichtprüfung bestanden; E2E 5/5 + 225 Unit-Tests grün | `2026-07-14.md` (S1), `archive/model-compare/plan.md` |
+| 2026-07-13 | Model Compare Phase 4 live (Compare 2–4 Modelle)     | PR #8 (9.5/10) + Farb-Fix PR #9 (10.0/10); Prod-Sichtprüfung komplett                          | `2026-07-13.md` (S1), `archive/model-compare/plan.md` |
+| 2026-07-11 | Model Compare Phasen 1–3 live                        | Baseline-Läufe + model-profiles-Service + Profil-Seite                                         | `2026-07-11.md` (S4), `archive/model-compare/plan.md` |
+| 2026-07-11 | Model Compare geplant (Discovery→Spec→Plan→Review)   | Plan Reviewed, 5 Phasen/17 Schritte; Lektion L1                                                | `2026-07-11.md` (S3), `archive/model-compare/`        |
+| 2026-07-11 | Design-Angleich Stufe B+C live — App einsprachig     | 6 Inseln editorial/EN; 3 PRs à 10.0/10                                                         | `2026-07-11.md` (S1), PR #5/#6/#7                     |
+| 2026-07-10 | Design-Angleich Stufe A (Chrome) live                | AppLayout, 9 Seiten, Copy EN                                                                   | `2026-07-10.md`, PR #4                                |
+| 2026-07-09 | Landing „Live Instrument" + CI-Review-Agent komplett | PR #3; Gate beide Richtungen belegt                                                            | `2026-07-09.md`, `evidence.md`                        |
+| 2026-07-05 | Zertifizierungs-Entscheidung: Champion               | Alle 3 Badges zusammen bei Termin 2/3                                                          | `2026-07-05.md`                                       |
 
 ---
 
@@ -84,5 +84,5 @@ Keine.
 
 ## Handoff
 
-**Naechster Befehl:** `/dtb:archive` nach Abnahme von Model Compare — sonst `/dtb:feature-start` (kein aktives Feature) bzw. `/10x-archive ci-review-agent` für den Champion-Nachweis.
+**Naechster Befehl:** `/10x-archive ci-review-agent` (Champion-Nachweis, zeitkritisch: Job-Logs verfallen ~07.10.) — danach `/dtb:feature-start` für das nächste Feature aus der Ideen-Inbox.
 **Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume` (stellt Kontext her), danach obigen Befehl.
