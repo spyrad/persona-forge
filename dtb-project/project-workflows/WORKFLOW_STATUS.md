@@ -1,7 +1,7 @@
 # Workflow-Status: persona-forge
 
 **Letztes Update:** 2026-07-14
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-14.md` (Session 2)
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-14.md` (Session 3)
 
 ---
 
@@ -15,11 +15,11 @@
 
 ## Kontext (manuell)
 
-| Kennzahl            | Wert                                                                                                                                                          |
-| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Laufende Arbeit** | **Model Compare komplett live** (PR #10 gemergt `19a8e8c`, Deploy grün, Prod-Sichtprüfung bestanden). Feature wartet auf Abnahme; kein anderes Feature aktiv. |
-| **Blocker**         | Keine.                                                                                                                                                        |
-| **Notizen**         | Champion-Einreichung Termin 2 = **10.08.**. PR #8/#9/#10 sind frische Verdict-Gate-Belege für `evidence.md`. Repo aufgeräumt: nur noch `main`.                |
+| Kennzahl            | Wert                                                                                                                                                                       |
+| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Laufende Arbeit** | **Model Compare komplett live** (PR #10 gemergt `19a8e8c`, Deploy grün, Prod-Sichtprüfung bestanden). Feature wartet auf Abnahme; kein anderes Feature aktiv.              |
+| **Blocker**         | Keine.                                                                                                                                                                     |
+| **Notizen**         | Champion-Einreichung Termin 2 = **10.08.**. PR #8/#9/#10 sind frische Verdict-Gate-Belege für `evidence.md`. Repo aufgeräumt: nur noch `main`; `.superpowers/` gitignored. |
 
 ---
 
