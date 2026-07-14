@@ -269,11 +269,11 @@ Einstieg über die Modell-Liste.
 - [x] 3.2 Profil-Darstellung (ModelProfile, Attribution) — `479f7b6`
 - [x] 3.3 Einstieg Modell-Liste (View-profile-Links) — `479f7b6`
 - [x] 3.4 Anzeige-Fallbacks „baseline" (Flag/Badge/Compare-Label) — `048dcb5` · ENTSCHEIDUNGSPUNKT Phase 4: Sichtprüfung Prod bestanden (Light+Dark, Badges, Attribution, Fehlzustände), Damian entschied 2026-07-13 „Ja, wie geplant"
-- [x] 4.1 Auswahl-UI (Checkboxen, 2–4) — ModelProfilePicker-Insel, Sticky-Leiste (Commit folgt)
-- [x] 4.2 Compare-Route + Rendering (N Spalten) — models/compare.astro + ModelComparison, überlagerte Achsen-Serien (Commit folgt)
-- [x] 4.3 Randfälle + Tests (Param-Parsing, Grenzen) — compare-params.ts + 7 Tests; 222 Unit-Tests grün (Commit folgt)
-- [ ] 5.1 Querverlinkung Run-Liste
-- [ ] 5.2 E2E-Risiko-Abdeckung
+- [x] 4.1 Auswahl-UI (Checkboxen, 2–4) — ModelProfilePicker-Insel, Sticky-Leiste — `4e72bd8` (PR #8)
+- [x] 4.2 Compare-Route + Rendering (N Spalten) — models/compare.astro + ModelComparison, überlagerte Achsen-Serien — `4e72bd8` (PR #8) + Farb-Fix chart-3/4 `52e8f49` (PR #9)
+- [x] 4.3 Randfälle + Tests (Param-Parsing, Grenzen) — compare-params.ts + 7 Tests; 222 Unit-Tests grün — `4e72bd8` (PR #8); Prod-Sichtprüfung 2026-07-13 komplett (2er/3er/4er, Light+Dark, Mobile, Randfälle)
+- [x] 5.1 Querverlinkung Run-Liste — Modell-Link je Lauf (Liste + Detail-Fuß), `modelProfileHref`-Helper (DRY mit Picker); Link nur bei aufloesbarer Modellkonfig; 225 Unit-Tests grün
+- [x] 5.2 E2E-Risiko-Abdeckung — `model-compare.spec.ts` (Lauf-Liste → Profil → 2-Modell-Vergleich) + `support/seed.ts` (Baseline-Daten per DB-Insert, kein LLM-Call); Gegenprobe: invertierter `isBaselineRun` macht den Test rot; `npm run test:e2e` 5/5 grün
 - [ ] 5.3 Abschluss (Prod-Sichtprüfung, Checkpoint)
 
 ---

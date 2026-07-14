@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { ServerError } from "@/components/auth/ServerError";
 import { Button } from "@/components/ui/button";
+import { modelProfileHref } from "@/lib/models/profile-link";
 import { runProgressSchema, runViewArraySchema, runViewSchema } from "@/lib/runs/run-schemas";
 import { formatDateTime, formatDuration } from "@/lib/runs/run-timing";
 import { cn } from "@/lib/utils";
@@ -148,6 +149,12 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
   // "verwertbar"-Garantie liegt bewusst auf der Vergleichsseite — hier wird nur
   // an `status === "completed"` festgemacht (RunView traegt kein usableReps).
   const [compareIds, setCompareIds] = useState<string[]>([]);
+
+  // Aufloesung Lauf → Modellname fuer die Profil-Querverlinkung (5.1). Die Konfigs
+  // kommen RLS-gescoped vom Server; ist die Konfig eines Laufs geloescht
+  // (`modelConfigId: null`) oder fuer diesen User nicht sichtbar, bleibt der Lauf
+  // ohne Link — kein Rateweg auf einen Modellnamen.
+  const modelNameById = new Map(modelConfigs.map((c) => [c.id, c.modelName] as const));
 
   /** Schaltet einen Lauf in der Vergleichs-Auswahl an/aus (Cap 2). */
   function toggleCompare(id: string) {
@@ -670,115 +677,131 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
           </p>
         ) : (
           <ul className="space-y-3">
-            {runs.map((run) => (
-              <li
-                key={run.id}
-                className="border-border bg-card flex flex-wrap items-start justify-between gap-3 rounded-2xl border p-4"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <StatusBadge status={run.status} />
-                    <span className="border-border bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
-                      {run.kind === "steadfastness" ? "Steadfastness" : "OEJTS"}
-                    </span>
-                    {/* Baseline-Badge: Lauf lief bewusst ohne Persona (Model-Compare-Datenbasis). */}
-                    {run.isBaseline ? (
-                      <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
-                        baseline
-                      </span>
-                    ) : null}
-                    {run.visibility === "global" ? (
-                      <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
-                        <Globe className="size-3" />
-                        Global
-                      </span>
-                    ) : run.isOwn ? (
+            {runs.map((run) => {
+              const modelName = run.modelConfigId != null ? modelNameById.get(run.modelConfigId) : undefined;
+              return (
+                <li
+                  key={run.id}
+                  className="border-border bg-card flex flex-wrap items-start justify-between gap-3 rounded-2xl border p-4"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <StatusBadge status={run.status} />
                       <span className="border-border bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
-                        <Lock className="size-3" />
-                        Private
+                        {run.kind === "steadfastness" ? "Steadfastness" : "OEJTS"}
                       </span>
+                      {/* Baseline-Badge: Lauf lief bewusst ohne Persona (Model-Compare-Datenbasis). */}
+                      {run.isBaseline ? (
+                        <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
+                          baseline
+                        </span>
+                      ) : null}
+                      {run.visibility === "global" ? (
+                        <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
+                          <Globe className="size-3" />
+                          Global
+                        </span>
+                      ) : run.isOwn ? (
+                        <span className="border-border bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
+                          <Lock className="size-3" />
+                          Private
+                        </span>
+                      ) : null}
+                      <span className="text-muted-foreground text-sm tabular-nums">
+                        {run.completedReps}/{run.repetitionCount} repetitions
+                      </span>
+                    </div>
+                    <p className="text-muted-foreground mt-1 text-xs tabular-nums">
+                      Executed: {formatDateTime(run.createdAt)} · Failure rate:{" "}
+                      {failureRate(run.failedCount, run.repetitionCount)} · Tokens: {run.promptTokens} in /{" "}
+                      {run.completionTokens} out
+                    </p>
+                    {/* Querverlinkung ins Modell-Profil (5.1) — nur bei aufloesbarem Modell. */}
+                    {modelName != null ? (
+                      <p className="text-muted-foreground mt-1 text-xs">
+                        Model:{" "}
+                        <a
+                          href={modelProfileHref(modelName)}
+                          aria-label={`View model profile for ${modelName}`}
+                          className="text-primary hover:text-primary/80 font-mono break-all underline"
+                        >
+                          {modelName}
+                        </a>
+                      </p>
                     ) : null}
-                    <span className="text-muted-foreground text-sm tabular-nums">
-                      {run.completedReps}/{run.repetitionCount} repetitions
-                    </span>
                   </div>
-                  <p className="text-muted-foreground mt-1 text-xs tabular-nums">
-                    Executed: {formatDateTime(run.createdAt)} · Failure rate:{" "}
-                    {failureRate(run.failedCount, run.repetitionCount)} · Tokens: {run.promptTokens} in /{" "}
-                    {run.completionTokens} out
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  {/* Vergleichs-Haken (S-08): nur abgeschlossene, nicht-aktive
+                  <div className="flex items-center gap-2">
+                    {/* Vergleichs-Haken (S-08): nur abgeschlossene, nicht-aktive
                       Laeufe; max. zwei. Gesperrt, sobald zwei andere gewaehlt sind. */}
-                  {run.status === "completed" && run.id !== activeRunId ? (
-                    <label
-                      className="border-border bg-muted hover:bg-accent inline-flex cursor-pointer items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors has-disabled:cursor-not-allowed has-disabled:opacity-40"
-                      title="Select for comparison (max. 2)"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={compareIds.includes(run.id)}
-                        disabled={compareIds.length >= 2 && !compareIds.includes(run.id)}
-                        onChange={() => {
-                          toggleCompare(run.id);
-                        }}
-                        className="accent-primary size-3.5"
-                      />
-                      <GitCompare className="size-3.5" />
-                      Compare
-                    </label>
-                  ) : null}
-                  {/* Ergebnis-Detailansicht (Verteilung je Achse). Bei noch nicht
+                    {run.status === "completed" && run.id !== activeRunId ? (
+                      <label
+                        className="border-border bg-muted hover:bg-accent inline-flex cursor-pointer items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors has-disabled:cursor-not-allowed has-disabled:opacity-40"
+                        title="Select for comparison (max. 2)"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={compareIds.includes(run.id)}
+                          disabled={compareIds.length >= 2 && !compareIds.includes(run.id)}
+                          onChange={() => {
+                            toggleCompare(run.id);
+                          }}
+                          className="accent-primary size-3.5"
+                        />
+                        <GitCompare className="size-3.5" />
+                        Compare
+                      </label>
+                    ) : null}
+                    {/* Ergebnis-Detailansicht (Verteilung je Achse). Bei noch nicht
                       abgeschlossenen Laeufen zeigt die Seite einen Hinweis. */}
-                  {run.id !== activeRunId ? (
-                    <a
-                      href={`/runs/${run.id}`}
-                      className="border-border bg-muted hover:bg-accent inline-flex items-center gap-1 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors"
-                    >
-                      <BarChart3 className="size-3.5" />
-                      Result
-                    </a>
-                  ) : null}
-                  {/* Sichtbarkeits-Toggle nur fuer eigene, nicht-aktive Laeufe. */}
-                  {run.isOwn && run.id !== activeRunId ? (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="outline"
-                      disabled={busyId === run.id}
-                      title={
-                        run.visibility === "global"
-                          ? "Set to private (only you can see it)"
-                          : "Set to global (visible org-wide)"
-                      }
-                      onClick={() => {
-                        void setVisibility(run);
-                      }}
-                      className="border-border bg-muted text-foreground hover:bg-accent"
-                    >
-                      {run.visibility === "global" ? <Lock className="size-3.5" /> : <Globe className="size-3.5" />}
-                      {run.visibility === "global" ? "Private" : "Global"}
-                    </Button>
-                  ) : null}
-                  {/* Aktiver Lauf wird ueber das Fortschritts-Panel abgebrochen (kein doppelter Button). */}
-                  {run.isOwn && run.id !== activeRunId ? (
-                    <Button
-                      type="button"
-                      size="sm"
-                      variant="destructive"
-                      disabled={busyId === run.id}
-                      onClick={() => {
-                        void remove(run.id);
-                      }}
-                    >
-                      <Trash2 className="size-3.5" />
-                      Delete
-                    </Button>
-                  ) : null}
-                </div>
-              </li>
-            ))}
+                    {run.id !== activeRunId ? (
+                      <a
+                        href={`/runs/${run.id}`}
+                        className="border-border bg-muted hover:bg-accent inline-flex items-center gap-1 rounded-md border px-2.5 py-1.5 text-xs font-medium transition-colors"
+                      >
+                        <BarChart3 className="size-3.5" />
+                        Result
+                      </a>
+                    ) : null}
+                    {/* Sichtbarkeits-Toggle nur fuer eigene, nicht-aktive Laeufe. */}
+                    {run.isOwn && run.id !== activeRunId ? (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        disabled={busyId === run.id}
+                        title={
+                          run.visibility === "global"
+                            ? "Set to private (only you can see it)"
+                            : "Set to global (visible org-wide)"
+                        }
+                        onClick={() => {
+                          void setVisibility(run);
+                        }}
+                        className="border-border bg-muted text-foreground hover:bg-accent"
+                      >
+                        {run.visibility === "global" ? <Lock className="size-3.5" /> : <Globe className="size-3.5" />}
+                        {run.visibility === "global" ? "Private" : "Global"}
+                      </Button>
+                    ) : null}
+                    {/* Aktiver Lauf wird ueber das Fortschritts-Panel abgebrochen (kein doppelter Button). */}
+                    {run.isOwn && run.id !== activeRunId ? (
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="destructive"
+                        disabled={busyId === run.id}
+                        onClick={() => {
+                          void remove(run.id);
+                        }}
+                      >
+                        <Trash2 className="size-3.5" />
+                        Delete
+                      </Button>
+                    ) : null}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </section>

@@ -1,7 +1,22 @@
 # E2E-Tests (Playwright)
 
-Lern-/Demo-Schicht für Kurslektion s03e04. Deckt genau den Risk-#5-Auth-Redirect-Flow
-ab. `test-plan.md` deferrt E2E bewusst — diese Schicht ist **kein** Deploy-Gate.
+Lern-/Demo-Schicht für Kurslektion s03e04. `test-plan.md` deferrt E2E bewusst —
+diese Schicht ist **kein** Deploy-Gate. Abgedeckte Risiken:
+
+| Spec                    | Risiko                                                                                                                                                          |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `auth-redirect.spec.ts` | Risk #5: Middleware-302 + Cookie-Roundtrip                                                                                                                      |
+| `model-compare.spec.ts` | Model Compare (5.2): Kette Lauf-Liste → Modell-Profil → 2-Modell-Vergleich über Auth/RLS, Routing (`?m=`), Baseline-Filter und serverseitige Aggregation hinweg |
+
+## Daten-Seeding
+
+`support/seed.ts` schreibt Baseline-Läufe **direkt in die lokale DB** (Muster
+`src/test/integration/fixtures.ts`) — ein echter Lauf wäre N nicht-deterministische
+LLM-Calls. Real bleibt alles danach: Auth, Routing, DB, Aggregation, Rendering.
+Damit der Browser (Session via `storageState`) die geseedeten Zeilen unter RLS
+sieht, legt `auth.setup.ts` die Zugangsdaten des Test-Users in
+`playwright/.auth/user-credentials.json` ab (gitignored); `support/supabase.ts`
+öffnet damit einen supabase-js-Client als **derselbe** User.
 
 ## Vorbedingungen
 
