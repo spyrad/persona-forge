@@ -1,10 +1,45 @@
-import { AlertTriangle, ArrowLeft, Clock, Globe, Lock, ShieldCheck, Sigma } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Clock, Globe, LineChart, Lock, ShieldCheck, Sigma } from "lucide-react";
 import type { AxisDistribution, RunFailureSummary, RunResultView } from "@/types";
+import { modelProfileHref } from "@/lib/models/profile-link";
 import { formatDateTime, formatDuration } from "@/lib/runs/run-timing";
 import { AxisChart, RELIABLE_MIN } from "./axis-chart";
 
 interface Props {
   result: RunResultView;
+  /**
+   * Kanonischer Modellname des Laufs — server-seitig aus der (RLS-sichtbaren)
+   * Modellkonfig aufgeloest. `null`, wenn die Konfig geloescht/unsichtbar ist:
+   * dann kein Profil-Link (5.1).
+   */
+  modelName?: string | null;
+}
+
+/**
+ * Fuss jeder Ergebnis-Ansicht: zurueck zur Liste, plus Querverlinkung ins
+ * Modell-Profil (5.1), sofern das Modell aufloesbar ist. Bewusst in allen
+ * Zustaenden (auch leer/unfertig) — das Profil haengt am Modell, nicht am
+ * Ausgang dieses einen Laufs.
+ */
+function ResultFooter({ modelName }: { modelName?: string | null }) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+      <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
+        <ArrowLeft className="size-4" /> Back to runs
+      </a>
+      {modelName != null ? (
+        <a
+          href={modelProfileHref(modelName)}
+          aria-label={`View model profile for ${modelName}`}
+          className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm"
+        >
+          <LineChart className="size-4" />
+          <span>
+            View model profile <span className="text-muted-foreground font-mono break-all">({modelName})</span>
+          </span>
+        </a>
+      ) : null}
+    </div>
+  );
 }
 
 /** Fehlquote als Text (`failed/total (pct %)`). */
@@ -91,7 +126,15 @@ function FailureList({ failures }: { failures: RunFailureSummary[] }) {
  * Unterscheidet einen fehlgeschlagenen Lauf (`status: "failed"`, z. B. Szenario-
  * Generierung/Modell nicht erreichbar) von „abgeschlossen, aber nichts verwertbar".
  */
-function EmptyResult({ result, itemLabel }: { result: RunResultView; itemLabel: string }) {
+function EmptyResult({
+  result,
+  itemLabel,
+  modelName,
+}: {
+  result: RunResultView;
+  itemLabel: string;
+  modelName?: string | null;
+}) {
   const { run, timing, failures } = result;
   const failed = run.status === "failed";
   return (
@@ -112,15 +155,13 @@ function EmptyResult({ result, itemLabel }: { result: RunResultView; itemLabel: 
           </div>
         ) : null}
       </div>
-      <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
-        <ArrowLeft className="size-4" /> Back to runs
-      </a>
+      <ResultFooter modelName={modelName} />
     </div>
   );
 }
 
 /** Standhaftigkeits-Ergebnis: Score-Panel + Kapitulationen je Strategie. */
-function SteadfastnessView({ result }: { result: RunResultView }) {
+function SteadfastnessView({ result, modelName }: { result: RunResultView; modelName?: string | null }) {
   const { run, steadfastness: s, timing, failures } = result;
   if (!s) return null;
   const scorePct = Math.round(s.steadfastnessScore * 100);
@@ -162,14 +203,12 @@ function SteadfastnessView({ result }: { result: RunResultView }) {
         </section>
       ) : null}
 
-      <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
-        <ArrowLeft className="size-4" /> Back to runs
-      </a>
+      <ResultFooter modelName={modelName} />
     </div>
   );
 }
 
-export default function RunResult({ result }: Props) {
+export default function RunResult({ result, modelName = null }: Props) {
   const { run, aggregate, state, timing, failures } = result;
 
   if (state === "unfinished") {
@@ -182,22 +221,20 @@ export default function RunResult({ result }: Props) {
           </span>
         </p>
         <p className="text-muted-foreground text-xs tabular-nums">Executed: {formatDateTime(timing.executedAt)}</p>
-        <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
-          <ArrowLeft className="size-4" /> Back to runs
-        </a>
+        <ResultFooter modelName={modelName} />
       </div>
     );
   }
 
   if (result.steadfastness) {
     if (state === "empty") {
-      return <EmptyResult result={result} itemLabel="experiments" />;
+      return <EmptyResult result={result} itemLabel="experiments" modelName={modelName} />;
     }
-    return <SteadfastnessView result={result} />;
+    return <SteadfastnessView result={result} modelName={modelName} />;
   }
 
   if (state === "empty" || !aggregate) {
-    return <EmptyResult result={result} itemLabel="answers" />;
+    return <EmptyResult result={result} itemLabel="answers" modelName={modelName} />;
   }
 
   const lowReliability = aggregate.usableReps < RELIABLE_MIN;
@@ -277,9 +314,7 @@ export default function RunResult({ result }: Props) {
         </div>
       </section>
 
-      <a href="/runs" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
-        <ArrowLeft className="size-4" /> Back to runs
-      </a>
+      <ResultFooter modelName={modelName} />
     </div>
   );
 }

@@ -2,6 +2,7 @@
 import AppLayout from "@/layouts/AppLayout.astro";
 import { createClient } from "@/lib/supabase";
 import { getRunResult } from "@/lib/services/runs";
+import { listModelConfigs } from "@/lib/services/model-configs";
 import type { RunResultView } from "@/types";
 import RunResult from "@/components/runs/RunResult";
 
@@ -11,7 +12,11 @@ const id = Astro.params.id ?? "";
 
 // Ergebnis server-seitig RLS-gescoped laden + on-the-fly aggregieren. Nicht
 // sichtbar/vorhanden → 404. Service-Ausfall → loadError-Banner statt 500.
+// Die Modellkonfigs kommen nur fuer die Profil-Querverlinkung dazu (5.1) — ihr
+// Ausfall darf das Ergebnis nicht kippen, daher eigener try/catch: dann fehlt
+// bloss der Link.
 let result: RunResultView | null = null;
+let modelName: string | null = null;
 let loadError = false;
 const supabase = createClient(Astro.request.headers, Astro.cookies);
 if (supabase && user) {
@@ -19,6 +24,15 @@ if (supabase && user) {
     result = await getRunResult(supabase, user.id, id);
   } catch {
     loadError = true;
+  }
+  const modelConfigId = result?.run.modelConfigId ?? null;
+  if (modelConfigId) {
+    try {
+      const configs = await listModelConfigs(supabase);
+      modelName = configs.find((c) => c.id === modelConfigId)?.modelName ?? null;
+    } catch {
+      modelName = null;
+    }
   }
 } else {
   loadError = true;
@@ -52,7 +66,7 @@ const resultSubtitle =
         </a>
       </div>
     ) : (
-      result && <RunResult client:load result={result} />
+      result && <RunResult client:load result={result} modelName={modelName} />
     )
   }
 </AppLayout>

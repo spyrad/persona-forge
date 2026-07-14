@@ -2,6 +2,7 @@ import { useState } from "react";
 import { GitCompare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { COMPARE_MAX, COMPARE_MIN } from "@/lib/models/compare-params";
+import { modelProfileHref } from "@/lib/models/profile-link";
 import type { ModelProfileListItem } from "@/types";
 
 /**
@@ -43,7 +44,7 @@ export default function ModelProfilePicker({ items }: Props) {
             className="border-border bg-card hover:border-primary/40 rounded-2xl border p-4 transition-colors"
           >
             <div className="flex items-start justify-between gap-3">
-              <a href={`/models/profile?m=${encodeURIComponent(item.modelName)}`} className="group min-w-0">
+              <a href={modelProfileHref(item.modelName)} className="group min-w-0">
                 <span className="text-foreground group-hover:text-primary font-mono font-semibold break-all transition-colors">
                   {item.modelName}
                 </span>
