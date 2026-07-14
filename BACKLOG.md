@@ -1,6 +1,6 @@
 # Feature Backlog
 
-**Letzte Aktualisierung:** 2026-07-13
+**Letzte Aktualisierung:** 2026-07-14
 
 ---
 
