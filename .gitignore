@@ -12,6 +12,9 @@ Thumbs.db
 # Playwright-MCP Test-Artefakte (Snapshots, Logs)
 .playwright-mcp/
 
+# Superpowers-Scratch (Brainstorm-Token/Port, HTML-Schnipsel, generierte Review-Diffs)
+.superpowers/
+
 # Secrets & Environment
 .env
 .env.*
