@@ -1,7 +1,7 @@
 # Workflow-Status: persona-forge
 
 **Letztes Update:** 2026-07-14
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-14.md` (Session 1)
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-14.md` (Session 2)
 
 ---
 
