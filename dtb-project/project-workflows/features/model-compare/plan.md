@@ -273,7 +273,7 @@ Einstieg über die Modell-Liste.
 - [x] 4.2 Compare-Route + Rendering (N Spalten) — models/compare.astro + ModelComparison, überlagerte Achsen-Serien — `4e72bd8` (PR #8) + Farb-Fix chart-3/4 `52e8f49` (PR #9)
 - [x] 4.3 Randfälle + Tests (Param-Parsing, Grenzen) — compare-params.ts + 7 Tests; 222 Unit-Tests grün — `4e72bd8` (PR #8); Prod-Sichtprüfung 2026-07-13 komplett (2er/3er/4er, Light+Dark, Mobile, Randfälle)
 - [x] 5.1 Querverlinkung Run-Liste — Modell-Link je Lauf (Liste + Detail-Fuß), `modelProfileHref`-Helper (DRY mit Picker); Link nur bei aufloesbarer Modellkonfig; 225 Unit-Tests grün
-- [ ] 5.2 E2E-Risiko-Abdeckung
+- [x] 5.2 E2E-Risiko-Abdeckung — `model-compare.spec.ts` (Lauf-Liste → Profil → 2-Modell-Vergleich) + `support/seed.ts` (Baseline-Daten per DB-Insert, kein LLM-Call); Gegenprobe: invertierter `isBaselineRun` macht den Test rot; `npm run test:e2e` 5/5 grün
 - [ ] 5.3 Abschluss (Prod-Sichtprüfung, Checkpoint)
 
 ---
