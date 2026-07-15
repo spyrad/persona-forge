@@ -1,7 +1,7 @@
 # Workflow-Status: persona-forge
 
 **Letztes Update:** 2026-07-15
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-15.md` (Session 4)
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-15.md` (Session 5)
 
 ---
 
@@ -33,16 +33,16 @@
 
 ## Abgeschlossene Meilensteine (kompakt)
 
-| Datum      | Meilenstein                                                      | Ergebnis                                                                                                    | Details                                                     |
-| ---------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| 2026-07-15 | **Modellname-Combobox abgenommen + archiviert**                  | Live-Kriterien erfuellt; deployt via `1cb0fac`; aus Alt-Format migriert nach `archive/model-name-combobox/` | `archive/model-name-combobox/spec.md`                       |
-| 2026-07-15 | **Dashboard Mission Control abgeschlossen + archiviert** (13/13) | PR #11 gemergt (`24f50c2`), Verdict 10.0/10, Prod-Abnahme; E2E-Kette + Hero-Motion; archiviert via DTB-Flow | `2026-07-15.md` (S3), `archive/dashboard-mission-control/`  |
-| 2026-07-15 | Dashboard Mission Control: Spec→Plan→Review→Phase 1–3            | Plan Reviewed (8 Entscheidungen); Summary-Service + Register + Orbit-Hero gebaut; 240 Tests gruen           | `2026-07-15.md` (S1), `features/dashboard-mission-control/` |
-| 2026-07-15 | Autofill-Fix deployt                                             | `1cb0fac` auf `main`, CI+Deploy gruen; Prod-Verifikation offen                                              | `2026-07-15.md` (S1)                                        |
-| 2026-07-14 | Model Compare abgenommen + archiviert                            | Prod-Abnahme; `archive/model-compare/`, Commit `0485b2f`                                                    | `2026-07-14.md` (S4), `archive/ARCHIVE_LOG.md`              |
-| 2026-07-14 | Discovery „Dashboard Mission Control" + Kit-Sync                 | fable-25 analysiert; Kit `66c6f27`→`a7170e5`                                                                | `2026-07-14.md` (S5)                                        |
-| 2026-07-11 | Model Compare Phasen 1–4 + Design einsprachig                    | Baseline/Profile/Compare live; PR #5–#9                                                                     | `2026-07-11.md`, `2026-07-13.md`                            |
-| 2026-07-09 | Landing „Live Instrument" + CI-Review-Agent                      | PR #3; Verdict-Gate beide Richtungen belegt                                                                 | `2026-07-09.md`, `evidence.md`                              |
+| Datum      | Meilenstein                                                      | Ergebnis                                                                                                    | Details                                                    |
+| ---------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| 2026-07-15 | **Modellname-Combobox abgenommen + archiviert**                  | Live-Kriterien erfuellt; deployt via `1cb0fac`; aus Alt-Format migriert nach `archive/model-name-combobox/` | `archive/model-name-combobox/spec.md`                      |
+| 2026-07-15 | **Dashboard Mission Control abgeschlossen + archiviert** (13/13) | PR #11 gemergt (`24f50c2`), Verdict 10.0/10, Prod-Abnahme; E2E-Kette + Hero-Motion; archiviert via DTB-Flow | `2026-07-15.md` (S3), `archive/dashboard-mission-control/` |
+| 2026-07-15 | Dashboard Mission Control: Spec→Plan→Review→Phase 1–3            | Plan Reviewed (8 Entscheidungen); Summary-Service + Register + Orbit-Hero gebaut; 240 Tests gruen           | `2026-07-15.md` (S1), `archive/dashboard-mission-control/` |
+| 2026-07-15 | Autofill-Fix deployt                                             | `1cb0fac` auf `main`, CI+Deploy gruen; Prod-Verifikation offen                                              | `2026-07-15.md` (S1)                                       |
+| 2026-07-14 | Model Compare abgenommen + archiviert                            | Prod-Abnahme; `archive/model-compare/`, Commit `0485b2f`                                                    | `2026-07-14.md` (S4), `archive/ARCHIVE_LOG.md`             |
+| 2026-07-14 | Discovery „Dashboard Mission Control" + Kit-Sync                 | fable-25 analysiert; Kit `66c6f27`→`a7170e5`                                                                | `2026-07-14.md` (S5)                                       |
+| 2026-07-11 | Model Compare Phasen 1–4 + Design einsprachig                    | Baseline/Profile/Compare live; PR #5–#9                                                                     | `2026-07-11.md`, `2026-07-13.md`                           |
+| 2026-07-09 | Landing „Live Instrument" + CI-Review-Agent                      | PR #3; Verdict-Gate beide Richtungen belegt                                                                 | `2026-07-09.md`, `evidence.md`                             |
 
 ---
 
