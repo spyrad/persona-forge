@@ -266,7 +266,7 @@ in Prod sichtpruefen.
 - [x] 1.3 Unit-Tests Summary-Service — `407f7d1`
 - [x] 2.1 Register-Grundgeruest in `dashboard.astro` — `b19e903`
 - [x] 2.2 Modell-Detailzeilen + Compare-Schnellzugriff — `b19e903`
-- [ ] 2.3 `OejtsAttribution`-Extraktion + Light/Dark-Sichtpruefung (Code in `b19e903`; Sichtpruefung offen)
+- [x] 2.3 `OejtsAttribution`-Extraktion + Light/Dark-Sichtpruefung — `b19e903`; Sichtpruefung durch Damian bestanden; Hero-Motion sichtbar nachkalibriert `c0b9be3`
 - [x] 3.1 Skizzen-Runde — Metapher festziehen (Orbit) — `1c6a470`
 - [x] 3.2 `hero-layout.ts` + statisches Hero (server-gerendert, feste Hoehe) — `1c6a470`
 - [x] 3.3 CSS-Animation + Bewegungsreduktion — `1c6a470`

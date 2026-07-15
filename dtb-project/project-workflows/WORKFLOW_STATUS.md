@@ -7,9 +7,9 @@
 
 ## Status (generiert aus Artefakten — nicht manuell editieren)
 
-| Item                      | Status (abgeleitet) | Fortschritt | Naechster Schritt                                 |
-| ------------------------- | ------------------- | ----------- | ------------------------------------------------- |
-| Dashboard Mission Control | In Arbeit           | 8/13        | 2.3 Sichtpruefung Light/Dark, dann 3.4 Hero-Tests |
+| Item                      | Status (abgeleitet) | Fortschritt | Naechster Schritt                                               |
+| ------------------------- | ------------------- | ----------- | --------------------------------------------------------------- |
+| Dashboard Mission Control | In Arbeit           | 10/13       | 4.1 E2E Dashboard-Kette (`/10x-e2e`, braucht Docker + Supabase) |
 
 ---
 
