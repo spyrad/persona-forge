@@ -1,12 +1,14 @@
 # Feature Backlog
 
-**Letzte Aktualisierung:** 2026-07-14
+**Letzte Aktualisierung:** 2026-07-15
 
 ---
 
 ## Aktive Features
 
-Keine — kein Feature in Arbeit. Neues Feature starten: `/dtb:feature-start`.
+| Feature                   | Status    | Prio   | Datei                                      | Ziel                                                                                                                             |
+| ------------------------- | --------- | ------ | ------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| Dashboard Mission Control | In Arbeit | Mittel | features/dashboard-mission-control/spec.md | Dashboard beantwortet auf einen Blick „Was ist der Stand meines Labors?" — echte Kennzahlen + ruhig animierte Modell-Darstellung |
 
 ---
 
