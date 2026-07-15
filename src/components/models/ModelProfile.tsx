@@ -1,4 +1,5 @@
 import { AlertTriangle, ArrowLeft, Boxes, ShieldCheck, Sigma } from "lucide-react";
+import OejtsAttribution from "@/components/models/OejtsAttribution";
 import { AxisCard } from "@/components/runs/RunResult";
 import { formatDateTime } from "@/lib/runs/run-timing";
 import type { ModelProfileSection, ModelProfileView } from "@/types";
@@ -138,25 +139,7 @@ export default function ModelProfile({ profile }: Props) {
       )}
 
       {/* Attribution (Spec-Abnahme-Kriterium): Profil zeigt OEJTS-Ergebnisse */}
-      {sections.some((s) => s.kind === "oejts") ? (
-        <p className="text-muted-foreground text-xs">
-          OEJTS 1.2 by Eric Jorgenson, Open Psychometrics Project (
-          <a
-            href="https://openpsychometrics.org/tests/OJTS/"
-            className="hover:text-foreground underline underline-offset-2"
-          >
-            openpsychometrics.org
-          </a>
-          ), licensed{" "}
-          <a
-            href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
-            className="hover:text-foreground underline underline-offset-2"
-          >
-            CC BY-NC-SA 4.0
-          </a>
-          . Not affiliated with the official MBTI.
-        </p>
-      ) : null}
+      {sections.some((s) => s.kind === "oejts") ? <OejtsAttribution /> : null}
 
       <a href="/models" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
         <ArrowLeft className="size-4" /> Back to model configs

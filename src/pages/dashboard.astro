@@ -1,13 +1,58 @@
 ---
-import AppLayout from "@/layouts/AppLayout.astro";
+import OejtsAttribution from "@/components/models/OejtsAttribution";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import AppLayout from "@/layouts/AppLayout.astro";
+import { modelProfileHref } from "@/lib/models/profile-link";
+import { formatRelativeTime } from "@/lib/relative-time";
+import { getDashboardSummary } from "@/lib/services/dashboard";
+import { createClient } from "@/lib/supabase";
+import type { DashboardSummary } from "@/types";
 
+// Mission Control (Phase 2): Register mit echten Kennzahlen statt statischer
+// Kacheln. EIN Summary-Aufruf, Teilausfall je Quelle → ERR-Zeile statt Crash
+// (CHRONARIUM-Muster). Route ist via PROTECTED_ROUTES geschuetzt.
 const { user } = Astro.locals;
+const supabase = createClient(Astro.request.headers, Astro.cookies);
 
-const tiles = [
-  { href: "/models", title: "Model configs", description: "Manage LLM models and parameters" },
-  { href: "/personas", title: "Personas", description: "Browse and curate the persona catalog" },
-  { href: "/runs", title: "Runs", description: "Start and evaluate OEJTS measurement runs" },
+const FAILED: DashboardSummary = {
+  models: { error: true, data: null },
+  personas: { error: true, data: null },
+  runs: { error: true, data: null },
+};
+const summary = supabase && user ? await getDashboardSummary(supabase) : FAILED;
+
+const models = summary.models.data ?? [];
+const profiledModels = models.filter((m) => m.profiled);
+const unprofiledModels = models.filter((m) => !m.profiled);
+const showsTypes = profiledModels.some((m) => m.modalType !== null);
+const nowMs = Date.now();
+
+// Register-Kacheln: grosser Mono-Wert + Detail-Zeile; ERR im CHRONARIUM-Stil.
+// 0 ist ein normaler Wert (Spec: Leerzustand zeigt 0-Werte, versteckt nichts).
+const register = [
+  {
+    href: "/models",
+    title: "Model configs",
+    error: summary.models.error,
+    value: String(models.length),
+    detail: `${String(profiledModels.length)} profiled · ${String(unprofiledModels.length)} unprofiled`,
+  },
+  {
+    href: "/personas",
+    title: "Personas",
+    error: summary.personas.error,
+    value: String(summary.personas.data?.count ?? 0),
+    detail: "in the catalog",
+  },
+  {
+    href: "/runs",
+    title: "Runs",
+    error: summary.runs.error,
+    value: String(summary.runs.data?.count ?? 0),
+    detail: summary.runs.data?.lastRunAt
+      ? `last run ${formatRelativeTime(summary.runs.data.lastRunAt, nowMs)}`
+      : "no runs yet",
+  },
 ];
 ---
 
@@ -18,9 +63,10 @@ const tiles = [
   lead={`Signed in as ${user?.email ?? ""}`}
   width="full"
 >
+  {/* Register: Kennzahl-Kacheln mit Links in die Bereiche (Hover-Muster der Alt-Kacheln) */}
   <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
     {
-      tiles.map((tile) => (
+      register.map((tile) => (
         <a href={tile.href} class="group block focus-visible:outline-none">
           <Card className="h-full transition-colors group-hover:border-primary group-focus-visible:border-primary">
             <CardHeader>
@@ -28,11 +74,92 @@ const tiles = [
                 {tile.title}
                 <span class="text-muted-foreground group-hover:text-primary transition-colors">→</span>
               </CardTitle>
-              <CardDescription>{tile.description}</CardDescription>
+              {tile.error ? (
+                <p class="text-destructive font-mono text-3xl" aria-label={`${tile.title}: source unavailable`}>
+                  ERR
+                </p>
+              ) : (
+                <p class="text-foreground font-mono text-3xl tabular-nums">{tile.value}</p>
+              )}
+              <CardDescription className="font-mono text-xs">
+                {tile.error ? "source unavailable" : tile.detail}
+              </CardDescription>
             </CardHeader>
           </Card>
         </a>
       ))
     }
   </div>
+
+  {/* Modell-Register: Typ + Stabilitaet je profiliertem Modell, unprofilierte gedimmt */}
+  <section class="mt-10" aria-labelledby="model-register-heading">
+    <p id="model-register-heading" class="text-muted-foreground font-mono text-xs tracking-[0.2em] uppercase">
+      Profiled models
+    </p>
+
+    {
+      summary.models.error ? (
+        <p class="border-destructive/30 bg-destructive/10 text-destructive mt-3 rounded-2xl border px-4 py-5 text-sm">
+          Could not load the model register. Please reload.
+        </p>
+      ) : models.length === 0 ? (
+        <p class="text-muted-foreground mt-3 text-sm">
+          No models yet —{" "}
+          <a href="/models" class="text-primary hover:text-primary/80 underline underline-offset-2">
+            configure your first model
+          </a>{" "}
+          and run a baseline to build a profile.
+        </p>
+      ) : (
+        <ul class="divide-border border-border mt-3 divide-y border-y">
+          {profiledModels.map((m) => (
+            <li>
+              <a
+                href={modelProfileHref(m.modelName)}
+                class="group hover:border-primary -mx-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-l-2 border-transparent px-2 py-3 transition-colors focus-visible:outline-none"
+              >
+                <span class="text-foreground font-mono text-sm">{m.modelName}</span>
+                <span class="text-muted-foreground flex items-baseline gap-4 font-mono text-xs">
+                  <span class="text-foreground">{m.modalType ?? "—"}</span>
+                  {m.typeConsistency !== null ? (
+                    <span class="tabular-nums">{String(Math.round(m.typeConsistency * 100))} % stable</span>
+                  ) : null}
+                  <span class="tabular-nums">
+                    {String(m.usableReps)} rep{m.usableReps === 1 ? "" : "s"}
+                  </span>
+                  <span class="text-primary group-hover:text-primary/80 transition-colors">profile →</span>
+                </span>
+              </a>
+            </li>
+          ))}
+          {unprofiledModels.map((m) => (
+            <li class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-3 opacity-60">
+              <span class="text-muted-foreground font-mono text-sm">{m.modelName}</span>
+              <span class="text-muted-foreground font-mono text-xs">not profiled yet</span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    {
+      !summary.models.error && profiledModels.length >= 2 ? (
+        <a
+          href="/models/compare"
+          class="text-primary hover:text-primary/80 mt-4 inline-flex items-center gap-1 text-sm"
+        >
+          Compare models →
+        </a>
+      ) : null
+    }
+  </section>
+
+  {/* Attribution (Spec-Kriterium), sobald das Dashboard Typen zeigt */}
+  {
+    showsTypes ? (
+      <div class="mt-10">
+        <OejtsAttribution />
+      </div>
+    ) : null
+  }
 </AppLayout>

@@ -1,6 +1,7 @@
 import { AlertTriangle, Boxes, ShieldCheck, Sigma } from "lucide-react";
 import { AxisChart } from "@/components/runs/axis-chart";
 import { THIN_DATA_MIN } from "@/components/models/ModelProfile";
+import OejtsAttribution from "@/components/models/OejtsAttribution";
 import { formatDateTime } from "@/lib/runs/run-timing";
 import type { ModelCompareView, ModelProfileSection, ModelProfileView } from "@/types";
 
@@ -265,25 +266,7 @@ export default function ModelComparison({ view }: { view: ModelCompareView }) {
       <SteadfastnessCompare profiles={profiles} />
 
       {/* Attribution (Spec-Abnahme-Kriterium), sobald OEJTS-Ergebnisse gezeigt werden */}
-      {hasOejts ? (
-        <p className="text-muted-foreground text-xs">
-          OEJTS 1.2 by Eric Jorgenson, Open Psychometrics Project (
-          <a
-            href="https://openpsychometrics.org/tests/OJTS/"
-            className="hover:text-foreground underline underline-offset-2"
-          >
-            openpsychometrics.org
-          </a>
-          ), licensed{" "}
-          <a
-            href="https://creativecommons.org/licenses/by-nc-sa/4.0/"
-            className="hover:text-foreground underline underline-offset-2"
-          >
-            CC BY-NC-SA 4.0
-          </a>
-          . Not affiliated with the official MBTI.
-        </p>
-      ) : null}
+      {hasOejts ? <OejtsAttribution /> : null}
     </div>
   );
 }
