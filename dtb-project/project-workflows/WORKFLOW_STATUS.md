@@ -1,51 +1,53 @@
 # Workflow-Status: persona-forge
 
 **Letztes Update:** 2026-07-14
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-14.md` (Session 3)
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-14.md` (Session 5)
 
 ---
 
 ## Status (generiert aus Artefakten — nicht manuell editieren)
 
-| Item                | Status (abgeleitet) | Fortschritt | Naechster Schritt                      |
-| ------------------- | ------------------- | ----------- | -------------------------------------- |
-| _kein aktives Item_ | —                   | —           | Neues Feature via `/dtb:feature-start` |
+| Item                      | Status (abgeleitet)                       | Fortschritt | Naechster Schritt                             |
+| ------------------------- | ----------------------------------------- | ----------- | --------------------------------------------- |
+| Dashboard Mission Control | Discovery abgeschlossen (keine Spec/Plan) | —           | `/dtb:feature-plan Dashboard Mission Control` |
 
 ---
 
 ## Kontext (manuell)
 
-| Kennzahl            | Wert                                                                                                                                                                       |
-| ------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Laufende Arbeit** | Kein aktives Feature. Model Compare ist abgenommen und archiviert (`archive/model-compare/`, 2026-07-14).                                                                  |
-| **Blocker**         | Keine.                                                                                                                                                                     |
-| **Notizen**         | Champion-Einreichung Termin 2 = **10.08.**. PR #8/#9/#10 sind frische Verdict-Gate-Belege für `evidence.md`. Repo aufgeräumt: nur noch `main`; `.superpowers/` gitignored. |
+| Kennzahl    | Wert                                                                                                                                                 |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Blocker** | Keine.                                                                                                                                               |
+| **Notizen** | Champion-Einreichung Termin 2 = **10.08.**; PR #8/#9/#10 = Verdict-Gate-Belege. Kit auf `a7170e5` (neue Skill-Staende greifen ab naechster Session). |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] **Neues Feature starten** — `/dtb:feature-start` (Ideen-Inbox #1/#3/#4/#5).
+- [ ] **`/dtb:feature-plan Dashboard Mission Control`** — Spec + Plan aus `features/dashboard-mission-control/discovery.md`.
+- [ ] **Uncommitted committen** — Checkpoint S4/S5, `autoComplete="off"`-Fix, Discovery + INBOX.
+- [ ] **Autofill-Fix verifizieren + Combobox abnehmen** — nach Deploy in Prod (Modellname-Feld: keine Fremdeintraege mehr; 2 offene Live-Kriterien in `FEATURE_MODEL_NAME_COMBOBOX.md`).
 - [ ] **Champion abschließen** — `/10x-archive ci-review-agent`; grüne Läufe PR #3–#10 in `evidence.md`. **Job-Logs verfallen ~07.10.**
 - [ ] **Sammel-Einreichung Termin 2 (10.08.):** Builder + Architect + Champion.
-- [ ] **Kit-Drift (optional):** `/dtb:kit-sync sync` — 4 Agents „Update verfügbar" ggü. `66c6f27`.
-- [ ] **Ideen-Inbox:** #1 Task-based evals, #3 Test-Palette, #4 Dashboard-Visualisierung, #5 Live-Run-Visualisierung (alle Offen).
-- [ ] **Geparkte Minors:** Connection-Test-Fallback bei 401 (Entscheidung offen); Picker `client:load`→`client:visible` (Finding PR #8); Live-Progress 0 Tokens; Generierungs-Fehler ohne Rep-Detail; DRY `tryParseJson`; Badge-Markup 4×; Banner rendert vor Ruler; aria-hidden Ruler-Träger; tabular-nums nur RunRunner; Actions Node-20-Deprecation (`actions/*@v5`).
+- [ ] **Altbestand:** `features/FEATURE_MODEL_NAME_COMBOBOX.md` → `/dtb:migrate-change-folders` oder archivieren.
+- [ ] **Ideen-Inbox:** #1 Task-based evals, #3 Test-Palette, #5 Live-Run-Visualisierung, #6 Combobox-Ersatz (alle Offen; #4 in Arbeit → Discovery done).
+- [ ] **Geparkte Minors:** Connection-Test-Fallback bei 401; Picker `client:load`→`client:visible` (PR #8); Live-Progress 0 Tokens; Generierungs-Fehler ohne Rep-Detail; DRY `tryParseJson`; Badge-Markup 4×; Banner vor Ruler; aria-hidden Ruler-Träger; tabular-nums nur RunRunner; Actions Node-20-Deprecation; Compare-Typ-Herleitung im Tooltip erklären; Modellname-Platzhalter `gpt-4o` irreführend bei Nicht-OpenAI-Providern.
 
 ---
 
 ## Abgeschlossene Meilensteine (kompakt)
 
-| Datum      | Meilenstein                                          | Ergebnis                                                                                       | Details                                               |
-| ---------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------- | ----------------------------------------------------- |
-| 2026-07-14 | **Model Compare fertig (17/17)** — Phase 5 live      | PR #10 (10.0/10) gemergt `19a8e8c`; Prod-Sichtprüfung bestanden; E2E 5/5 + 225 Unit-Tests grün | `2026-07-14.md` (S1), `archive/model-compare/plan.md` |
-| 2026-07-13 | Model Compare Phase 4 live (Compare 2–4 Modelle)     | PR #8 (9.5/10) + Farb-Fix PR #9 (10.0/10); Prod-Sichtprüfung komplett                          | `2026-07-13.md` (S1), `archive/model-compare/plan.md` |
-| 2026-07-11 | Model Compare Phasen 1–3 live                        | Baseline-Läufe + model-profiles-Service + Profil-Seite                                         | `2026-07-11.md` (S4), `archive/model-compare/plan.md` |
-| 2026-07-11 | Model Compare geplant (Discovery→Spec→Plan→Review)   | Plan Reviewed, 5 Phasen/17 Schritte; Lektion L1                                                | `2026-07-11.md` (S3), `archive/model-compare/`        |
-| 2026-07-11 | Design-Angleich Stufe B+C live — App einsprachig     | 6 Inseln editorial/EN; 3 PRs à 10.0/10                                                         | `2026-07-11.md` (S1), PR #5/#6/#7                     |
-| 2026-07-10 | Design-Angleich Stufe A (Chrome) live                | AppLayout, 9 Seiten, Copy EN                                                                   | `2026-07-10.md`, PR #4                                |
-| 2026-07-09 | Landing „Live Instrument" + CI-Review-Agent komplett | PR #3; Gate beide Richtungen belegt                                                            | `2026-07-09.md`, `evidence.md`                        |
-| 2026-07-05 | Zertifizierungs-Entscheidung: Champion               | Alle 3 Badges zusammen bei Termin 2/3                                                          | `2026-07-05.md`                                       |
+| Datum      | Meilenstein                                          | Ergebnis                                                                                           | Details                                                     |
+| ---------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| 2026-07-14 | Discovery „Dashboard Mission Control" + Kit-Sync     | fable-25 analysiert (HELIOS/CHRONARIUM/GRIDWATCH); Kit `66c6f27`→`a7170e5` (39/39 synchron)        | `2026-07-14.md` (S5), `features/dashboard-mission-control/` |
+| 2026-07-14 | **Model Compare abgenommen + archiviert**            | Prod-Abnahme durch Damian; `archive/model-compare/`, ARCHIVE_LOG; Commit `0485b2f`, CI+Deploy grün | `2026-07-14.md` (S4), `archive/ARCHIVE_LOG.md`              |
+| 2026-07-14 | **Model Compare fertig (17/17)** — Phase 5 live      | PR #10 (10.0/10) gemergt `19a8e8c`; Prod-Sichtprüfung bestanden; E2E 5/5 + 225 Unit-Tests grün     | `2026-07-14.md` (S1), `archive/model-compare/plan.md`       |
+| 2026-07-13 | Model Compare Phase 4 live (Compare 2–4 Modelle)     | PR #8 (9.5/10) + Farb-Fix PR #9 (10.0/10); Prod-Sichtprüfung komplett                              | `2026-07-13.md` (S1), `archive/model-compare/plan.md`       |
+| 2026-07-11 | Model Compare Phasen 1–3 live + geplant              | Baseline-Läufe + model-profiles-Service + Profil-Seite; Plan Reviewed (5 Phasen/17 Schritte)       | `2026-07-11.md` (S3/S4)                                     |
+| 2026-07-11 | Design-Angleich Stufe B+C live — App einsprachig     | 6 Inseln editorial/EN; 3 PRs à 10.0/10                                                             | `2026-07-11.md` (S1), PR #5/#6/#7                           |
+| 2026-07-10 | Design-Angleich Stufe A (Chrome) live                | AppLayout, 9 Seiten, Copy EN                                                                       | `2026-07-10.md`, PR #4                                      |
+| 2026-07-09 | Landing „Live Instrument" + CI-Review-Agent komplett | PR #3; Gate beide Richtungen belegt                                                                | `2026-07-09.md`, `evidence.md`                              |
+| 2026-07-05 | Zertifizierungs-Entscheidung: Champion               | Alle 3 Badges zusammen bei Termin 2/3                                                              | `2026-07-05.md`                                             |
 
 ---
 
@@ -61,7 +63,7 @@ Module 1–4 = **20/20 ✅**. **10xBuilder** + **10xArchitect** einreichbereit.
 - **Volles Lint lokal:** `npx eslint . --rule '{"prettier/prettier":"off"}'` (CRLF); nie Teilmengen linten.
 - **`lint-staged` darf `package-lock.json` nicht anfassen.** Prettier zerlegt `astro`-Codefences in Markdown.
 - **Squash-Merge:** danach `git reset --hard origin/main`, kein `git pull`.
-- **E2E braucht Docker + lokales Supabase** (`npx supabase start`); Baseline-Daten kommen per DB-Insert (`tests/e2e/support/seed.ts`) — ein echter Lauf wären N LLM-Calls. Seed-Client meldet sich mit den Credentials aus `playwright/.auth/` als derselbe User an (sonst RLS-unsichtbar).
+- **E2E braucht Docker + lokales Supabase**; Baseline-Daten per DB-Insert (`tests/e2e/support/seed.ts`); Seed-Client mit `playwright/.auth/`-Credentials (sonst RLS-unsichtbar).
 - **Dev-SSR/Hydration:** „Invalid hook call" harmlos; Playwright-fill vor Hydration → `astro-island:not([ssr])`-Wait. Memory `persona-forge-dev-ssr-noise`.
 - **Connection-Test ≠ Lauf-Pfad:** Test probt `GET /models` (Bearer) — Anthropic-Compat deckt nur `/chat/completions` → 401 trotz korrekter Config. Memory `persona-forge-zai-provider`.
 - **Anthropic via OpenAI-Compat:** `https://api.anthropic.com/v1` + exakte Modell-IDs ohne Datums-Suffix (`claude-sonnet-5`, `claude-opus-4-8`, `claude-haiku-4-5`).
@@ -72,7 +74,8 @@ Module 1–4 = **20/20 ✅**. **10xBuilder** + **10xArchitect** einreichbereit.
 - **`ENCRYPTION_KEY` MUSS = `.dev.vars`/`.env`-Key**, sonst hängen Läufe 0/N.
 - **Push auf `main` = Prod-Deploy**; CI-Fail blockt Deploy lautlos → nach Push `gh run list --branch main`.
 - **`persona_id null` heißt „Persona gelöscht", nicht „ohne Persona"** — Baseline nur über `isBaselineRun` (Lektion L1).
-- **kit-sync:** Lock `~/.claude/dtb-lock.json` (Quelle `master@66c6f27`).
+- **kit-sync:** Lock `~/.claude/dtb-lock.json` (Quelle `master@a7170e5`).
+- **Natives `<datalist>`** rendert der Browser (Tokens/Dark Mode wirkungslos); Browser-Autofill mischt Formular-Historie ins Dropdown → `autoComplete="off"` (Fix S5); Ersatz = Idee #6.
 
 ---
 
@@ -84,5 +87,5 @@ Keine.
 
 ## Handoff
 
-**Naechster Befehl:** `/10x-archive ci-review-agent` (Champion-Nachweis, zeitkritisch: Job-Logs verfallen ~07.10.) — danach `/dtb:feature-start` für das nächste Feature aus der Ideen-Inbox.
+**Naechster Befehl:** `/dtb:feature-plan Dashboard Mission Control` (Discovery liegt vor: `features/dashboard-mission-control/discovery.md`) — vorher die uncommitteten Staende committen.
 **Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume` (stellt Kontext her), danach obigen Befehl.

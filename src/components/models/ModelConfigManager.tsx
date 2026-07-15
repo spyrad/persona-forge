@@ -263,6 +263,8 @@ export default function ModelConfigManager({ initialConfigs, loadError = false }
           error={errors.modelName}
           icon={<Box className="size-4" />}
           list={modelOptions.length ? "model-name-options" : undefined}
+          // sonst mischt der Browser seine Formular-Historie unter die Provider-Modelle
+          autoComplete="off"
           hint={
             modelOptions.length ? (
               <span className="text-muted-foreground mt-1 block text-xs">
