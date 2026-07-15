@@ -7,9 +7,9 @@
 
 ## Status (generiert aus Artefakten — nicht manuell editieren)
 
-| Item                      | Status (abgeleitet) | Fortschritt | Naechster Schritt                                               |
-| ------------------------- | ------------------- | ----------- | --------------------------------------------------------------- |
-| Dashboard Mission Control | In Arbeit           | 10/13       | 4.1 E2E Dashboard-Kette (`/10x-e2e`, braucht Docker + Supabase) |
+| Item                      | Status (abgeleitet) | Fortschritt | Naechster Schritt                                         |
+| ------------------------- | ------------------- | ----------- | --------------------------------------------------------- |
+| Dashboard Mission Control | In Arbeit           | 11/13       | 4.2 Full Suite + PR (Verdict-Gate), dann 4.3 Prod-Abnahme |
 
 ---
 

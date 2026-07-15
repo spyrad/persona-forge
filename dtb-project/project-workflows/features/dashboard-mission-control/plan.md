@@ -271,7 +271,7 @@ in Prod sichtpruefen.
 - [x] 3.2 `hero-layout.ts` + statisches Hero (server-gerendert, feste Hoehe) — `1c6a470`
 - [x] 3.3 CSS-Animation + Bewegungsreduktion — `1c6a470`
 - [x] 3.4 Hero-Zustaende + Unit-Tests + Wiederverwendbarkeits-Notiz — `02a9811` (Zustaende + Notiz bereits in `1c6a470`)
-- [ ] 4.1 E2E Dashboard-Kette
+- [x] 4.1 E2E Dashboard-Kette (Register-Aggregation + Profil-Routing, deliberate-break verifiziert) — `2ffdf80`
 - [ ] 4.2 Full Suite + PR (Verdict-Gate)
 - [ ] 4.3 Prod-Sichtpruefung + Abnahme
 
