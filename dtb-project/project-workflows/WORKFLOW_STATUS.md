@@ -15,20 +15,19 @@
 
 ## Kontext (manuell)
 
-| Kennzahl    | Wert                                                                                                                                                                                             |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Blocker** | Keine.                                                                                                                                                                                           |
-| **Notizen** | Dashboard Mission Control **live** (PR #11, Merge `24f50c2`, Verdict 10.0/10, Deploy gruen). Lokaler `main` synchron. Naechstes: Feature archivieren. Champion-Einreichung Termin 2 = **10.08.** |
+| Kennzahl    | Wert                                                                                                                                                                                                                                                     |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Blocker** | Keine.                                                                                                                                                                                                                                                   |
+| **Notizen** | Dashboard Mission Control **live** (PR #11, Merge `24f50c2`, Verdict 10.0/10, Deploy gruen). Lokaler `main` synchron. Modellname-Combobox **abgenommen** (2026-07-15). Naechstes: beide Features archivieren. Champion-Einreichung Termin 2 = **10.08.** |
 
 ---
 
 ## Offene Aufgaben
 
 - [ ] **Dashboard Mission Control archivieren** — Feature 13/13, abgenommen, live; `/dtb:archive` (oder DTB-Archiv-Flow)
-- [ ] **Autofill-Fix in Prod verifizieren + Combobox abnehmen** — deployt via `1cb0fac`; 2 offene Live-Kriterien in `FEATURE_MODEL_NAME_COMBOBOX.md`
+- [ ] **Modellname-Combobox archivieren** — abgenommen 2026-07-15; flaches Alt-Format → `/dtb:migrate-change-folders` dann archivieren (oder direkt in `archive/` + `ARCHIVE_LOG.md`)
 - [ ] **Champion abschliessen** — `/10x-archive ci-review-agent`; PR #3–#10 in `evidence.md`. **Job-Logs verfallen ~07.10.**
 - [ ] **Sammel-Einreichung Termin 2 (10.08.):** Builder + Architect + Champion
-- [ ] **Altbestand:** `features/FEATURE_MODEL_NAME_COMBOBOX.md` → `/dtb:migrate-change-folders` oder archivieren
 - [ ] **Ideen-Inbox:** #1 Task-based evals, #3 Test-Palette, #5 Live-Run-Visualisierung, #6 Combobox-Ersatz (alle Offen)
 - [ ] **Geparkte Minors:** unveraendert (Connection-Test-Fallback 401; Picker `client:visible`; Live-Progress 0 Tokens; DRY `tryParseJson`; Badge-Markup; Banner/Ruler; tabular-nums; Node-20-Deprecation; Compare-Tooltip; Platzhalter `gpt-4o`)
 
@@ -38,6 +37,7 @@
 
 | Datum      | Meilenstein                                           | Ergebnis                                                                                          | Details                                                     |
 | ---------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| 2026-07-15 | **Modellname-Combobox abgenommen**                    | Live-Kriterien erfuellt; deployt via `1cb0fac`; Status → Abgeschlossen (Archivierung offen)       | `features/FEATURE_MODEL_NAME_COMBOBOX.md`                   |
 | 2026-07-15 | **Dashboard Mission Control abgeschlossen** (13/13)   | PR #11 gemergt (`24f50c2`), Verdict 10.0/10, Deploy gruen, Prod-Abnahme; E2E-Kette + Hero-Motion  | `2026-07-15.md` (S3), `features/dashboard-mission-control/` |
 | 2026-07-15 | Dashboard Mission Control: Spec→Plan→Review→Phase 1–3 | Plan Reviewed (8 Entscheidungen); Summary-Service + Register + Orbit-Hero gebaut; 240 Tests gruen | `2026-07-15.md` (S1), `features/dashboard-mission-control/` |
 | 2026-07-15 | Autofill-Fix deployt                                  | `1cb0fac` auf `main`, CI+Deploy gruen; Prod-Verifikation offen                                    | `2026-07-15.md` (S1)                                        |

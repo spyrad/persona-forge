@@ -1,6 +1,6 @@
 # Feature Backlog
 
-**Letzte Aktualisierung:** 2026-07-15
+**Letzte Aktualisierung:** 2026-07-15 (Modellname-Combobox abgenommen)
 
 ---
 
@@ -24,5 +24,9 @@ Keine aktiven Features. Starte eines mit `/dtb:feature-start`.
 Abgeschlossene Features werden archiviert und nur noch im Archiv gefuehrt:
 `dtb-project/project-workflows/archive/ARCHIVE_LOG.md` (zuletzt: Model Compare, 2026-07-14).
 
-**Fertig, noch nicht archiviert:** Dashboard Mission Control (13/13, abgenommen,
-live via PR #11 `24f50c2`) — Archivierung offen (`/dtb:archive`).
+**Fertig, noch nicht archiviert:**
+
+- Dashboard Mission Control (13/13, abgenommen, live via PR #11 `24f50c2`) —
+  Archivierung offen (`/dtb:archive`).
+- Modellname-Combobox (abgenommen 2026-07-15, deployt via `1cb0fac`) —
+  Archivierung offen; flaches Alt-Format → ggf. erst `/dtb:migrate-change-folders`.

@@ -3,7 +3,8 @@
 **Erstellt:** 2026-07-01
 **Ziel:** Beim Anlegen/Bearbeiten einer Modellkonfig den Modellnamen aus den real verfügbaren Provider-Modellen wählen, statt ihn blind zu tippen.
 **Prioritaet:** Mittel
-**Status:** Fertig zum Testen
+**Status:** Abgeschlossen <!-- 2026-07-15 von Damian abgenommen; deployt via `1cb0fac` -->
+**Abgenommen:** 2026-07-15
 
 ---
 
@@ -74,8 +75,8 @@ Flexibilität für nicht-gelistete Modelle zu verlieren.
 
 **Das Feature gilt als erfolgreich wenn:**
 
-- [ ] Nach „Verbindung testen" erscheint das Modellname-Feld als durchsuchbare Liste der real verfügbaren Modelle. _(Live-Abnahme offen)_
-- [ ] Auswahl eines Listeneintrags setzt den Modellnamen korrekt; Speichern übernimmt ihn. _(Live-Abnahme offen)_
+- [x] Nach „Verbindung testen" erscheint das Modellname-Feld als durchsuchbare Liste der real verfügbaren Modelle. _(Live abgenommen 2026-07-15)_
+- [x] Auswahl eines Listeneintrags setzt den Modellnamen korrekt; Speichern übernimmt ihn. _(Live abgenommen 2026-07-15)_
 - [x] Ein nicht-gelistetes Modell lässt sich weiterhin per Freitext eintragen. _(`<datalist>` erlaubt Freitext by design)_
 - [x] Der API-Key erscheint in **keiner** Response (`probeModels` gibt nur `models`-IDs zurück).
 - [x] Bestehendes Speichern/Bearbeiten unverändert (Formularlogik nicht angefasst; `models` rein additiv).
