@@ -15,16 +15,15 @@
 
 ## Kontext (manuell)
 
-| Kennzahl    | Wert                                                                                                                                                                                                                                                                                                 |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Blocker** | Keine.                                                                                                                                                                                                                                                                                               |
-| **Notizen** | Dashboard Mission Control **archiviert** (`archive/dashboard-mission-control/`, PR #11 `24f50c2`, Verdict 10.0/10, live). Modellname-Combobox **abgenommen** (2026-07-15), Archivierung offen. Lokaler `main` synchron. Naechstes: Combobox archivieren + Champion-Einreichung Termin 2 = **10.08.** |
+| Kennzahl    | Wert                                                                                                                                                                                                                                                                                    |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Blocker** | Keine.                                                                                                                                                                                                                                                                                  |
+| **Notizen** | Dashboard Mission Control + Modellname-Combobox **archiviert** (2026-07-15; `archive/dashboard-mission-control/`, `archive/model-name-combobox/`). Keine offenen Features. Lokaler `main` synchron (2 Doc-Commits nicht gepusht). Naechstes: Champion-Einreichung Termin 2 = **10.08.** |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] **Modellname-Combobox archivieren** — abgenommen 2026-07-15; flaches Alt-Format → `/dtb:migrate-change-folders` dann archivieren (oder direkt in `archive/` + `ARCHIVE_LOG.md`)
 - [ ] **Champion abschliessen** — `/10x-archive ci-review-agent`; PR #3–#10 in `evidence.md`. **Job-Logs verfallen ~07.10.**
 - [ ] **Sammel-Einreichung Termin 2 (10.08.):** Builder + Architect + Champion
 - [ ] **Ideen-Inbox:** #1 Task-based evals, #3 Test-Palette, #5 Live-Run-Visualisierung, #6 Combobox-Ersatz (alle Offen)
@@ -36,7 +35,7 @@
 
 | Datum      | Meilenstein                                                      | Ergebnis                                                                                                    | Details                                                     |
 | ---------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| 2026-07-15 | **Modellname-Combobox abgenommen**                               | Live-Kriterien erfuellt; deployt via `1cb0fac`; Status → Abgeschlossen (Archivierung offen)                 | `features/FEATURE_MODEL_NAME_COMBOBOX.md`                   |
+| 2026-07-15 | **Modellname-Combobox abgenommen + archiviert**                  | Live-Kriterien erfuellt; deployt via `1cb0fac`; aus Alt-Format migriert nach `archive/model-name-combobox/` | `archive/model-name-combobox/spec.md`                       |
 | 2026-07-15 | **Dashboard Mission Control abgeschlossen + archiviert** (13/13) | PR #11 gemergt (`24f50c2`), Verdict 10.0/10, Prod-Abnahme; E2E-Kette + Hero-Motion; archiviert via DTB-Flow | `2026-07-15.md` (S3), `archive/dashboard-mission-control/`  |
 | 2026-07-15 | Dashboard Mission Control: Spec→Plan→Review→Phase 1–3            | Plan Reviewed (8 Entscheidungen); Summary-Service + Register + Orbit-Hero gebaut; 240 Tests gruen           | `2026-07-15.md` (S1), `features/dashboard-mission-control/` |
 | 2026-07-15 | Autofill-Fix deployt                                             | `1cb0fac` auf `main`, CI+Deploy gruen; Prod-Verifikation offen                                              | `2026-07-15.md` (S1)                                        |
@@ -84,5 +83,5 @@ Keine.
 
 ## Handoff
 
-**Naechster Befehl:** Modellname-Combobox archivieren (DTB-Archiv-Flow: `git mv features/… archive/…` + `ARCHIVE_LOG.md`; ggf. vorher `/dtb:migrate-change-folders`). Danach Champion-Einreichung Termin 2 (10.08.) vorbereiten — Job-Logs verfallen ~07.10.
-**Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume`.
+**Naechster Befehl:** Champion abschliessen — `/10x-archive ci-review-agent`, PR #3–#11 in `evidence.md` erfassen (Job-Logs verfallen ~07.10.), dann Sammel-Einreichung Termin 2 (10.08.). Alternativ neues Feature aus der Ideen-Inbox (#7/#4/#5 verwandt → `/dtb:idea-review`).
+**Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume`. Offene lokale Doc-Commits ggf. pushen (= Prod-Doc-Deploy).

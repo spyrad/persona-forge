@@ -3,7 +3,7 @@
 **Erstellt:** 2026-07-01
 **Ziel:** Beim Anlegen/Bearbeiten einer Modellkonfig den Modellnamen aus den real verfügbaren Provider-Modellen wählen, statt ihn blind zu tippen.
 **Prioritaet:** Mittel
-**Status:** Abgeschlossen <!-- 2026-07-15 von Damian abgenommen; deployt via `1cb0fac` -->
+**Status:** Abgeschlossen <!-- 2026-07-15 von Damian abgenommen (deployt via `1cb0fac`), archiviert via DTB-Archiv-Flow 2026-07-15; migriert vom flachen Alt-Format FEATURE_MODEL_NAME_COMBOBOX.md -->
 **Abgenommen:** 2026-07-15
 
 ---
