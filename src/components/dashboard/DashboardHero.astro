@@ -45,6 +45,7 @@ const rings = layout.nodes.length > 0 ? layout.rings : [70, 110, HERO_OUTER_RING
       ))
     }
 
+    <circle class="core-halo" cx={cx} cy={cy} r="5"></circle>
     <circle class="core" cx={cx} cy={cy} r="5"></circle>
     <text x={cx} y={cy + 24} text-anchor="middle" class="hero-mono muted" font-size="10">baseline core</text>
 
@@ -146,7 +147,10 @@ const rings = layout.nodes.length > 0 ? layout.rings : [70, 110, HERO_OUTER_RING
 
   .orbit {
     fill: none;
-    stroke: var(--border);
+    /* Sichtbares, aber ruhiges Scaffolding: gedaempfte Kontur statt fast
+       unsichtbarem --border, damit die driftenden Striche wahrnehmbar sind. */
+    stroke: var(--muted-foreground);
+    stroke-opacity: 0.3;
     /* Drift der Striche entlang der Bahn — ruhig und konstant (HELIOS-Prinzip). */
     animation: drift 90s linear infinite;
   }
@@ -154,10 +158,24 @@ const rings = layout.nodes.length > 0 ? layout.rings : [70, 110, HERO_OUTER_RING
     fill: var(--primary);
     transform-origin: center;
     transform-box: fill-box;
-    animation: breathe 6s ease-in-out infinite;
+    animation: breathe 5s ease-in-out infinite;
+  }
+  /* Sonar-Ping des Baseline-Kerns — klar sichtbares Lebenszeichen, ruhig getaktet. */
+  .core-halo {
+    fill: none;
+    stroke: var(--primary);
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: ping 4s ease-out infinite;
   }
   .node {
     animation: pulse 4.5s ease-in-out infinite;
+  }
+  /* Der farbige Punkt atmet sichtbar (Groesse) — das Label bleibt ruhig. */
+  .node circle {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: dot-throb 4.5s ease-in-out infinite;
   }
   .node:hover .fg,
   .node:hover text.fg {
@@ -185,16 +203,32 @@ const rings = layout.nodes.length > 0 ? layout.rings : [70, 110, HERO_OUTER_RING
   }
   @keyframes breathe {
     50% {
-      transform: scale(1.18);
+      transform: scale(1.3);
+    }
+  }
+  @keyframes ping {
+    0% {
+      transform: scale(1);
+      opacity: 0.45;
+    }
+    70%,
+    100% {
+      transform: scale(3.4);
+      opacity: 0;
     }
   }
   @keyframes pulse {
     0%,
     100% {
-      opacity: 0.65;
+      opacity: 0.8;
     }
     50% {
       opacity: 1;
+    }
+  }
+  @keyframes dot-throb {
+    50% {
+      transform: scale(1.22);
     }
   }
 
@@ -202,7 +236,9 @@ const rings = layout.nodes.length > 0 ? layout.rings : [70, 110, HERO_OUTER_RING
   @media (prefers-reduced-motion: reduce) {
     .orbit,
     .core,
-    .node {
+    .core-halo,
+    .node,
+    .node circle {
       animation: none;
     }
   }
