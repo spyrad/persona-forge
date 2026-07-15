@@ -7,24 +7,23 @@
 
 ## Status (generiert aus Artefakten — nicht manuell editieren)
 
-| Item                      | Status (abgeleitet) | Fortschritt | Naechster Schritt                         |
-| ------------------------- | ------------------- | ----------- | ----------------------------------------- |
-| Dashboard Mission Control | Abgeschlossen       | 13/13       | Archivieren (`/dtb:archive`) — abgenommen |
+| Item | Status (abgeleitet)    | Fortschritt | Naechster Schritt                                              |
+| ---- | ---------------------- | ----------- | -------------------------------------------------------------- |
+| —    | Keine aktiven Features | —           | Neues Feature (`/dtb:feature-start`) oder Champion-Einreichung |
 
 ---
 
 ## Kontext (manuell)
 
-| Kennzahl    | Wert                                                                                                                                                                                                                                                     |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Blocker** | Keine.                                                                                                                                                                                                                                                   |
-| **Notizen** | Dashboard Mission Control **live** (PR #11, Merge `24f50c2`, Verdict 10.0/10, Deploy gruen). Lokaler `main` synchron. Modellname-Combobox **abgenommen** (2026-07-15). Naechstes: beide Features archivieren. Champion-Einreichung Termin 2 = **10.08.** |
+| Kennzahl    | Wert                                                                                                                                                                                                                                                                                                 |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Blocker** | Keine.                                                                                                                                                                                                                                                                                               |
+| **Notizen** | Dashboard Mission Control **archiviert** (`archive/dashboard-mission-control/`, PR #11 `24f50c2`, Verdict 10.0/10, live). Modellname-Combobox **abgenommen** (2026-07-15), Archivierung offen. Lokaler `main` synchron. Naechstes: Combobox archivieren + Champion-Einreichung Termin 2 = **10.08.** |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] **Dashboard Mission Control archivieren** — Feature 13/13, abgenommen, live; `/dtb:archive` (oder DTB-Archiv-Flow)
 - [ ] **Modellname-Combobox archivieren** — abgenommen 2026-07-15; flaches Alt-Format → `/dtb:migrate-change-folders` dann archivieren (oder direkt in `archive/` + `ARCHIVE_LOG.md`)
 - [ ] **Champion abschliessen** — `/10x-archive ci-review-agent`; PR #3–#10 in `evidence.md`. **Job-Logs verfallen ~07.10.**
 - [ ] **Sammel-Einreichung Termin 2 (10.08.):** Builder + Architect + Champion
@@ -35,16 +34,16 @@
 
 ## Abgeschlossene Meilensteine (kompakt)
 
-| Datum      | Meilenstein                                           | Ergebnis                                                                                          | Details                                                     |
-| ---------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| 2026-07-15 | **Modellname-Combobox abgenommen**                    | Live-Kriterien erfuellt; deployt via `1cb0fac`; Status → Abgeschlossen (Archivierung offen)       | `features/FEATURE_MODEL_NAME_COMBOBOX.md`                   |
-| 2026-07-15 | **Dashboard Mission Control abgeschlossen** (13/13)   | PR #11 gemergt (`24f50c2`), Verdict 10.0/10, Deploy gruen, Prod-Abnahme; E2E-Kette + Hero-Motion  | `2026-07-15.md` (S3), `features/dashboard-mission-control/` |
-| 2026-07-15 | Dashboard Mission Control: Spec→Plan→Review→Phase 1–3 | Plan Reviewed (8 Entscheidungen); Summary-Service + Register + Orbit-Hero gebaut; 240 Tests gruen | `2026-07-15.md` (S1), `features/dashboard-mission-control/` |
-| 2026-07-15 | Autofill-Fix deployt                                  | `1cb0fac` auf `main`, CI+Deploy gruen; Prod-Verifikation offen                                    | `2026-07-15.md` (S1)                                        |
-| 2026-07-14 | Model Compare abgenommen + archiviert                 | Prod-Abnahme; `archive/model-compare/`, Commit `0485b2f`                                          | `2026-07-14.md` (S4), `archive/ARCHIVE_LOG.md`              |
-| 2026-07-14 | Discovery „Dashboard Mission Control" + Kit-Sync      | fable-25 analysiert; Kit `66c6f27`→`a7170e5`                                                      | `2026-07-14.md` (S5)                                        |
-| 2026-07-11 | Model Compare Phasen 1–4 + Design einsprachig         | Baseline/Profile/Compare live; PR #5–#9                                                           | `2026-07-11.md`, `2026-07-13.md`                            |
-| 2026-07-09 | Landing „Live Instrument" + CI-Review-Agent           | PR #3; Verdict-Gate beide Richtungen belegt                                                       | `2026-07-09.md`, `evidence.md`                              |
+| Datum      | Meilenstein                                                      | Ergebnis                                                                                                    | Details                                                     |
+| ---------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| 2026-07-15 | **Modellname-Combobox abgenommen**                               | Live-Kriterien erfuellt; deployt via `1cb0fac`; Status → Abgeschlossen (Archivierung offen)                 | `features/FEATURE_MODEL_NAME_COMBOBOX.md`                   |
+| 2026-07-15 | **Dashboard Mission Control abgeschlossen + archiviert** (13/13) | PR #11 gemergt (`24f50c2`), Verdict 10.0/10, Prod-Abnahme; E2E-Kette + Hero-Motion; archiviert via DTB-Flow | `2026-07-15.md` (S3), `archive/dashboard-mission-control/`  |
+| 2026-07-15 | Dashboard Mission Control: Spec→Plan→Review→Phase 1–3            | Plan Reviewed (8 Entscheidungen); Summary-Service + Register + Orbit-Hero gebaut; 240 Tests gruen           | `2026-07-15.md` (S1), `features/dashboard-mission-control/` |
+| 2026-07-15 | Autofill-Fix deployt                                             | `1cb0fac` auf `main`, CI+Deploy gruen; Prod-Verifikation offen                                              | `2026-07-15.md` (S1)                                        |
+| 2026-07-14 | Model Compare abgenommen + archiviert                            | Prod-Abnahme; `archive/model-compare/`, Commit `0485b2f`                                                    | `2026-07-14.md` (S4), `archive/ARCHIVE_LOG.md`              |
+| 2026-07-14 | Discovery „Dashboard Mission Control" + Kit-Sync                 | fable-25 analysiert; Kit `66c6f27`→`a7170e5`                                                                | `2026-07-14.md` (S5)                                        |
+| 2026-07-11 | Model Compare Phasen 1–4 + Design einsprachig                    | Baseline/Profile/Compare live; PR #5–#9                                                                     | `2026-07-11.md`, `2026-07-13.md`                            |
+| 2026-07-09 | Landing „Live Instrument" + CI-Review-Agent                      | PR #3; Verdict-Gate beide Richtungen belegt                                                                 | `2026-07-09.md`, `evidence.md`                              |
 
 ---
 
@@ -85,5 +84,5 @@ Keine.
 
 ## Handoff
 
-**Naechster Befehl:** Dashboard Mission Control archivieren (`/dtb:archive` bzw. DTB-Archiv-Flow) — Feature ist 13/13, abgenommen und live. Danach naechstes Feature aus dem BACKLOG oder Champion-Einreichung vorbereiten.
-**Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume`. Lokale Dienste (Dev-Server 4321, Supabase) laufen ggf. noch — bei Bedarf stoppen.
+**Naechster Befehl:** Modellname-Combobox archivieren (DTB-Archiv-Flow: `git mv features/… archive/…` + `ARCHIVE_LOG.md`; ggf. vorher `/dtb:migrate-change-folders`). Danach Champion-Einreichung Termin 2 (10.08.) vorbereiten — Job-Logs verfallen ~07.10.
+**Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume`.

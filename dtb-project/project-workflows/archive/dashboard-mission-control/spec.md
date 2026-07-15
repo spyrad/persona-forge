@@ -3,7 +3,7 @@
 **Erstellt:** 2026-07-15
 **Ziel:** Das Dashboard beantwortet auf einen Blick „Was ist der Stand meines Labors?" — mit echten Kennzahlen und einer ruhig animierten Darstellung der profilierten Modelle.
 **Prioritaet:** Mittel
-**Status:** Abgeschlossen <!-- abgeleitete Anzeige, wird von dtb:workflow-checkpoint synchronisiert (project-rules/DERIVED_STATE_RULES.md) -->
+**Status:** Abgeschlossen <!-- abgenommen von Damian 2026-07-15 (Prod-Sichtpruefung), archiviert via DTB-Archiv-Flow 2026-07-15 -->
 
 ---
 
