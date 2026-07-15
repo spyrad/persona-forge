@@ -1,0 +1,209 @@
+---
+/**
+ * Dashboard-Hero (Orbit, Entscheidung 3.1): server-gerendertes SVG — Layout aus
+ * `hero-layout.ts` (pur), Bewegung rein per CSS (3.3). Keine Insel, keine
+ * Hydration: feste Hoehe + SSR erfuellen „nichts springt nach" per Konstruktion.
+ * Farben nur via Tokens (`var(--chart-1)` etc.) — Light/Dark automatisch;
+ * `prefers-reduced-motion` haelt alles an, Inhalte identisch.
+ */
+import { buildHeroLayout, HERO_OUTER_RING, HERO_SQUASH, HERO_VIEW } from "@/components/dashboard/hero-layout";
+import { modelProfileHref } from "@/lib/models/profile-link";
+import type { DashboardModelEntry } from "@/types";
+
+interface Props {
+  models: DashboardModelEntry[];
+  /** true = Modell-Quelle ausgefallen → unbelegte Struktur + ERR-Hinweis. */
+  error?: boolean;
+}
+
+const { models, error = false } = Astro.props;
+const layout = buildHeroLayout(error ? [] : models);
+const { width, height, cx, cy } = HERO_VIEW;
+
+/** Leerzustand/ERR: angedeutete, unbelegte Orbit-Struktur (Spec-Randfall). */
+const rings = layout.nodes.length > 0 ? layout.rings : [70, 110, HERO_OUTER_RING];
+---
+
+<div class="relative h-80 w-full" data-hero-state={error ? "error" : layout.empty ? "empty" : "ready"}>
+  <svg
+    viewBox={`0 0 ${String(width)} ${String(height)}`}
+    class="h-full w-full"
+    role="img"
+    aria-label="Profiled models — orbit view"
+  >
+    {
+      rings.map((ring, i) => (
+        <ellipse
+          class="orbit"
+          cx={cx}
+          cy={cy}
+          rx={ring}
+          ry={Math.round(ring * HERO_SQUASH)}
+          stroke-dasharray={ring === HERO_OUTER_RING ? "1 9" : "2 6"}
+          style={`animation-duration: ${String(90 + i * 45)}s`}
+        />
+      ))
+    }
+
+    <circle class="core" cx={cx} cy={cy} r="5"></circle>
+    <text x={cx} y={cy + 24} text-anchor="middle" class="hero-mono muted" font-size="10">baseline core</text>
+
+    {
+      layout.nodes.map((node, i) =>
+        node.profiled ? (
+          <a href={modelProfileHref(node.modelName)} aria-label={`${node.modelName} — ${node.label}, view profile`}>
+            <g class="node" style={`animation-delay: ${String(i * 0.9)}s`}>
+              <circle cx={node.x} cy={node.y} r={node.r} class:list={[node.series === 1 ? "dot-1" : "dot-2"]} />
+              <text
+                x={node.labelAnchor === "start" ? node.x + node.r + 8 : node.x - node.r - 8}
+                y={node.y - 3}
+                text-anchor={node.labelAnchor}
+                class="hero-mono fg"
+                font-size="12"
+              >
+                {node.modelName}
+              </text>
+              <text
+                x={node.labelAnchor === "start" ? node.x + node.r + 8 : node.x - node.r - 8}
+                y={node.y + 12}
+                text-anchor={node.labelAnchor}
+                class="hero-mono muted"
+                font-size="10"
+              >
+                {node.label}
+              </text>
+            </g>
+          </a>
+        ) : (
+          <g class="unprofiled">
+            <circle cx={node.x} cy={node.y} r={node.r} />
+            <text
+              x={node.labelAnchor === "start" ? node.x + node.r + 8 : node.x - node.r - 8}
+              y={node.y - 3}
+              text-anchor={node.labelAnchor}
+              class="hero-mono muted"
+              font-size="11"
+            >
+              {node.modelName}
+            </text>
+            <text
+              x={node.labelAnchor === "start" ? node.x + node.r + 8 : node.x - node.r - 8}
+              y={node.y + 11}
+              text-anchor={node.labelAnchor}
+              class="hero-mono muted"
+              font-size="9"
+            >
+              {node.label}
+            </text>
+          </g>
+        ),
+      )
+    }
+
+    {
+      layout.overflow > 0 ? (
+        <a href="/models" aria-label={`${String(layout.overflow)} more models`}>
+          <text x={width - 16} y={height - 12} text-anchor="end" class="hero-mono accent" font-size="11">
+            +{layout.overflow} more →
+          </text>
+        </a>
+      ) : null
+    }
+  </svg>
+
+  {
+    error ? (
+      <div class="absolute inset-0 flex items-center justify-center">
+        <p class="bg-card/80 text-destructive rounded-lg px-4 py-2 font-mono text-sm">ERR — source unavailable</p>
+      </div>
+    ) : layout.empty ? (
+      <div class="absolute inset-x-0 bottom-6 flex justify-center">
+        <p class="bg-card/80 text-muted-foreground rounded-lg px-4 py-2 text-sm">
+          Profile your first model —{" "}
+          <a href="/runs" class="text-primary hover:text-primary/80 underline underline-offset-2">
+            run a baseline
+          </a>
+        </p>
+      </div>
+    ) : null
+  }
+</div>
+
+<style>
+  .hero-mono {
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    letter-spacing: 0.02em;
+  }
+  .fg {
+    fill: var(--foreground);
+  }
+  .muted {
+    fill: var(--muted-foreground);
+  }
+  .accent {
+    fill: var(--primary);
+  }
+
+  .orbit {
+    fill: none;
+    stroke: var(--border);
+    /* Drift der Striche entlang der Bahn — ruhig und konstant (HELIOS-Prinzip). */
+    animation: drift 90s linear infinite;
+  }
+  .core {
+    fill: var(--primary);
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: breathe 6s ease-in-out infinite;
+  }
+  .node {
+    animation: pulse 4.5s ease-in-out infinite;
+  }
+  .node:hover .fg,
+  .node:hover text.fg {
+    fill: var(--primary);
+  }
+  .dot-1 {
+    fill: var(--chart-1);
+  }
+  .dot-2 {
+    fill: var(--chart-2);
+  }
+  .unprofiled {
+    opacity: 0.4;
+  }
+  .unprofiled circle {
+    fill: none;
+    stroke: var(--muted-foreground);
+    stroke-dasharray: 2 3;
+  }
+
+  @keyframes drift {
+    to {
+      stroke-dashoffset: -400;
+    }
+  }
+  @keyframes breathe {
+    50% {
+      transform: scale(1.18);
+    }
+  }
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 0.65;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  /* Bewegungsreduktion: alles steht, Inhalte identisch (Spec-Kriterium). */
+  @media (prefers-reduced-motion: reduce) {
+    .orbit,
+    .core,
+    .node {
+      animation: none;
+    }
+  }
+</style>
