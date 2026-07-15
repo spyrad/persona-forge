@@ -3,7 +3,7 @@
 **Erstellt:** 2026-07-15
 **Feature-Spec:** `features/dashboard-mission-control/spec.md`
 **Geschaetzte Dauer:** 2–3 Sessions (~10 h)
-**Status:** Reviewed <!-- plan-review 2026-07-15: REVISE → 8 Entscheidungen mit Damian, Anpassungen eingearbeitet -->
+**Status:** Done <!-- 13/13 umgesetzt, PR #11 gemergt (24f50c2), Prod-Abnahme 2026-07-15. plan-review 2026-07-15: REVISE → 8 Entscheidungen mit Damian, eingearbeitet -->
 
 ---
 
@@ -272,8 +272,8 @@ in Prod sichtpruefen.
 - [x] 3.3 CSS-Animation + Bewegungsreduktion — `1c6a470`
 - [x] 3.4 Hero-Zustaende + Unit-Tests + Wiederverwendbarkeits-Notiz — `02a9811` (Zustaende + Notiz bereits in `1c6a470`)
 - [x] 4.1 E2E Dashboard-Kette (Register-Aggregation + Profil-Routing, deliberate-break verifiziert) — `2ffdf80`
-- [ ] 4.2 Full Suite + PR (Verdict-Gate)
-- [ ] 4.3 Prod-Sichtpruefung + Abnahme
+- [x] 4.2 Full Suite + PR (Verdict-Gate) — PR #11, Merge `24f50c2`; Verdict 10.0/10 (0 Findings), Deploy gruen
+- [x] 4.3 Prod-Sichtpruefung + Abnahme — durch Damian abgenommen (Light/Dark, Motion, Kennzahlen, Attribution)
 
 ---
 

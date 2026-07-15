@@ -1,31 +1,30 @@
 # Workflow-Status: persona-forge
 
 **Letztes Update:** 2026-07-15
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-15.md` (Session 2)
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-15.md` (Session 3)
 
 ---
 
 ## Status (generiert aus Artefakten — nicht manuell editieren)
 
-| Item                      | Status (abgeleitet) | Fortschritt | Naechster Schritt                                         |
-| ------------------------- | ------------------- | ----------- | --------------------------------------------------------- |
-| Dashboard Mission Control | In Arbeit           | 11/13       | 4.2 Full Suite + PR (Verdict-Gate), dann 4.3 Prod-Abnahme |
+| Item                      | Status (abgeleitet) | Fortschritt | Naechster Schritt                         |
+| ------------------------- | ------------------- | ----------- | ----------------------------------------- |
+| Dashboard Mission Control | Abgeschlossen       | 13/13       | Archivieren (`/dtb:archive`) — abgenommen |
 
 ---
 
 ## Kontext (manuell)
 
-| Kennzahl    | Wert                                                                                                                                                                                                               |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Blocker** | Keine.                                                                                                                                                                                                             |
-| **Notizen** | Feature-Branch `feat/dashboard-mission-control` gepusht (5 Commits, Working Tree sauber; PR erst in 4.2); Plan Reviewed (8 Entscheidungen, u. a. SVG+CSS statt Canvas). Champion-Einreichung Termin 2 = **10.08.** |
+| Kennzahl    | Wert                                                                                                                                                                                             |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Blocker** | Keine.                                                                                                                                                                                           |
+| **Notizen** | Dashboard Mission Control **live** (PR #11, Merge `24f50c2`, Verdict 10.0/10, Deploy gruen). Lokaler `main` synchron. Naechstes: Feature archivieren. Champion-Einreichung Termin 2 = **10.08.** |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] **Sichtpruefung `/dashboard`** (Schritt 2.3) — `npm run dev`, Light/Dark + Hero-Optik; Feintuning vor dem PR
-- [ ] **Block 4:** 3.4 Unit-Tests `hero-layout`, 4.1 E2E (`/10x-e2e`), 4.2 Full Suite + PR (Verdict-Gate)
+- [ ] **Dashboard Mission Control archivieren** — Feature 13/13, abgenommen, live; `/dtb:archive` (oder DTB-Archiv-Flow)
 - [ ] **Autofill-Fix in Prod verifizieren + Combobox abnehmen** — deployt via `1cb0fac`; 2 offene Live-Kriterien in `FEATURE_MODEL_NAME_COMBOBOX.md`
 - [ ] **Champion abschliessen** — `/10x-archive ci-review-agent`; PR #3–#10 in `evidence.md`. **Job-Logs verfallen ~07.10.**
 - [ ] **Sammel-Einreichung Termin 2 (10.08.):** Builder + Architect + Champion
@@ -39,6 +38,7 @@
 
 | Datum      | Meilenstein                                           | Ergebnis                                                                                          | Details                                                     |
 | ---------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| 2026-07-15 | **Dashboard Mission Control abgeschlossen** (13/13)   | PR #11 gemergt (`24f50c2`), Verdict 10.0/10, Deploy gruen, Prod-Abnahme; E2E-Kette + Hero-Motion  | `2026-07-15.md` (S3), `features/dashboard-mission-control/` |
 | 2026-07-15 | Dashboard Mission Control: Spec→Plan→Review→Phase 1–3 | Plan Reviewed (8 Entscheidungen); Summary-Service + Register + Orbit-Hero gebaut; 240 Tests gruen | `2026-07-15.md` (S1), `features/dashboard-mission-control/` |
 | 2026-07-15 | Autofill-Fix deployt                                  | `1cb0fac` auf `main`, CI+Deploy gruen; Prod-Verifikation offen                                    | `2026-07-15.md` (S1)                                        |
 | 2026-07-14 | Model Compare abgenommen + archiviert                 | Prod-Abnahme; `archive/model-compare/`, Commit `0485b2f`                                          | `2026-07-14.md` (S4), `archive/ARCHIVE_LOG.md`              |
@@ -85,5 +85,5 @@ Keine.
 
 ## Handoff
 
-**Naechster Befehl:** Weiterarbeit am Feature (Block 4: 3.4 Hero-Tests → 4.1 E2E → 4.2 PR) — davor Sichtpruefung `/dashboard` durch Damian (Schritt 2.3, `npm run dev`).
-**Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume` (stellt Kontext her), danach obigen Befehl.
+**Naechster Befehl:** Dashboard Mission Control archivieren (`/dtb:archive` bzw. DTB-Archiv-Flow) — Feature ist 13/13, abgenommen und live. Danach naechstes Feature aus dem BACKLOG oder Champion-Einreichung vorbereiten.
+**Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume`. Lokale Dienste (Dev-Server 4321, Supabase) laufen ggf. noch — bei Bedarf stoppen.
