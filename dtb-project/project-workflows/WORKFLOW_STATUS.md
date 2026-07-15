@@ -1,7 +1,7 @@
 # Workflow-Status: persona-forge
 
 **Letztes Update:** 2026-07-15
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-15.md` (Session 1)
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-15.md` (Session 2)
 
 ---
 
@@ -15,10 +15,10 @@
 
 ## Kontext (manuell)
 
-| Kennzahl    | Wert                                                                                                                                                                                                           |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Blocker** | Keine.                                                                                                                                                                                                         |
-| **Notizen** | Feature-Branch `feat/dashboard-mission-control` (3 Commits, PR bewusst offen); Plan Reviewed (REVISE → 8 Entscheidungen, u. a. SVG+CSS statt Canvas — keine Insel). Champion-Einreichung Termin 2 = **10.08.** |
+| Kennzahl    | Wert                                                                                                                                                                                                               |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Blocker** | Keine.                                                                                                                                                                                                             |
+| **Notizen** | Feature-Branch `feat/dashboard-mission-control` gepusht (5 Commits, Working Tree sauber; PR erst in 4.2); Plan Reviewed (8 Entscheidungen, u. a. SVG+CSS statt Canvas). Champion-Einreichung Termin 2 = **10.08.** |
 
 ---
 
@@ -26,7 +26,6 @@
 
 - [ ] **Sichtpruefung `/dashboard`** (Schritt 2.3) — `npm run dev`, Light/Dark + Hero-Optik; Feintuning vor dem PR
 - [ ] **Block 4:** 3.4 Unit-Tests `hero-layout`, 4.1 E2E (`/10x-e2e`), 4.2 Full Suite + PR (Verdict-Gate)
-- [ ] **Workflow-Doku committen** — spec/plan/BACKLOG/INBOX/STATUS uncommitted auf dem Feature-Branch
 - [ ] **Autofill-Fix in Prod verifizieren + Combobox abnehmen** — deployt via `1cb0fac`; 2 offene Live-Kriterien in `FEATURE_MODEL_NAME_COMBOBOX.md`
 - [ ] **Champion abschliessen** — `/10x-archive ci-review-agent`; PR #3–#10 in `evidence.md`. **Job-Logs verfallen ~07.10.**
 - [ ] **Sammel-Einreichung Termin 2 (10.08.):** Builder + Architect + Champion
