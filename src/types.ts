@@ -493,3 +493,41 @@ export interface ModelProfileListItem {
 export interface ModelCompareView {
   profiles: ModelProfileView[];
 }
+
+// ─── Dashboard (Mission Control) ─────────────────────────────────────────────
+
+/**
+ * Ergebnis einer Dashboard-Quelle: Daten ODER ERR-Zustand (Teilausfall) —
+ * faellt eine Quelle aus, rendert der Rest der Seite trotzdem (Spec-Randfall).
+ */
+export type DashboardSource<T> = { error: false; data: T } | { error: true; data: null };
+
+/** Modell-Eintrag des Dashboards — profiliert (mit Typ) oder nur konfiguriert (gedimmt). */
+export interface DashboardModelEntry {
+  modelName: string;
+  /** true = mind. 1 abgeschlossener Baseline-Lauf (Hero zeigt Typ). */
+  profiled: boolean;
+  /** Modaltyp aus der OEJTS-Sektion; null bei unprofilierten Modellen oder ohne OEJTS-Laeufe. */
+  modalType: string | null;
+  /** Anteil der Wiederholungen mit exakt diesem Typ (0–1); null wie `modalType`. */
+  typeConsistency: number | null;
+  /** Summe verwertbarer Wiederholungen ueber alle Instrument-Sektionen (0 bei unprofiliert). */
+  usableReps: number;
+  /** Eingeflossene Baseline-Laeufe (0 bei unprofiliert). */
+  runCount: number;
+  /** Juengster eingeflossener Lauf; null bei unprofiliert. */
+  lastRunAt: string | null;
+}
+
+/** Kennzahlen der Runs-Register-Zeile (sichtbare Laeufe — dieselbe Menge wie `/runs`). */
+export interface DashboardRunStats {
+  count: number;
+  lastRunAt: string | null;
+}
+
+/** SSR-Snapshot des Dashboards — je Quelle einzeln ausfallbar. */
+export interface DashboardSummary {
+  models: DashboardSource<DashboardModelEntry[]>;
+  personas: DashboardSource<{ count: number }>;
+  runs: DashboardSource<DashboardRunStats>;
+}

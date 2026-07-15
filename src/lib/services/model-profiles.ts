@@ -210,3 +210,13 @@ export async function getModelProfiles(sb: SupabaseClient, modelNames: string[])
   if (modelNames.length === 0) return [];
   return loadProfiles(sb, modelNames);
 }
+
+/**
+ * Alle Profile des Nutzers (jedes Modell mit mind. 1 Baseline-Lauf) — fuer das
+ * Dashboard, das Typ/Stabilitaet/lastRunAt braucht (die Listen-Sicht traegt sie
+ * nicht). Bewusst akzeptiert: laedt die Configs intern erneut, auch wenn der
+ * Aufrufer sie separat haelt (Plan-Entscheidung Dashboard Mission Control).
+ */
+export async function getAllModelProfiles(sb: SupabaseClient): Promise<ModelProfileView[]> {
+  return loadProfiles(sb);
+}
