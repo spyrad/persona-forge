@@ -166,3 +166,19 @@ Two boundaries to keep straight:
   masks the bug; that failing-test-to-fix case is Lesson 5.
 
 <!-- END @przeprogramowani/10x-cli -->
+
+<!-- BEGIN dtb -->
+
+## DTB Workflow
+
+Dieses Projekt nutzt das DTB-Workflow-Kit (`workflow.config.yaml` ist die Config).
+
+- **Session-Lifecycle:** `/dtb:workflow-resume` (Start), `/dtb:workflow-checkpoint` (Ende)
+- **Artefakte:** `dtb-project/project-workflows/features/<slug>/` (ein Ordner pro Change mit
+  fixen Dateinamen `discovery.md`/`spec.md`/`plan.md`/`bug.md`/`task.md`),
+  `dtb-project/project-workflows/BACKLOG.md`, `dtb-project/project-changelog/`
+- **Derived State:** Status wird aus Artefakten abgeleitet (`## Progress`-Checkboxen
+  in `plan.md`), nie manuell gepflegt — Regeln:
+  `dtb-project/project-rules/DERIVED_STATE_RULES.md`
+- **Naechster Schritt unklar?** `/dtb:workflow-next`
+<!-- END dtb -->

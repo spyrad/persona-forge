@@ -15,10 +15,10 @@
 
 ## Kontext (manuell)
 
-| Kennzahl    | Wert                                                                                                                                                                                                                                                                                    |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Blocker** | Keine.                                                                                                                                                                                                                                                                                  |
-| **Notizen** | Dashboard Mission Control + Modellname-Combobox **archiviert** (2026-07-15; `archive/dashboard-mission-control/`, `archive/model-name-combobox/`). Keine offenen Features. Lokaler `main` synchron (2 Doc-Commits nicht gepusht). Naechstes: Champion-Einreichung Termin 2 = **10.08.** |
+| Kennzahl    | Wert                                                                                                                                                                                                                                                                                                                            |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Blocker** | Keine.                                                                                                                                                                                                                                                                                                                          |
+| **Notizen** | Dashboard Mission Control + Modellname-Combobox **archiviert** (2026-07-15; `archive/dashboard-mission-control/`, `archive/model-name-combobox/`). Keine offenen Features. Lokaler `main` == `origin/main` (`683dc1d`, gepusht + Deploy `29444647956` gruen, 2026-07-15). Naechstes: Champion-Einreichung Termin 2 = **10.08.** |
 
 ---
 
@@ -84,4 +84,4 @@ Keine.
 ## Handoff
 
 **Naechster Befehl:** Champion abschliessen — `/10x-archive ci-review-agent`, PR #3–#11 in `evidence.md` erfassen (Job-Logs verfallen ~07.10.), dann Sammel-Einreichung Termin 2 (10.08.). Alternativ neues Feature aus der Ideen-Inbox (#7/#4/#5 verwandt → `/dtb:idea-review`).
-**Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume`. Offene lokale Doc-Commits ggf. pushen (= Prod-Doc-Deploy).
+**Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume`. (Doc-Commits sind gepusht + deployt, Stand `683dc1d`.)
