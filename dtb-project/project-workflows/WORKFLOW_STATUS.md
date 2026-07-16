@@ -1,7 +1,7 @@
 # Workflow-Status: persona-forge
 
 **Letztes Update:** 2026-07-16
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-16.md` (Session 1)
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-16.md` (Session 2)
 
 ---
 
@@ -25,9 +25,7 @@
 ## Offene Aufgaben
 
 - [ ] **Feature umsetzen** `hexaco-instrument` — `/dtb:feature-start` (Plan Reviewed, 0/17); erster Schritt 1.1 (Instrument-Interface generalisieren)
-- [ ] **IPIP-HEXACO-60 Items + Keying** von ipip.ori.org beziehen (Plan-Schritt 2.1) — vor `feature-start`
-- [ ] **Planungs-Artefakte committen** (discovery/spec/plan, INBOX, BACKLOG) als `docs(workflow)`
-- [ ] **Champion abschliessen** — `/10x-archive ci-review-agent`; PR #3–#11 in `evidence.md`. **Job-Logs verfallen ~07.10.**
+- [ ] **IPIP-HEXACO-60 Items + Keying** von ipip.ori.org beziehen (Plan-Schritt 2.1) — vor `feature-start`- [ ] **Champion abschliessen** — `/10x-archive ci-review-agent`; PR #3–#11 in `evidence.md`. **Job-Logs verfallen ~07.10.**
 - [ ] **Sammel-Einreichung Termin 2 (10.08.):** Builder + Architect + Champion
 - [ ] **Ideen-Inbox:** #1 Task-based evals, #5 Live-Run-Visualisierung, #6 Combobox-Ersatz, #7 UI-Konzepte, #8 SD3, #9 HEXACO-100, #10 Repo-LICENSE (alle Offen)
 - [ ] **Lektion-Kandidat:** „generisch deklariert ≠ generisch gebaut" (Instrument-Interface war OEJTS-gepraegt) — ggf. `/dtb:lesson`
@@ -83,5 +81,5 @@ Keine.
 
 ## Handoff
 
-**Naechster Befehl:** `/dtb:feature-start hexaco-instrument` — Plan ist **Reviewed** (REVISE eingearbeitet, 0/17), erster Schritt 1.1. Davor: Planungs-Artefakte committen (`docs(workflow)`) und die IPIP-HEXACO-60-Items/Keying beziehen (Schritt 2.1).
-**Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume`. Planungs-Artefakte vorher committen (`docs(workflow)`).
+**Naechster Befehl:** `/dtb:feature-start hexaco-instrument` — Plan ist **Reviewed** (REVISE eingearbeitet, 0/17), erster Schritt 1.1. Davor: die IPIP-HEXACO-60-Items/Keying beziehen (Schritt 2.1). Planungszyklus ist committet + deployt (`4e7994d`).
+**Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume`.
