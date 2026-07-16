@@ -1,12 +1,14 @@
 # Feature Backlog
 
-**Letzte Aktualisierung:** 2026-07-15 (Modellname-Combobox archiviert)
+**Letzte Aktualisierung:** 2026-07-16 (HEXACO-Instrument spezifiziert)
 
 ---
 
 ## Aktive Features
 
-Keine aktiven Features. Starte eines mit `/dtb:feature-start`.
+| Feature           | Status  | Prio   | Datei                              | Beschreibung                                                                                                                                                                                                                                                       |
+| ----------------- | ------- | ------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| HEXACO-Instrument | Geplant | Mittel | features/hexaco-instrument/spec.md | Zweites gemeinfreies Persönlichkeitsinstrument (HEXACO, inkl. des alignment-relevanten Honesty-Humility-Faktors) fürs Modell-Profiling via gemeinfreier IPIP-Items; hebt zugleich die feste Bindung an ein einzelnes Instrument auf. Aus Idee #3, Alignment-Fokus. |
 
 ---
 
