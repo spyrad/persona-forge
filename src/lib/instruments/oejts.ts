@@ -23,11 +23,13 @@ import type { Instrument } from "@/types";
 export const OEJTS = {
   id: "oejts-1.2",
   permute: true,
+  hasModalType: true,
   axes: [
-    { key: "IE", constant: 30, cutoff: 24, high: "E", low: "I", label: "Introversion–Extraversion" },
-    { key: "SN", constant: 12, cutoff: 24, high: "N", low: "S", label: "Sensing–Intuition" },
-    { key: "FT", constant: 30, cutoff: 24, high: "T", low: "F", label: "Feeling–Thinking" },
-    { key: "JP", constant: 18, cutoff: 24, high: "P", low: "J", label: "Judging–Perceiving" },
+    // `midpoint` = der OEJTS-Cutoff (24): score > midpoint → high-Pol (Referenz oejts-1.2.json).
+    { key: "IE", constant: 30, midpoint: 24, high: "E", low: "I", label: "Introversion–Extraversion" },
+    { key: "SN", constant: 12, midpoint: 24, high: "N", low: "S", label: "Sensing–Intuition" },
+    { key: "FT", constant: 30, midpoint: 24, high: "T", low: "F", label: "Feeling–Thinking" },
+    { key: "JP", constant: 18, midpoint: 24, high: "P", low: "J", label: "Judging–Perceiving" },
   ],
   items: [
     { id: "Q1", axis: "JP", sign: 1, left: "makes lists", right: "relies on memory" },

@@ -44,7 +44,7 @@
 | `src/components/landing/TestLibrary.astro`             | „Big Five/HEXACO" als `planned`-Karte vorhanden.                                                                                                                                                                                                      |
 | `supabase/migrations/20260702120000_steadfastness.sql` | `check (kind in ('oejts','steadfastness'))` — zu erweitern.                                                                                                                                                                                           |
 
-**Instrument-Quelle:** **IPIP-HEXACO-60** (Ashton, Lee & Goldberg 2007) — **public domain**, 6 Domänen à 10 Likert-Items, inkl. Honesty-Humility. Bezug: ipip.ori.org (Items + Keying).
+**Instrument-Quelle:** **IPIP-HEXACO-Skalen** (Ashton, Lee & Goldberg 2007, public domain, 24 Facetten / 238 Items auf der Key-Seite) mit **eigener deterministischer 60-Item-Auswahl** (10 je Domäne, 30/30 keying-balanciert). **Befund 2026-07-17:** Ein kanonisches „IPIP-HEXACO-60" existiert nicht (nur das ©-HEXACO-60 von Ashton & Lee 2009 — nicht redistributierbar). Auswahlregel + Items + Keying: `context/foundation/instruments/ipip-hexaco-60.json` (liegt vor).
 
 **`InstrumentItem`-Union-Konsumenten (Review P3):** `buildOejtsMessages`/Prompt-Bau (`oejts-run.ts`), `scoreAxes` (`it.sign`), `axisScale`, `RunResult`/`axis-chart` (Pol-Labels). Diese müssen die Likert-Variante mitbehandeln.
 
@@ -109,7 +109,7 @@ HEXACO als datengetriebenes Instrument mit gemeinfreien IPIP-Items; Keying-Korre
 #### Schritt 2.1: IPIP-HEXACO-60 als Instrument-Definition
 
 - **Zweck:** die 60 gemeinfreien Items mit Faktor-Zuordnung + Keying als typisierte Definition.
-- **Dateien:** NEU `src/lib/instruments/hexaco.ts` (+ menschenlesbare Referenz analog `context/foundation/instruments/oejts-1.2.json`); in Registry (1.2) eintragen.
+- **Dateien:** NEU `src/lib/instruments/hexaco.ts`; Quelle: `context/foundation/instruments/ipip-hexaco-60.json` (Referenz liegt vor, 2026-07-17, inkl. Auswahlregel/Keying/`constant`-Herleitung); in Registry (1.2) eintragen.
 - **Output:** `export const HEXACO satisfies Instrument` — 6 Faktoren (H/E/X/A/C/O) mit Low/High-Pol-Labels + `midpoint`, 60 Likert-Items mit Keying, `hasModalType: false`, `permute: true`. Public-Domain-Lizenz-Header + Attributions-Metadaten.
 
 #### Schritt 2.2: Scoring-Korrektheits-Test (Keying)
@@ -302,17 +302,17 @@ Vollständige Absicherung, PR über das Verdict-Gate, Prod-Abnahme.
 
 ## Technische Entscheidungen
 
-| Thema               | Optionen                                                          | Entscheidung              | Begruendung                                                                                     |
-| ------------------- | ----------------------------------------------------------------- | ------------------------- | ----------------------------------------------------------------------------------------------- |
-| Instrument-Quelle   | IPIP-HEXACO-60 (PD) / © HEXACO-PI-R                               | **IPIP-HEXACO-60**        | Öffentliches Repo → nur gemeinfreie Redistribution tragbar (Spec/3d)                            |
-| Instrument-Bindung  | schlanke Registry / minimaler `kind`-Zweig                        | **Registry (P1)**         | Enabler-Success-Kriterium; #8/#9 stehen an; bewusst minimal (kein Plugin-System)                |
-| Likert-Item         | Union (bipolar \| Likert), Koexistenz / OEJTS mitmigrieren        | **Koexistenz (P3)**       | Bipolare OEJTS-Pol-Paare nicht verlustfrei in Likert wandelbar → Migration wäre fachlich falsch |
-| Skalen-Referenz     | `midpoint` (OEJTS liest ihn als `cutoff`) / eigenes Faktor-Modell | **`midpoint` (P2)**       | Hält `axisScale`/Charts unverändert; minimal-invasiv                                            |
-| Modaltyp            | `hasModalType`-Flag, HEXACO ohne / immer ableiten                 | **Flag, HEXACO ohne**     | Fachlich korrekt (Spec/3b); nimmt #8 mit                                                        |
-| `kind`-Persistenz   | `kind='hexaco'` / nur `instrument_id`                             | **`kind='hexaco'`**       | Konsistent mit bestehendem Dispatch-Muster                                                      |
-| Prompt-Bau          | parametrisieren / eigener HEXACO-Pfad                             | **parametrisieren**       | Ein Ausführungspfad, weniger Duplikat                                                           |
-| Rate-Limit Lauf-API | kein v1-Cap / Cap jetzt                                           | **kein v1-Cap (P6)**      | Geschlossener Zugang; als Betriebsrisiko notiert                                                |
-| LICENSE-Datei       | jetzt / Folge-Ticket                                              | **Folge-Ticket #10 (P7)** | Vorbestehendes OEJTS-Thema, von HEXACO nicht verschärft                                         |
+| Thema               | Optionen                                                          | Entscheidung                | Begruendung                                                                                                                                                                                |
+| ------------------- | ----------------------------------------------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Instrument-Quelle   | IPIP-HEXACO-Auswahl (PD) / volle 238 / Mini-IPIP6 / © HEXACO-60   | **Kuratierte 60er-Auswahl** | Kanonisches „IPIP-HEXACO-60" existiert nicht (Befund 2026-07-17); deterministische Auswahl aus den offiziellen IPIP-HEXACO-Skalen, public domain (Spec/3d); Regel in `ipip-hexaco-60.json` |
+| Instrument-Bindung  | schlanke Registry / minimaler `kind`-Zweig                        | **Registry (P1)**           | Enabler-Success-Kriterium; #8/#9 stehen an; bewusst minimal (kein Plugin-System)                                                                                                           |
+| Likert-Item         | Union (bipolar \| Likert), Koexistenz / OEJTS mitmigrieren        | **Koexistenz (P3)**         | Bipolare OEJTS-Pol-Paare nicht verlustfrei in Likert wandelbar → Migration wäre fachlich falsch                                                                                            |
+| Skalen-Referenz     | `midpoint` (OEJTS liest ihn als `cutoff`) / eigenes Faktor-Modell | **`midpoint` (P2)**         | Hält `axisScale`/Charts unverändert; minimal-invasiv                                                                                                                                       |
+| Modaltyp            | `hasModalType`-Flag, HEXACO ohne / immer ableiten                 | **Flag, HEXACO ohne**       | Fachlich korrekt (Spec/3b); nimmt #8 mit                                                                                                                                                   |
+| `kind`-Persistenz   | `kind='hexaco'` / nur `instrument_id`                             | **`kind='hexaco'`**         | Konsistent mit bestehendem Dispatch-Muster                                                                                                                                                 |
+| Prompt-Bau          | parametrisieren / eigener HEXACO-Pfad                             | **parametrisieren**         | Ein Ausführungspfad, weniger Duplikat                                                                                                                                                      |
+| Rate-Limit Lauf-API | kein v1-Cap / Cap jetzt                                           | **kein v1-Cap (P6)**        | Geschlossener Zugang; als Betriebsrisiko notiert                                                                                                                                           |
+| LICENSE-Datei       | jetzt / Folge-Ticket                                              | **Folge-Ticket #10 (P7)**   | Vorbestehendes OEJTS-Thema, von HEXACO nicht verschärft                                                                                                                                    |
 
 ---
 
@@ -322,9 +322,9 @@ Vollständige Absicherung, PR über das Verdict-Gate, Prod-Abnahme.
 > Abhaken gemaess Flip-Bedingung §2 (Automated-Kriterien der Phase gruen); SHA-Nachtrag beim
 > Phasen-Ende-Commit — geflippte Zeile ohne SHA ist mid-phase gueltig (§2 Regel 4).
 
-- [ ] 1.1 Instrument-Interface generalisieren (Modaltyp optional, midpoint, Likert-Union)
-- [ ] 1.2 Instrument-Registry (schlank)
-- [ ] 1.3 runs.ts auf Registry + Prompt-Bau parametrisieren
+- [x] 1.1 Instrument-Interface generalisieren (Modaltyp optional, midpoint, Likert-Union)
+- [x] 1.2 Instrument-Registry (schlank)
+- [x] 1.3 runs.ts auf Registry + Prompt-Bau parametrisieren
 - [ ] 2.1 IPIP-HEXACO-60 Instrument-Definition
 - [ ] 2.2 Scoring-Korrektheits-Test (Keying)
 - [ ] 2.3 Früher Smoke-Lauf gegen echtes Modell

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { OEJTS } from "@/lib/instruments/oejts";
-import { buildOejtsMessages, parseOejtsResponse, permuteItems } from "@/lib/runs/oejts-run";
+import { buildItemMessages, parseOejtsResponse, permuteItems } from "@/lib/runs/oejts-run";
 
 const ITEMS = OEJTS.items;
 const IDS = ITEMS.map((i) => i.id);
@@ -27,25 +27,42 @@ describe("permuteItems", () => {
   });
 });
 
-describe("buildOejtsMessages", () => {
+describe("buildItemMessages", () => {
   it("setzt den Persona-Prompt als System-Message", () => {
-    const msgs = buildOejtsMessages("Du bist skeptisch.", ITEMS);
+    const msgs = buildItemMessages("Du bist skeptisch.", ITEMS);
     expect(msgs[0]).toEqual({ role: "system", content: "Du bist skeptisch." });
     expect(msgs[1].role).toBe("user");
   });
 
   it("enthaelt alle Item-Ids und die JSON-Aufforderung", () => {
-    const msgs = buildOejtsMessages("x", ITEMS);
+    const msgs = buildItemMessages("x", ITEMS);
     for (const id of IDS) expect(msgs[1].content).toContain(`${id}:`);
     expect(msgs[1].content).toContain('"answers"');
   });
 
   it("Baseline: leerer System-Prompt → System-Message wird weggelassen", () => {
     for (const empty of ["", "  \n "]) {
-      const msgs = buildOejtsMessages(empty, ITEMS);
+      const msgs = buildItemMessages(empty, ITEMS);
       expect(msgs).toHaveLength(1);
       expect(msgs[0].role).toBe("user");
     }
+  });
+
+  it("rendert bipolare Items mit beiden Polen (OEJTS-Wortlaut unveraendert)", () => {
+    const msgs = buildItemMessages("x", ITEMS);
+    expect(msgs[1].content).toContain('Q1: 1 = "makes lists"  …  5 = "relies on memory"');
+    expect(msgs[1].content).toContain("two opposing");
+  });
+
+  it("rendert Likert-Aussagen mit IPIP-Instruktion (Item-Union)", () => {
+    const likert = [
+      { id: "H1", axis: "H", sign: 1 as const, text: "Don't pretend to be more than I am" },
+      { id: "X2", axis: "X", sign: -1 as const, text: "Don't talk a lot" },
+    ];
+    const msgs = buildItemMessages("x", likert);
+    expect(msgs[1].content).toContain('H1: "Don\'t pretend to be more than I am"');
+    expect(msgs[1].content).toContain("very inaccurate");
+    expect(msgs[1].content).not.toContain("two opposing");
   });
 });
 

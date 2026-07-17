@@ -154,26 +154,31 @@ export interface CreateStructuredPersonaInput extends CreatePersonaBase {
  */
 export type CreatePersonaInput = CreateFreeformPersonaInput | CreateStructuredPersonaInput;
 
-// ─── Test-Instrument (OEJTS, S-04) ──────────────────────────────────────────
+// ─── Test-Instrumente (OEJTS S-04, HEXACO) ──────────────────────────────────
 
-/** Eine Achse/Skala eines Instruments (bei OEJTS die 4 Jung'schen Dichotomien). */
+/**
+ * Eine Achse/Skala eines Instruments (bei OEJTS die 4 Jung'schen Dichotomien,
+ * bei HEXACO die 6 Faktoren). `midpoint` ist die Skalen-Referenz je Achse:
+ * bei Modaltyp-Instrumenten zugleich die Typ-Schwelle (OEJTS, vormals `cutoff`),
+ * bei Likert-Instrumenten die Skalenmitte (Referenzlinie der Charts).
+ */
 export interface InstrumentAxis {
-  /** Achsen-Schluessel, z. B. "IE". */
+  /** Achsen-Schluessel, z. B. "IE" oder "H". */
   key: string;
-  /** Scoring-Konstante (siehe OEJTS-Formeln). */
+  /** Scoring-Konstante (score = constant + Σ sign·antwort). */
   constant: number;
-  /** Score > cutoff → `high`-Pol, sonst `low`. */
-  cutoff: number;
-  /** Buchstabe bei Score > cutoff. */
-  high: string;
-  /** Buchstabe bei Score <= cutoff. */
-  low: string;
+  /** Skalen-Referenz: Typ-Schwelle (Modaltyp) bzw. Skalenmitte (Likert). */
+  midpoint: number;
+  /** Buchstabe bei Score > midpoint — nur bei `hasModalType`-Instrumenten. */
+  high?: string;
+  /** Buchstabe bei Score <= midpoint — nur bei `hasModalType`-Instrumenten. */
+  low?: string;
   /** Menschenlesbares Label. */
   label?: string;
 }
 
-/** Ein bipolares Item: 1 = voll `left`, 5 = voll `right`. */
-export interface InstrumentItem {
+/** Ein bipolares Item: 1 = voll `left`, 5 = voll `right` (OEJTS). */
+export interface BipolarInstrumentItem {
   /** Item-Id, z. B. "Q1". */
   id: string;
   /** Achse, zu der das Item beitraegt. */
@@ -186,13 +191,36 @@ export interface InstrumentItem {
   right: string;
 }
 
-/** Ein psychometrisches Instrument (v1 hartkodiert, FR-011). */
+/**
+ * Ein Likert-Aussage-Item: Zustimmung 1–5 zu einer Selbstbeschreibung (IPIP/HEXACO).
+ * `sign` traegt das Keying: -1 = revers gekeyt (Beitrag 6 − antwort, via constant).
+ */
+export interface LikertInstrumentItem {
+  /** Item-Id, z. B. "H1". */
+  id: string;
+  /** Achse/Faktor, zu der das Item beitraegt. */
+  axis: string;
+  /** Keying-Vorzeichen im Achsen-Score (+1 oder -1). */
+  sign: 1 | -1;
+  /** Aussagetext (Selbstbeschreibung), z. B. "Talk a lot". */
+  text: string;
+}
+
+/**
+ * Item-Union: bipolare Pol-Paare (OEJTS) und Likert-Aussagen (HEXACO) koexistieren —
+ * OEJTS-Pol-Paare sind nicht verlustfrei in Likert wandelbar (Plan-Review P3).
+ */
+export type InstrumentItem = BipolarInstrumentItem | LikertInstrumentItem;
+
+/** Ein psychometrisches Instrument (v1 hartkodiert, FR-011; Aufloesung via Registry). */
 export interface Instrument {
   id: string;
   items: InstrumentItem[];
   axes: InstrumentAxis[];
   /** Ob die Item-Reihenfolge je Wiederholung permutiert wird (FR-012). */
   permute: boolean;
+  /** Ob aus den Achsen ein Modaltyp (Buchstaben-Code) abgeleitet wird (OEJTS: ja; HEXACO: nein). */
+  hasModalType?: boolean;
 }
 
 // ─── Standhaftigkeit (steadfastness, zweiter Test-Typ) ───────────────────────
@@ -385,10 +413,11 @@ export interface AxisDistribution {
   letterCounts: Record<string, number>;
   /** Anzahl Wiederholungen, die zu dieser Achse beitrugen (alle 8 Items geparst). */
   usableCount: number;
+  /** `cutoff` traegt den `midpoint` der Achse (Chart-Referenzlinie; Feldname stabil, P2). */
   scale: { min: number; max: number; cutoff: number };
-  /** Buchstabe bei Score > cutoff. */
+  /** Buchstabe bei Score > midpoint; leer (`""`) bei Instrumenten ohne Modaltyp. */
   high: string;
-  /** Buchstabe bei Score <= cutoff. */
+  /** Buchstabe bei Score <= midpoint; leer (`""`) bei Instrumenten ohne Modaltyp. */
   low: string;
 }
 

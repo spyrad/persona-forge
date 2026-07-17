@@ -46,16 +46,18 @@ export function scoreAxes(values: ItemValue[], instrument: Instrument): Record<s
 }
 
 /**
- * Leitet den 4-Buchstaben-Typ aus den Achsen-Scores ab (Buchstaben-Reihenfolge =
- * Achsen-Reihenfolge des Instruments). `score > cutoff` → `high`, sonst `low`. Ist
- * EINE Achse `null` (Dropout), gibt es keinen vollstaendigen Typ → `null`.
+ * Leitet den Buchstaben-Typ aus den Achsen-Scores ab (Buchstaben-Reihenfolge =
+ * Achsen-Reihenfolge des Instruments). `score > midpoint` → `high`, sonst `low`. Ist
+ * EINE Achse `null` (Dropout) oder traegt das Instrument keine Modaltyp-Pole
+ * (`hasModalType` falsy bzw. `high`/`low` fehlen, z. B. HEXACO), gibt es keinen Typ → `null`.
  */
 export function deriveType(axisScores: Record<string, number | null>, instrument: Instrument): string | null {
+  if (instrument.hasModalType !== true) return null;
   let type = "";
   for (const axis of instrument.axes) {
     const score = axisScores[axis.key];
-    if (score == null) return null;
-    type += score > axis.cutoff ? axis.high : axis.low;
+    if (score == null || axis.high == null || axis.low == null) return null;
+    type += score > axis.midpoint ? axis.high : axis.low;
   }
   return type;
 }
@@ -64,7 +66,8 @@ export function deriveType(axisScores: Record<string, number | null>, instrument
  * Skalengrenzen je Achse aus den Item-Vorzeichen-Extrema: jedes Item traegt
  * `sign·1`/`sign·5` als Extreme bei; `min = constant + Σ min_i`,
  * `max = constant + Σ max_i`. Bewusst je Achse berechnet (die Konstanten
- * verschieben die Skala) statt global `8..40` anzunehmen.
+ * verschieben die Skala) statt global `8..40` anzunehmen. `cutoff` traegt den
+ * `midpoint` der Achse (Chart-Referenzlinie; Feldname bleibt stabil, P2).
  */
 export function axisScale(axisKey: string, instrument: Instrument): AxisScale {
   const axis = instrument.axes.find((a) => a.key === axisKey);
@@ -77,5 +80,5 @@ export function axisScale(axisKey: string, instrument: Instrument): AxisScale {
     min += Math.min(lo, hi);
     max += Math.max(lo, hi);
   }
-  return { min, max, cutoff: axis.cutoff };
+  return { min, max, cutoff: axis.midpoint };
 }

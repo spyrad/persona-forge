@@ -38,6 +38,10 @@ export function aggregateRun(reps: Pick<RunRepetition, "item_values">[], instrum
     perRepScores.push(scoreAxes(rep.item_values, instrument));
   }
 
+  // Modaltyp-Pole nur bei `hasModalType`-Instrumenten (OEJTS); Likert-Instrumente
+  // (HEXACO) liefern leere Buchstaben + leere letterCounts — rein dimensional.
+  const wantsType = instrument.hasModalType === true;
+
   const axes: AxisDistribution[] = instrument.axes.map((axis) => {
     const scores: number[] = [];
     for (const s of perRepScores) {
@@ -45,9 +49,11 @@ export function aggregateRun(reps: Pick<RunRepetition, "item_values">[], instrum
       if (v != null) scores.push(v);
     }
     const letterCounts: Record<string, number> = {};
-    for (const score of scores) {
-      const letter = score > axis.cutoff ? axis.high : axis.low;
-      letterCounts[letter] = (letterCounts[letter] ?? 0) + 1;
+    if (wantsType && axis.high != null && axis.low != null) {
+      for (const score of scores) {
+        const letter = score > axis.midpoint ? axis.high : axis.low;
+        letterCounts[letter] = (letterCounts[letter] ?? 0) + 1;
+      }
     }
     const mean = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : null;
     const sd = mean != null ? populationStdDev(scores, mean) : null;
@@ -60,15 +66,16 @@ export function aggregateRun(reps: Pick<RunRepetition, "item_values">[], instrum
       letterCounts,
       usableCount: scores.length,
       scale: axisScale(axis.key, instrument),
-      high: axis.high,
-      low: axis.low,
+      high: axis.high ?? "",
+      low: axis.low ?? "",
     };
   });
 
   // Modaltyp: je Achse Mehrheits-Buchstabe (Tie-Break ueber Mean-Seite).
-  let modalType: string | null = "";
+  let modalType: string | null = wantsType ? "" : null;
   for (const axis of axes) {
-    if (axis.usableCount === 0 || axis.mean == null) {
+    if (modalType === null) break;
+    if (axis.usableCount === 0 || axis.mean == null || axis.high === "" || axis.low === "") {
       modalType = null;
       break;
     }

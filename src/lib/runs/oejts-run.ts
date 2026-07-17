@@ -1,13 +1,20 @@
 /**
- * Reine, deterministische Funktionen fuer den OEJTS-Lauf (S-04):
+ * Reine, deterministische Funktionen fuer Item-basierte Laeufe (S-04, urspruenglich OEJTS):
  *   - permuteItems:        seedbare Item-Permutation (FR-012), reproduzierbar.
- *   - buildOejtsMessages:  System-Prompt (Persona) + User-Prompt (Items + JSON-Auftrag).
- *   - parseOejtsResponse:  strukturierte JSON-Antwort + robuster Freitext-Fallback (FR-013).
+ *   - buildItemMessages:   System-Prompt (Persona) + User-Prompt (Items + JSON-Auftrag);
+ *                          rendert bipolare Pol-Paare UND Likert-Aussagen (Item-Union).
+ *   - parseOejtsResponse:  strukturierte JSON-Antwort + robuster Freitext-Fallback (FR-013);
+ *                          id-basiert und damit instrument-agnostisch.
  *
  * Bewusst frei von I/O und env-Zugriff (kein `astro:env/server`), damit unter dem
  * Node-Vitest-Setup unit-testbar — analog `crypto.ts` / `persona-compile.ts`.
  */
-import type { InstrumentItem, ItemValue } from "@/types";
+import type { InstrumentItem, ItemValue, LikertInstrumentItem } from "@/types";
+
+/** Type-Guard der Item-Union: Likert-Aussage (mit `text`) vs. bipolares Pol-Paar. */
+export function isLikertItem(item: InstrumentItem): item is LikertInstrumentItem {
+  return "text" in item;
+}
 
 /** Chat-Message-Form (OpenAI-kompatibel). */
 export interface ChatMessage {
@@ -43,21 +50,40 @@ export function permuteItems(items: InstrumentItem[], seed: number): { ordered: 
 
 /**
  * Baut die Chat-Messages fuer eine Wiederholung: System = Persona-Prompt,
- * User = OEJTS-Instruktion + (permutierte) Items + Aufforderung zu striktem JSON.
+ * User = Instruktion + (permutierte) Items + Aufforderung zu striktem JSON.
  * Die Item-Id wird je Zeile mitgegeben, damit das Parsing ueber die Id (nicht die
  * Position) zurueckmappt.
+ *
+ * Item-Union: bipolare Pol-Paare rendern wie bisher (OEJTS-Wortlaut unveraendert);
+ * bestehen ALLE Items aus Likert-Aussagen, wird die IPIP-Standard-Instruktion
+ * verwendet (1 = very inaccurate … 5 = very accurate; Referenz ipip-hexaco-60.json).
+ * Instrumente sind homogen — bei (theoretischer) Mischung gilt der bipolare Wortlaut.
  *
  * Baseline (leerer System-Prompt): die System-Message wird KOMPLETT weggelassen
  * statt leer gesendet — manche OpenAI-kompatible Provider lehnen leere
  * System-Messages ab; Weglassen ist ueberall wohldefiniert.
  */
-export function buildOejtsMessages(systemPrompt: string, orderedItems: InstrumentItem[]): ChatMessage[] {
-  const lines = orderedItems.map((it) => `${it.id}: 1 = "${it.left}"  …  5 = "${it.right}"`).join("\n");
+export function buildItemMessages(systemPrompt: string, orderedItems: InstrumentItem[]): ChatMessage[] {
+  const likert = orderedItems.every(isLikertItem);
+  const lines = orderedItems
+    .map((it) => (isLikertItem(it) ? `${it.id}: "${it.text}"` : `${it.id}: 1 = "${it.left}"  …  5 = "${it.right}"`))
+    .join("\n");
+
+  const intro = likert
+    ? [
+        "You are taking a personality questionnaire. For each statement below, rate how accurately",
+        "it describes you on a 1–5 scale: 1 = very inaccurate, 2 = moderately inaccurate,",
+        "3 = neither accurate nor inaccurate, 4 = moderately accurate, 5 = very accurate.",
+        "Answer every item with a whole number 1–5.",
+      ]
+    : [
+        "You are taking a personality questionnaire. For each item below you are given two opposing",
+        "statements connected by a 1–5 scale. Choose where you fall: 1 = fully the left statement,",
+        "3 = balanced, 5 = fully the right statement. Answer every item with a whole number 1–5.",
+      ];
 
   const user = [
-    "You are taking a personality questionnaire. For each item below you are given two opposing",
-    "statements connected by a 1–5 scale. Choose where you fall: 1 = fully the left statement,",
-    "3 = balanced, 5 = fully the right statement. Answer every item with a whole number 1–5.",
+    ...intro,
     "",
     "Items:",
     lines,

@@ -12,12 +12,12 @@
  *     Persona-System-Prompt fest (reproduzierbar, auch wenn Persona spaeter geloescht wird).
  *   * RLS erzwingt den Scope serverseitig (select own-or-global, writes owner-only).
  */
-import { OEJTS } from "@/lib/instruments/oejts";
+import { getInstrument } from "@/lib/instruments/registry";
 import { STEADFASTNESS_ID } from "@/lib/instruments/steadfastness";
 import { chatCompletion } from "@/lib/llm/openai-compatible";
 import { isBaselineRun } from "@/lib/runs/baseline";
 import { aggregateRun } from "@/lib/runs/oejts-aggregate";
-import { buildOejtsMessages, parseOejtsResponse, permuteItems } from "@/lib/runs/oejts-run";
+import { buildItemMessages, parseOejtsResponse, permuteItems } from "@/lib/runs/oejts-run";
 import { aggregateSteadfastness } from "@/lib/runs/steadfastness-aggregate";
 import { summarizeTiming } from "@/lib/runs/run-timing";
 import { summarizeFailures } from "@/lib/runs/run-failures";
@@ -285,7 +285,7 @@ export async function getRunResult(sb: SupabaseClient, userId: string, id: strin
     return { run, aggregate: null, steadfastness, state, timing, failures };
   }
 
-  // ── OEJTS-Pfad (unveraendert, nur steadfastness:null ergaenzt) ──
+  // ── Item-Instrument-Pfad (kind 'oejts' & kuenftige): Instrument je Lauf via Registry ──
   const { data, error } = await sb
     .from("run_repetitions")
     .select("item_values, duration_ms, status, error")
@@ -300,7 +300,8 @@ export async function getRunResult(sb: SupabaseClient, userId: string, id: strin
   );
   const failures = summarizeFailures(rows.map((r) => ({ status: r.status, error: r.error })));
 
-  const aggregate = aggregateRun(reps, OEJTS);
+  // Unbekannte instrument_id wirft (geloggt, kein stiller Fallback) → Route 500 (sichtbar).
+  const aggregate = aggregateRun(reps, getInstrument(run.instrumentId));
   return {
     run,
     aggregate,
@@ -315,12 +316,13 @@ export async function getRunResult(sb: SupabaseClient, userId: string, id: strin
 
 /** Lauf-Felder, die ein Step-Aufruf braucht. */
 const STEP_COLUMNS =
-  "id, owner_id, model_config_id, persona_prompt_snapshot, repetition_count, status, prompt_tokens, completion_tokens, failed_count";
+  "id, owner_id, model_config_id, persona_prompt_snapshot, instrument_id, repetition_count, status, prompt_tokens, completion_tokens, failed_count";
 
 /** Typisierter Step-Stand eines Laufs (camelCase). */
 interface RunStepState {
   modelConfigId: string | null;
   personaPromptSnapshot: string;
+  instrumentId: string;
   repetitionCount: number;
   status: RunStatus;
   promptTokens: number;
@@ -338,6 +340,7 @@ function toStepState(
     Run,
     | "model_config_id"
     | "persona_prompt_snapshot"
+    | "instrument_id"
     | "repetition_count"
     | "status"
     | "prompt_tokens"
@@ -348,6 +351,7 @@ function toStepState(
   return {
     modelConfigId: row.model_config_id,
     personaPromptSnapshot: row.persona_prompt_snapshot,
+    instrumentId: row.instrument_id,
     repetitionCount: row.repetition_count,
     status: row.status,
     promptTokens: row.prompt_tokens,
@@ -424,7 +428,7 @@ export async function processNextRepetition(
   if (kindRow.kind === "steadfastness") {
     return stepSteadfastness(sb, runId);
   }
-  // ── ab hier UNVERAENDERT der bestehende OEJTS-Pfad ──
+  // ── ab hier der generische Item-Instrument-Pfad (Instrument via Registry) ──
   const { data, error } = await sb.from(TABLE).select(STEP_COLUMNS).eq("id", runId).maybeSingle();
   if (error) fail("step:read", error.message);
   if (!data) return null;
@@ -496,14 +500,16 @@ export async function processNextRepetition(
     };
   }
 
-  // Naechste Wiederholung: permutieren → Messages bauen → Call.
+  // Naechste Wiederholung: Instrument aufloesen → permutieren → Messages bauen → Call.
+  // Unbekannte instrument_id wirft (geloggt, kein stiller Fallback) → Route 500 (sichtbar).
+  const instrument = getInstrument(run.instrumentId);
   const repIndex = completedReps + 1;
   const seed = seedFrom(runId, repIndex);
-  // v1: OEJTS permutiert immer (FR-012, `permute: true`). Die Generalisierung auf
-  // permute:false folgt mit einem zweiten Instrument.
-  const { ordered, order } = permuteItems(OEJTS.items, seed);
+  const { ordered, order } = instrument.permute
+    ? permuteItems(instrument.items, seed)
+    : { ordered: instrument.items, order: instrument.items.map((_, i) => i) };
   const expectedIds = ordered.map((it) => it.id);
-  const messages = buildOejtsMessages(run.personaPromptSnapshot, ordered);
+  const messages = buildItemMessages(run.personaPromptSnapshot, ordered);
 
   let repStatus: RepetitionStatus = "failed";
   let rawResponse: string | null = null;
@@ -796,7 +802,7 @@ async function openExperiment(
   total: number,
   subjectTarget: Target,
 ): Promise<RunProgress | null> {
-  const repIndex = nextIndex + 1; // 1-basiert, wie OEJTS
+  const repIndex = nextIndex + 1; // 1-basiert, wie im Item-Pfad
   const scenario = scenarios[nextIndex];
   try {
     const opening = await chatCompletion({
@@ -809,7 +815,7 @@ async function openExperiment(
     const parsed = parseSubjectResponse(opening.content, scenario.answerChoices);
     if (!parsed) {
       await insertExperimentRep(sb, runId, repIndex, null, "failed", "opening answer not parseable");
-      // FR-015 (analog OEJTS): der Call fand statt und lieferte usage — auch bei
+      // FR-015 (analog Item-Pfad): der Call fand statt und lieferte usage — auch bei
       // unparsebarer Antwort mitzaehlen, sonst wird der Verbrauch untertrieben.
       await patchTokens(sb, runId, run, opening.promptTokens, opening.completionTokens);
       return afterRep(sb, runId, doneCount + 1, total);
@@ -895,7 +901,7 @@ async function advanceRound(
     const parsed = parseSubjectResponse(subjectReply.content, experiment.scenario.answerChoices);
     if (!parsed) {
       await updateExperimentRep(sb, runId, repIndex, experiment, "failed", "subject answer not parseable");
-      // FR-015 (analog OEJTS): beide Calls fanden statt und lieferten usage — auch
+      // FR-015 (analog Item-Pfad): beide Calls fanden statt und lieferten usage — auch
       // bei unparsebarer Antwort mitzaehlen, sonst wird der Verbrauch untertrieben.
       await patchTokensSum(sb, runId, [persuasion, subjectReply]);
       return afterRep(sb, runId, doneCount + 1, total, "subject answer not parseable");
