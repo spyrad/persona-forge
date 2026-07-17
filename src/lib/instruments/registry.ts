@@ -11,10 +11,14 @@
  * keine Item-Liste und laeuft ueber den kind-Dispatch (`runs.ts`), nie ueber
  * die Registry.
  */
+import { HEXACO } from "@/lib/instruments/hexaco";
 import { OEJTS } from "@/lib/instruments/oejts";
 import type { Instrument } from "@/types";
 
-const REGISTRY: ReadonlyMap<string, Instrument> = new Map<string, Instrument>([[OEJTS.id, OEJTS]]);
+const REGISTRY: ReadonlyMap<string, Instrument> = new Map<string, Instrument>([
+  [OEJTS.id, OEJTS],
+  [HEXACO.id, HEXACO],
+]);
 
 /** Loest eine `instrument_id` zum Instrument auf; unbekannte Id → geloggter Fehler. */
 export function getInstrument(id: string): Instrument {

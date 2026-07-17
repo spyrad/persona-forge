@@ -325,11 +325,11 @@ Vollständige Absicherung, PR über das Verdict-Gate, Prod-Abnahme.
 - [x] 1.1 Instrument-Interface generalisieren (Modaltyp optional, midpoint, Likert-Union) — `5cdac4b`
 - [x] 1.2 Instrument-Registry (schlank) — `5cdac4b`
 - [x] 1.3 runs.ts auf Registry + Prompt-Bau parametrisieren — `5cdac4b`
-- [ ] 2.1 IPIP-HEXACO-60 Instrument-Definition
-- [ ] 2.2 Scoring-Korrektheits-Test (Keying)
-- [ ] 2.3 Früher Smoke-Lauf gegen echtes Modell
-- [ ] 2.4 Attributions-Metadaten je Instrument
-- [ ] 2.5 Migration kind-Constraint erweitern
+- [x] 2.1 IPIP-HEXACO-60 Instrument-Definition
+- [x] 2.2 Scoring-Korrektheits-Test (Keying)
+- [x] 2.3 Früher Smoke-Lauf gegen echtes Modell
+- [x] 2.4 Attributions-Metadaten je Instrument
+- [x] 2.5 Migration kind-Constraint erweitern
 - [ ] 3.1 Eingabe-Validierung erweitern
 - [ ] 3.2 Lauf-Formular
 - [ ] 3.3 End-to-end-Lauf über die UI

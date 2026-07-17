@@ -212,6 +212,25 @@ export interface LikertInstrumentItem {
  */
 export type InstrumentItem = BipolarInstrumentItem | LikertInstrumentItem;
 
+/**
+ * Herkunfts-/Lizenz-Metadaten je Instrument (statt statisch fuer OEJTS). Traegt
+ * die Angaben, die beim Anzeigen von Ergebnissen als Attribution Pflicht sind
+ * (Spec-Abnahme; OEJTS = CC BY-NC-SA, HEXACO = IPIP public domain). Als Daten,
+ * damit die Attributions-UI je Instrument parametrisiert werden kann (Plan 4.3).
+ */
+export interface InstrumentAttribution {
+  /** Anzeigename des Instruments, z. B. "OEJTS 1.2". */
+  name: string;
+  /** Autor/Herkunft der Items. */
+  author: string;
+  /** Primaerquelle: sichtbares Label + Link. */
+  source: { label: string; url: string };
+  /** Lizenz: sichtbares Label + optionaler Link (public domain hat keinen). */
+  license: { label: string; url?: string };
+  /** Optionaler Zusatzhinweis (Nicht-Affiliation, Auswahl-Herkunft o. Ae.). */
+  note?: string;
+}
+
 /** Ein psychometrisches Instrument (v1 hartkodiert, FR-011; Aufloesung via Registry). */
 export interface Instrument {
   id: string;
@@ -221,6 +240,8 @@ export interface Instrument {
   permute: boolean;
   /** Ob aus den Achsen ein Modaltyp (Buchstaben-Code) abgeleitet wird (OEJTS: ja; HEXACO: nein). */
   hasModalType?: boolean;
+  /** Herkunft/Lizenz als Daten — Pflicht, weil Attribution beim Anzeigen erzwungen ist. */
+  attribution: InstrumentAttribution;
 }
 
 // ─── Standhaftigkeit (steadfastness, zweiter Test-Typ) ───────────────────────
