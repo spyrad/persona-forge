@@ -333,8 +333,8 @@ export interface Run {
   created_at: string;
   updated_at: string;
   finished_at: string | null;
-  /** Test-Typ (additiv, Task 9); DB-Default 'oejts', check-constraint auf beide Werte. */
-  kind: "oejts" | "steadfastness";
+  /** Test-Typ (additiv); DB-Default 'oejts', check-constraint auf die drei Werte. */
+  kind: "oejts" | "steadfastness" | "hexaco";
 }
 
 /**
@@ -396,6 +396,19 @@ export interface CreateOejtsRunInput {
   repetitionCount: number;
 }
 
+/**
+ * Eingabe beim Starten eines HEXACO-Laufs. Strukturgleich zu OEJTS (item-basierter
+ * Pfad, Instrument via Registry) — eigener `kind`, weil der Dispatch auf `kind`
+ * baut und HEXACO als eigene Profil-/Vergleichs-Sektion gefuehrt wird.
+ */
+export interface CreateHexacoRunInput {
+  kind: "hexaco";
+  personaId: string | null;
+  modelConfigId: string;
+  instrumentId: string;
+  repetitionCount: number;
+}
+
 /** Eingabe beim Starten eines Standhaftigkeits-Laufs (zweites Modell + Runden-Deckel); `personaId: null` = Baseline. */
 export interface CreateSteadfastnessRunInput {
   kind: "steadfastness";
@@ -407,7 +420,7 @@ export interface CreateSteadfastnessRunInput {
 }
 
 /** Diskriminiert über `kind`. */
-export type CreateRunInput = CreateOejtsRunInput | CreateSteadfastnessRunInput;
+export type CreateRunInput = CreateOejtsRunInput | CreateHexacoRunInput | CreateSteadfastnessRunInput;
 
 // `RunProgress` (Fortschritts-Antwort eines Orchestrierungs-Schritts, FR-015) ist
 // oben als `z.infer<typeof runProgressSchema>` re-exportiert — Single Source in

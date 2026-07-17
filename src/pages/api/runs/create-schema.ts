@@ -11,6 +11,16 @@ const oejts = z.object({
   repetitionCount: z.number().int().min(1).max(25),
 });
 
+// Strukturgleich zu OEJTS, aber `kind` OHNE default: nur ein explizites
+// kind:"hexaco" trifft diesen Zweig — ein fehlendes kind bleibt OEJTS (Kompat).
+const hexaco = z.object({
+  kind: z.literal("hexaco"),
+  personaId: z.uuid().nullable(),
+  modelConfigId: z.uuid(),
+  instrumentId: z.string().trim().min(1).max(120).default("hexaco-ipip-60"),
+  repetitionCount: z.number().int().min(1).max(25),
+});
+
 const steadfastness = z.object({
   kind: z.literal("steadfastness"),
   personaId: z.uuid().nullable(),
@@ -24,4 +34,4 @@ const steadfastness = z.object({
  * Diskriminiert über `kind`. OEJTS ist der Default (fehlt `kind`, greift der
  * OEJTS-Zweig) — rückwärtskompatibel zum bestehenden Client.
  */
-export const createSchema = z.union([steadfastness, oejts]);
+export const createSchema = z.union([steadfastness, hexaco, oejts]);

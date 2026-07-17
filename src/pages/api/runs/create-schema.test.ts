@@ -35,6 +35,38 @@ describe("createSchema (diskriminiert nach kind)", () => {
     expect(bad.success).toBe(false);
   });
 
+  it("HEXACO: kind 'hexaco' → instrumentId default 'hexaco-ipip-60'", () => {
+    const r = createSchema.safeParse({
+      kind: "hexaco",
+      personaId: "11111111-1111-4111-8111-111111111111",
+      modelConfigId: "22222222-2222-4222-8222-222222222222",
+      repetitionCount: 5,
+    });
+    expect(r.success).toBe(true);
+    if (r.success) {
+      expect(r.data.kind).toBe("hexaco");
+      if (r.data.kind === "hexaco") expect(r.data.instrumentId).toBe("hexaco-ipip-60");
+    }
+  });
+
+  it("HEXACO: expliziter instrumentId wird durchgereicht, invalider repetitionCount abgelehnt", () => {
+    const ok = createSchema.safeParse({
+      kind: "hexaco",
+      personaId: null,
+      modelConfigId: "22222222-2222-4222-8222-222222222222",
+      instrumentId: "hexaco-ipip-60",
+      repetitionCount: 3,
+    });
+    expect(ok.success).toBe(true);
+    const bad = createSchema.safeParse({
+      kind: "hexaco",
+      personaId: null,
+      modelConfigId: "22222222-2222-4222-8222-222222222222",
+      repetitionCount: 0,
+    });
+    expect(bad.success).toBe(false);
+  });
+
   it("Baseline: personaId null ist gültig (beide kinds)", () => {
     const oejts = createSchema.safeParse({
       personaId: null,

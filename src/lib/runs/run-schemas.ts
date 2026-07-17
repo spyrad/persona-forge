@@ -43,7 +43,7 @@ export const runViewSchema = z.object({
   finishedAt: z.string().nullable(),
   // Additiv (Task 9): Test-Typ fuer den Listen-Badge. `.default` haelt bestehende
   // Server-Antworten ohne das Feld typkonform (Drift-Semantik siehe Datei-Kommentar).
-  kind: z.enum(["oejts", "steadfastness"]).default("oejts"),
+  kind: z.enum(["oejts", "steadfastness", "hexaco"]).default("oejts"),
   // Additiv (Model Compare Phase 3): Baseline-Flag, server-seitig via
   // `isBaselineRun` berechnet — der Snapshot selbst geht NIE an den Client.
   isBaseline: z.boolean().default(false),
