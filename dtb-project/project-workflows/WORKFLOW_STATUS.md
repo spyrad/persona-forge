@@ -15,17 +15,16 @@
 
 ## Kontext (manuell)
 
-| Kennzahl    | Wert                                                                                                                                                                                                                                                                     |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Blocker** | Keine.                                                                                                                                                                                                                                                                   |
-| **Notizen** | Phase 1 (Enabler) fertig + committet (`5cdac4b`, **lokal — Push offen**). Item-Quelle entschieden: kuratierte 60er-Auswahl aus den IPIP-HEXACO-Skalen (kein kanonisches „IPIP-HEXACO-60"!), Referenz `context/foundation/instruments/ipip-hexaco-60.json` (uncommitted). |
+| Kennzahl    | Wert                                                                                                                                                                                                                                                                            |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Blocker** | Keine.                                                                                                                                                                                                                                                                          |
+| **Notizen** | Phase 1 (Enabler) fertig, committet + **gepusht** (`5cdac4b`/`bddd38e`, Deploy-Lauf siehe S1). Item-Quelle entschieden: kuratierte 60er-Auswahl aus den IPIP-HEXACO-Skalen (kein kanonisches „IPIP-HEXACO-60"!), Referenz `context/foundation/instruments/ipip-hexaco-60.json`. |
 
 ---
 
 ## Offene Aufgaben
 
 - [ ] **Phase 2 umsetzen** — `/dtb:implement hexaco-instrument phase 2` (2.1 Definition aus Referenz-JSON, 2.2 Scoring-Test, 2.3 Smoke-Lauf, 2.4 Attribution, 2.5 Migration; Migration VOR Code-Deploy)
-- [ ] **Push `5cdac4b`** (+ Referenz-JSON) — Push auf `main` = Prod-Deploy; danach `gh run list --branch main`
 - [ ] **Champion abschliessen** — `/10x-archive ci-review-agent`; PR #3–#11 in `evidence.md`. **Job-Logs verfallen ~07.10.**
 - [ ] **Sammel-Einreichung Termin 2 (10.08.):** Builder + Architect + Champion
 - [ ] **Ideen-Inbox:** #1 Task-based evals, #5 Live-Run-Visualisierung, #6 Combobox-Ersatz, #7 UI-Konzepte, #8 SD3, #9 HEXACO-100, #10 Repo-LICENSE (alle Offen)
@@ -83,5 +82,5 @@ Keine.
 
 ## Handoff
 
-**Naechster Befehl:** `/dtb:implement hexaco-instrument phase 2` — Phase 1 committet (`5cdac4b`, 3/17); erster Schritt 2.1 (HEXACO-Definition aus `context/foundation/instruments/ipip-hexaco-60.json`). 3x3-Stopp nach 2.3 (Smoke-Lauf). `5cdac4b` + Referenz-JSON sind noch NICHT gepusht.
+**Naechster Befehl:** `/dtb:implement hexaco-instrument phase 2` — Phase 1 committet + gepusht (`5cdac4b`/`bddd38e`, 3/17); erster Schritt 2.1 (HEXACO-Definition aus `context/foundation/instruments/ipip-hexaco-60.json`). 3x3-Stopp nach 2.3 (Smoke-Lauf).
 **Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume` (stellt Kontext her), danach obigen Befehl.
