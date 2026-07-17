@@ -322,9 +322,9 @@ Vollständige Absicherung, PR über das Verdict-Gate, Prod-Abnahme.
 > Abhaken gemaess Flip-Bedingung §2 (Automated-Kriterien der Phase gruen); SHA-Nachtrag beim
 > Phasen-Ende-Commit — geflippte Zeile ohne SHA ist mid-phase gueltig (§2 Regel 4).
 
-- [x] 1.1 Instrument-Interface generalisieren (Modaltyp optional, midpoint, Likert-Union)
-- [x] 1.2 Instrument-Registry (schlank)
-- [x] 1.3 runs.ts auf Registry + Prompt-Bau parametrisieren
+- [x] 1.1 Instrument-Interface generalisieren (Modaltyp optional, midpoint, Likert-Union) — `5cdac4b`
+- [x] 1.2 Instrument-Registry (schlank) — `5cdac4b`
+- [x] 1.3 runs.ts auf Registry + Prompt-Bau parametrisieren — `5cdac4b`
 - [ ] 2.1 IPIP-HEXACO-60 Instrument-Definition
 - [ ] 2.2 Scoring-Korrektheits-Test (Keying)
 - [ ] 2.3 Früher Smoke-Lauf gegen echtes Modell

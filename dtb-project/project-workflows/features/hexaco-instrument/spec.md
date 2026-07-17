@@ -3,7 +3,7 @@
 **Erstellt:** 2026-07-16
 **Ziel:** Ein zweites gemeinfreies Persönlichkeitsinstrument (HEXACO, inkl. des alignment-relevanten Honesty-Humility-Faktors) für das Modell-Profiling verfügbar machen und dabei die feste Bindung an ein einzelnes Instrument aufheben.
 **Prioritaet:** Mittel
-**Status:** Geplant <!-- abgeleitete Anzeige, wird von dtb:workflow-checkpoint synchronisiert (project-rules/DERIVED_STATE_RULES.md) -->
+**Status:** In Arbeit <!-- abgeleitete Anzeige, wird von dtb:workflow-checkpoint synchronisiert (project-rules/DERIVED_STATE_RULES.md) -->
 
 ---
 
@@ -68,8 +68,8 @@ hinzukommen.
 
 ### Erforderlich vor Start
 
-- [ ] Gemeinfreie HEXACO-Fragebogen-Fassung (IPIP) mit Umfang und Faktor-Zuordnung identifiziert
-- [ ] Exaktes Lizenz-/Herkunfts-Label für die gewählte Quelle bestätigt
+- [x] Gemeinfreie HEXACO-Fragebogen-Fassung (IPIP) mit Umfang und Faktor-Zuordnung identifiziert — kuratierte 60er-Auswahl aus den IPIP-HEXACO-Skalen (Ashton, Lee & Goldberg 2007); `context/foundation/instruments/ipip-hexaco-60.json` (2026-07-17)
+- [x] Exaktes Lizenz-/Herkunfts-Label für die gewählte Quelle bestätigt — „IPIP, public domain"; Befund: kein kanonisches „IPIP-HEXACO-60", eigene deterministische Auswahl (dokumentiert in der Referenzdatei)
 
 ### Referenz-Dokumente
 
@@ -95,7 +95,7 @@ hinzukommen.
 
 ## Offene Punkte
 
-- Welche konkrete gemeinfreie HEXACO-Fragebogen-Fassung (Umfang, Faktor-Zuordnung) und welches exakte Lizenz-/Herkunfts-Label nehmen wir? (Vor Umsetzung zu bestätigen — Recherche der gemeinfreien Quelle.)
+- ~~Welche konkrete gemeinfreie HEXACO-Fragebogen-Fassung (Umfang, Faktor-Zuordnung) und welches exakte Lizenz-/Herkunfts-Label nehmen wir?~~ **Geklärt 2026-07-17:** kuratierte 60er-Auswahl aus den IPIP-HEXACO-Skalen, public domain — `context/foundation/instruments/ipip-hexaco-60.json`.
 - Wie weit soll die Verallgemeinerung der Instrument-Bindung in v1 reichen (minimal für HEXACO vs. vollständige, künftig rein additive Lösung)? — in der Planung zu schärfen.
 
 ---

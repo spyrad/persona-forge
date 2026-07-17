@@ -1,14 +1,14 @@
 # Feature Backlog
 
-**Letzte Aktualisierung:** 2026-07-16 (HEXACO-Instrument spezifiziert)
+**Letzte Aktualisierung:** 2026-07-17 (HEXACO-Instrument gestartet)
 
 ---
 
 ## Aktive Features
 
-| Feature           | Status  | Prio   | Datei                              | Beschreibung                                                                                                                                                                                                                                                       |
-| ----------------- | ------- | ------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| HEXACO-Instrument | Geplant | Mittel | features/hexaco-instrument/spec.md | Zweites gemeinfreies Persönlichkeitsinstrument (HEXACO, inkl. des alignment-relevanten Honesty-Humility-Faktors) fürs Modell-Profiling via gemeinfreier IPIP-Items; hebt zugleich die feste Bindung an ein einzelnes Instrument auf. Aus Idee #3, Alignment-Fokus. |
+| Feature           | Status    | Prio   | Datei                              | Beschreibung                                                                                                                                                                                                                                                       |
+| ----------------- | --------- | ------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| HEXACO-Instrument | In Arbeit | Mittel | features/hexaco-instrument/spec.md | Zweites gemeinfreies Persönlichkeitsinstrument (HEXACO, inkl. des alignment-relevanten Honesty-Humility-Faktors) fürs Modell-Profiling via gemeinfreier IPIP-Items; hebt zugleich die feste Bindung an ein einzelnes Instrument auf. Aus Idee #3, Alignment-Fokus. |
 
 ---
 
