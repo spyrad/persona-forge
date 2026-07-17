@@ -330,9 +330,9 @@ Vollständige Absicherung, PR über das Verdict-Gate, Prod-Abnahme.
 - [x] 2.3 Früher Smoke-Lauf gegen echtes Modell — `0d80ae9`
 - [x] 2.4 Attributions-Metadaten je Instrument — `0d80ae9`
 - [x] 2.5 Migration kind-Constraint erweitern — `0d80ae9`
-- [x] 3.1 Eingabe-Validierung erweitern
-- [x] 3.2 Lauf-Formular
-- [x] 3.3 End-to-end-Lauf über die UI
+- [x] 3.1 Eingabe-Validierung erweitern — `332ea71`
+- [x] 3.2 Lauf-Formular — `332ea71`
+- [x] 3.3 End-to-end-Lauf über die UI — `332ea71`
 - [ ] 4.1 Lauf-Ergebnis ohne Typ-Code
 - [ ] 4.2 Modell-Profil / Vergleich / Dashboard
 - [ ] 4.3 Attribution parametrisieren + Landing live
