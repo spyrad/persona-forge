@@ -19,6 +19,7 @@
  *   - Reps werden BATCH-geladen (eine in-Klausel ueber alle Run-Ids) — keine
  *     Per-Lauf-Ladeschleife (N+1).
  */
+import { HEXACO } from "@/lib/instruments/hexaco";
 import { OEJTS } from "@/lib/instruments/oejts";
 import { isBaselineRun } from "@/lib/runs/baseline";
 import { aggregateRun } from "@/lib/runs/oejts-aggregate";
@@ -125,6 +126,12 @@ export function buildModelProfiles(
       const pooled = oejtsRuns.flatMap((r) => repsByRun.get(r.id) ?? []);
       const aggregate = aggregateRun(pooled, OEJTS);
       sections.push({ kind: "oejts", runCount: oejtsRuns.length, usableReps: aggregate.usableReps, aggregate });
+    }
+    const hexacoRuns = baseline.filter((r) => r.kind === "hexaco");
+    if (hexacoRuns.length > 0) {
+      const pooled = hexacoRuns.flatMap((r) => repsByRun.get(r.id) ?? []);
+      const aggregate = aggregateRun(pooled, HEXACO);
+      sections.push({ kind: "hexaco", runCount: hexacoRuns.length, usableReps: aggregate.usableReps, aggregate });
     }
     const steadfastRuns = baseline.filter((r) => r.kind === "steadfastness");
     if (steadfastRuns.length > 0) {

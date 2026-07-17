@@ -11,7 +11,7 @@ import type { DashboardRunStats, ModelConfigView, ModelProfileView, RunAggregate
 // ─── Fixture-Bauer ───────────────────────────────────────────────────────────
 
 function oejtsAggregate(modalType: string | null, typeConsistency: number | null, usableReps = 5): RunAggregate {
-  return { axes: [], modalType, typeConsistency, usableReps };
+  return { axes: [], hasModalType: true, modalType, typeConsistency, usableReps };
 }
 
 function profile(

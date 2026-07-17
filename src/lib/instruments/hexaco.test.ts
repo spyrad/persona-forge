@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { ATTRIBUTION_BY_KIND } from "@/lib/instruments/attribution";
 import { HEXACO } from "@/lib/instruments/hexaco";
 import { axisScale, deriveType, scoreAxes } from "@/lib/runs/oejts-score";
 import type { ItemValue } from "@/types";
@@ -86,6 +87,16 @@ describe("scoreAxes (HEXACO-Keying)", () => {
   it("ist deterministisch", () => {
     const v = buildValues(3, { H2: 5 });
     expect(scoreAxes(v, HEXACO)).toEqual(scoreAxes(v, HEXACO));
+  });
+});
+
+describe("Attribution je Instrument (Daten aus 2.4)", () => {
+  it("traegt korrekte Lizenz-Label je Test-Typ", () => {
+    expect(ATTRIBUTION_BY_KIND.oejts.license.label).toBe("CC BY-NC-SA 4.0");
+    expect(ATTRIBUTION_BY_KIND.oejts.license.url).toBeTruthy(); // CC-Lizenz hat einen Link
+    expect(ATTRIBUTION_BY_KIND.hexaco.license.label).toBe("Public domain (IPIP)");
+    expect(ATTRIBUTION_BY_KIND.hexaco.license.url).toBeUndefined(); // public domain → kein Lizenz-Link
+    expect(HEXACO.attribution).toBe(ATTRIBUTION_BY_KIND.hexaco); // Map referenziert die Instrument-Daten
   });
 });
 

@@ -458,7 +458,13 @@ export interface AxisDistribution {
 /** Aggregiertes Lauf-Ergebnis: Achsen-Verteilungen + Typ-Stabilitaet. */
 export interface RunAggregate {
   axes: AxisDistribution[];
-  /** Modaltyp aus den achsenweisen Mehrheits-Buchstaben (null, wenn keine Achse beitrug). */
+  /**
+   * Ob das Instrument einen Modaltyp kennt (OEJTS: true; HEXACO/dimensional: false).
+   * Trennt „kein Typ, weil dimensional" von „Modaltyp unvollstaendig (Dropout)" —
+   * beides hat `modalType: null`, aber die UI zeigt Ersteres ohne Typ-Block.
+   */
+  hasModalType: boolean;
+  /** Modaltyp aus den achsenweisen Mehrheits-Buchstaben (null, wenn keine Achse beitrug ODER dimensional). */
   modalType: string | null;
   /** Anteil der Wiederholungen mit vollstaendigem Typ, die exakt `modalType` ergeben (0–1; null wenn n. a.). */
   typeConsistency: number | null;
@@ -535,6 +541,7 @@ export interface ModelProfileMeta {
  */
 export type ModelProfileSection =
   | { kind: "oejts"; runCount: number; usableReps: number; aggregate: RunAggregate }
+  | { kind: "hexaco"; runCount: number; usableReps: number; aggregate: RunAggregate }
   | { kind: "steadfastness"; runCount: number; usableReps: number; aggregate: SteadfastnessAggregate };
 
 /** Profil eines Modells: Meta + eine Sektion je Instrument mit mind. 1 Baseline-Lauf. */

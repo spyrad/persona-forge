@@ -333,9 +333,9 @@ Vollständige Absicherung, PR über das Verdict-Gate, Prod-Abnahme.
 - [x] 3.1 Eingabe-Validierung erweitern — `332ea71`
 - [x] 3.2 Lauf-Formular — `332ea71`
 - [x] 3.3 End-to-end-Lauf über die UI — `332ea71`
-- [ ] 4.1 Lauf-Ergebnis ohne Typ-Code
-- [ ] 4.2 Modell-Profil / Vergleich / Dashboard
-- [ ] 4.3 Attribution parametrisieren + Landing live
+- [x] 4.1 Lauf-Ergebnis ohne Typ-Code
+- [x] 4.2 Modell-Profil / Vergleich / Dashboard
+- [x] 4.3 Attribution parametrisieren + Landing live
 - [ ] 5.1 Fehlerpfad + volle Suite
 - [ ] 5.2 E2E-Kette HEXACO
 - [ ] 5.3 PR + Verdict-Gate + Prod-Abnahme

@@ -1,7 +1,8 @@
 import { AlertTriangle, Boxes, ShieldCheck, Sigma } from "lucide-react";
 import { AxisChart } from "@/components/runs/axis-chart";
+import InstrumentAttribution from "@/components/models/InstrumentAttribution";
 import { THIN_DATA_MIN } from "@/components/models/ModelProfile";
-import OejtsAttribution from "@/components/models/OejtsAttribution";
+import { ATTRIBUTION_BY_KIND } from "@/lib/instruments/attribution";
 import { formatDateTime } from "@/lib/runs/run-timing";
 import type { ModelCompareView, ModelProfileSection, ModelProfileView } from "@/types";
 
@@ -72,6 +73,11 @@ function oejtsSection(profile: ModelProfileView): Extract<ModelProfileSection, {
   return profile.sections.find((s): s is Extract<ModelProfileSection, { kind: "oejts" }> => s.kind === "oejts");
 }
 
+/** HEXACO-Sektion eines Profils, falls vorhanden. */
+function hexacoSection(profile: ModelProfileView): Extract<ModelProfileSection, { kind: "hexaco" }> | undefined {
+  return profile.sections.find((s): s is Extract<ModelProfileSection, { kind: "hexaco" }> => s.kind === "hexaco");
+}
+
 /** Steadfastness-Sektion eines Profils, falls vorhanden. */
 function steadfastnessSection(
   profile: ModelProfileView,
@@ -120,17 +126,34 @@ function OejtsTypePanel({
   );
 }
 
-/** Überlagerte OEJTS-Achsen-Verteilungen aller Modelle mit Daten. */
-function OejtsCompare({ profiles }: { profiles: ModelProfileView[] }) {
-  // Spaltenfarbe folgt der Profil-Position — Modelle ohne OEJTS-Daten behalten
-  // ihre Farbe im Typ-Panel, tauchen in den Charts aber nicht auf.
+/** Ein item-basiertes (achsen-tragendes) Instrument-Section (OEJTS/HEXACO). */
+type AxisSectionOf = (
+  profile: ModelProfileView,
+) => Extract<ModelProfileSection, { kind: "oejts" | "hexaco" }> | undefined;
+
+/**
+ * Überlagerte Achsen-Verteilungen aller Modelle mit Daten — geteilt von OEJTS und
+ * HEXACO (beide tragen `aggregate.axes`). `referenceLabel` beschriftet die
+ * Referenzlinie („Cutoff" Modaltyp-Schwelle vs. „Midpoint" dimensional).
+ */
+function AxisCompare({
+  profiles,
+  sectionOf,
+  referenceLabel,
+}: {
+  profiles: ModelProfileView[];
+  sectionOf: AxisSectionOf;
+  referenceLabel: string;
+}) {
+  // Spaltenfarbe folgt der Profil-Position — Modelle ohne Daten behalten ihre
+  // Farbe im Stat-Panel, tauchen in den Charts aber nicht auf.
   const withData = profiles
-    .map((profile, index) => ({ profile, section: oejtsSection(profile), color: colorAt(index) }))
-    .filter((e): e is typeof e & { section: NonNullable<ReturnType<typeof oejtsSection>> } => e.section != null);
+    .map((profile, index) => ({ profile, section: sectionOf(profile), color: colorAt(index) }))
+    .filter((e): e is typeof e & { section: NonNullable<ReturnType<AxisSectionOf>> } => e.section != null);
   if (withData.length === 0) return null;
 
-  // Achsen-Referenz: erstes Modell mit Daten; alle OEJTS-Aggregate teilen
-  // dieselbe Instrument-Definition (Match per key wie `RunComparison`).
+  // Achsen-Referenz: erstes Modell mit Daten; alle Aggregate desselben Instruments
+  // teilen die Instrument-Definition (Match per key wie `RunComparison`).
   const referenceAxes = withData[0]?.section.aggregate.axes ?? [];
 
   return (
@@ -155,6 +178,7 @@ function OejtsCompare({ profiles }: { profiles: ModelProfileView[] }) {
                 scale={referenceAxis.scale}
                 low={referenceAxis.low}
                 high={referenceAxis.high}
+                referenceLabel={referenceLabel}
                 series={series}
               />
               <div className={`grid gap-x-4 gap-y-2 ${columnsClass(stats.length)}`}>
@@ -180,6 +204,40 @@ function OejtsCompare({ profiles }: { profiles: ModelProfileView[] }) {
         })}
       </div>
     </section>
+  );
+}
+
+/** Stat-Panel je Modell für ein dimensionales Instrument (HEXACO): verwertbare Reps, kein Typ-Code. */
+function HexacoStatPanel({
+  profile,
+  section,
+  color,
+}: {
+  profile: ModelProfileView;
+  section: Extract<ModelProfileSection, { kind: "hexaco" }> | undefined;
+  color: ColorScheme;
+}) {
+  return (
+    <div className="border-border bg-card space-y-1 rounded-2xl border p-5">
+      <p className="text-muted-foreground flex items-center gap-1.5 font-mono text-xs tracking-[0.2em] uppercase">
+        <span className={`size-2 rounded-full ${color.dot}`} /> {profile.meta.modelName}
+      </p>
+      {section ? (
+        <>
+          <p className={`font-mono text-3xl font-bold tabular-nums ${color.text}`}>6 factors</p>
+          <p className="text-muted-foreground text-xs tabular-nums">
+            {section.usableReps} usable reps from {section.runCount} run{section.runCount === 1 ? "" : "s"}
+          </p>
+          {section.usableReps < THIN_DATA_MIN ? (
+            <p className="text-chart-2 flex items-center gap-1 text-xs">
+              <AlertTriangle className="size-3.5 shrink-0" /> thin data (&lt; {THIN_DATA_MIN} reps)
+            </p>
+          ) : null}
+        </>
+      ) : (
+        <p className="text-muted-foreground text-sm">No HEXACO baseline data for this model.</p>
+      )}
+    </div>
   );
 }
 
@@ -231,6 +289,7 @@ function SteadfastnessCompare({ profiles }: { profiles: ModelProfileView[] }) {
 export default function ModelComparison({ view }: { view: ModelCompareView }) {
   const { profiles } = view;
   const hasOejts = profiles.some((p) => oejtsSection(p));
+  const hasHexaco = profiles.some((p) => hexacoSection(p));
   return (
     <div className="space-y-6">
       {/* Meta-Köpfe aller Modelle */}
@@ -255,7 +314,7 @@ export default function ModelComparison({ view }: { view: ModelCompareView }) {
               />
             ))}
           </div>
-          <OejtsCompare profiles={profiles} />
+          <AxisCompare profiles={profiles} sectionOf={oejtsSection} referenceLabel="Cutoff" />
         </section>
       ) : (
         <p className="text-muted-foreground flex items-start gap-2 text-sm">
@@ -263,10 +322,32 @@ export default function ModelComparison({ view }: { view: ModelCompareView }) {
         </p>
       )}
 
+      {hasHexaco ? (
+        <section className="space-y-4">
+          <h2 className="text-muted-foreground flex items-center gap-2 font-mono text-xs tracking-[0.2em] uppercase">
+            <Sigma className="size-4" /> personality (hexaco)
+          </h2>
+          <div className={`grid gap-4 ${columnsClass(profiles.length)}`}>
+            {profiles.map((profile, index) => (
+              <HexacoStatPanel
+                key={profile.meta.modelName}
+                profile={profile}
+                section={hexacoSection(profile)}
+                color={colorAt(index)}
+              />
+            ))}
+          </div>
+          <AxisCompare profiles={profiles} sectionOf={hexacoSection} referenceLabel="Midpoint" />
+        </section>
+      ) : null}
+
       <SteadfastnessCompare profiles={profiles} />
 
-      {/* Attribution (Spec-Abnahme-Kriterium), sobald OEJTS-Ergebnisse gezeigt werden */}
-      {hasOejts ? <OejtsAttribution /> : null}
+      {/* Attribution je gezeigtem Instrument (Spec-Abnahme-Kriterium) */}
+      <div className="space-y-1">
+        {hasOejts ? <InstrumentAttribution attribution={ATTRIBUTION_BY_KIND.oejts} /> : null}
+        {hasHexaco ? <InstrumentAttribution attribution={ATTRIBUTION_BY_KIND.hexaco} /> : null}
+      </div>
     </div>
   );
 }

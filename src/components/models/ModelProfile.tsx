@@ -1,6 +1,7 @@
 import { AlertTriangle, ArrowLeft, Boxes, ShieldCheck, Sigma } from "lucide-react";
-import OejtsAttribution from "@/components/models/OejtsAttribution";
+import InstrumentAttribution from "@/components/models/InstrumentAttribution";
 import { AxisCard } from "@/components/runs/RunResult";
+import { ATTRIBUTION_BY_KIND } from "@/lib/instruments/attribution";
 import { formatDateTime } from "@/lib/runs/run-timing";
 import type { ModelProfileSection, ModelProfileView } from "@/types";
 
@@ -56,6 +57,31 @@ function OejtsSection({ section }: { section: Extract<ModelProfileSection, { kin
             No consistent type — at least one axis had no repetition where all items were parseable.
           </p>
         )}
+        <ThinDataHint usableReps={section.usableReps} />
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        {aggregate.axes.map((axis) => (
+          <AxisCard key={axis.key} axis={axis} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+/** HEXACO-Sektion: dimensionales Profil (kein Typ-Code) + Achsen-Verteilungen (gepoolt). */
+function HexacoSection({ section }: { section: Extract<ModelProfileSection, { kind: "hexaco" }> }) {
+  const { aggregate } = section;
+  return (
+    <section className="space-y-4">
+      <div className="border-border bg-card rounded-2xl border p-6">
+        <h2 className="text-muted-foreground flex items-center gap-2 font-mono text-xs tracking-[0.2em] uppercase">
+          <Sigma className="size-4" /> personality (hexaco) — {section.usableReps} usable reps pooled from{" "}
+          {section.runCount} run{section.runCount === 1 ? "" : "s"}
+        </h2>
+        <p className="text-muted-foreground mt-2 text-sm">
+          Six factor distributions (H/E/X/A/C/O) — dimensional, no single-type code.
+        </p>
         <ThinDataHint usableReps={section.usableReps} />
       </div>
 
@@ -130,16 +156,23 @@ export default function ModelProfile({ profile }: Props) {
         </p>
       </section>
 
-      {sections.map((section) =>
-        section.kind === "oejts" ? (
-          <OejtsSection key={section.kind} section={section} />
-        ) : (
-          <SteadfastnessSection key={section.kind} section={section} />
-        ),
-      )}
+      {sections.map((section) => {
+        if (section.kind === "oejts") return <OejtsSection key={section.kind} section={section} />;
+        if (section.kind === "hexaco") return <HexacoSection key={section.kind} section={section} />;
+        return <SteadfastnessSection key={section.kind} section={section} />;
+      })}
 
-      {/* Attribution (Spec-Abnahme-Kriterium): Profil zeigt OEJTS-Ergebnisse */}
-      {sections.some((s) => s.kind === "oejts") ? <OejtsAttribution /> : null}
+      {/* Attribution je gezeigtem Instrument (Spec-Abnahme-Kriterium): OEJTS und/oder HEXACO */}
+      <div className="space-y-1">
+        {sections
+          .filter(
+            (s): s is Extract<ModelProfileSection, { kind: "oejts" | "hexaco" }> =>
+              s.kind === "oejts" || s.kind === "hexaco",
+          )
+          .map((s) => (
+            <InstrumentAttribution key={s.kind} attribution={ATTRIBUTION_BY_KIND[s.kind]} />
+          ))}
+      </div>
 
       <a href="/models" className="text-primary hover:text-primary/80 inline-flex items-center gap-1 text-sm">
         <ArrowLeft className="size-4" /> Back to model configs

@@ -97,20 +97,45 @@ const MID = H / 2;
     </div>
 
     <div class="reveal">
-      <Card className="hover:border-muted-foreground/40 h-full border-dashed transition-colors duration-300">
+      <Card className="hover:border-primary/40 h-full transition-colors duration-300">
         <CardHeader>
           <div class="flex items-center justify-between">
-            <CardTitle className="text-muted-foreground">Big Five</CardTitle>
+            <CardTitle>HEXACO</CardTitle>
             <span
-              class="border-border text-muted-foreground rounded-full border px-2 py-0.5 font-mono text-[10px] tracking-wider uppercase"
+              class="border-primary/40 text-primary rounded-full border px-2 py-0.5 font-mono text-[10px] tracking-wider uppercase"
             >
-              planned
+              live
             </span>
           </div>
           <CardDescription>
-            Mini-IPIP — a public-domain Likert instrument. Five factors, same discipline: distributions per scale.
+            60 public-domain IPIP items across six factors — including Honesty-Humility, the alignment-relevant trait
+            missing from Big Five. Dimensional distributions, no single-type code.
           </CardDescription>
         </CardHeader>
+        <CardContent>
+          <div class="grid grid-cols-3 gap-2 font-mono text-[10px]">
+            {
+              [
+                { key: "H", label: "Honesty" },
+                { key: "E", label: "Emotion" },
+                { key: "X", label: "eXtrav" },
+                { key: "A", label: "Agree" },
+                { key: "C", label: "Consc" },
+                { key: "O", label: "Openness" },
+              ].map((f, i) => (
+                <div class="border-border bg-muted/30 rounded-md border px-2 py-1.5">
+                  <div class="flex items-baseline justify-between">
+                    <span class="text-primary font-bold">{f.key}</span>
+                    <span class="text-muted-foreground">{f.label}</span>
+                  </div>
+                  <div class="bg-muted mt-1.5 h-1 overflow-hidden rounded-full">
+                    <div class="bg-primary/60 h-full rounded-full" style={`width:${String(35 + ((i * 13) % 55))}%`} />
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </CardContent>
       </Card>
     </div>
 

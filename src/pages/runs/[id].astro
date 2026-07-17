@@ -49,7 +49,9 @@ if (notFound) {
 const resultSubtitle =
   result?.run.kind === "steadfastness"
     ? "Steadfastness (manipulation resistance): capitulation rate across experiments plus strategy breakdown."
-    : "OEJTS distribution per axis across repetitions plus the derived type.";
+    : result?.run.kind === "hexaco"
+      ? "HEXACO distribution across repetitions: six personality factors (H/E/X/A/C/O), no single-type code."
+      : "OEJTS distribution per axis across repetitions plus the derived type.";
 ---
 
 <AppLayout title="Run result" eyebrow="04 — run result" heading="Run result" lead={resultSubtitle}>

@@ -4,6 +4,7 @@
  * deckt `model-profiles.itest.ts` ab.
  */
 import { describe, expect, it } from "vitest";
+import { HEXACO } from "@/lib/instruments/hexaco";
 import { OEJTS } from "@/lib/instruments/oejts";
 import {
   buildModelProfiles,
@@ -41,6 +42,15 @@ function fullItemValues(value: number): ItemValue[] {
 
 function oejtsRep(runId: string, value = 3): ProfileRepRow {
   return { run_id: runId, item_values: fullItemValues(value), experiment: null };
+}
+
+/** Volle HEXACO-Item-Werte (60 Items) — eine verwertbare Rep. */
+function hexacoRep(runId: string, value = 4): ProfileRepRow {
+  return {
+    run_id: runId,
+    item_values: HEXACO.items.map((it) => ({ id: it.id, value, status: "ok" })),
+    experiment: null,
+  };
 }
 
 function experiment(capitulated: boolean, done = true): SteadfastnessExperiment {
@@ -141,6 +151,24 @@ describe("buildModelProfiles", () => {
     if (section.kind === "steadfastness") {
       expect(section.aggregate.capitulatedCount).toBe(1);
       expect(section.aggregate.heldCount).toBe(2);
+    }
+  });
+
+  it("baut eine HEXACO-Sektion (6 Faktoren, kein Modaltyp) neben der OEJTS-Sektion", () => {
+    const cfg = config("c1", "gpt-test");
+    const oejtsRun = run("c1"); // kind oejts
+    const hexRun = run("c1", { kind: "hexaco" });
+    const reps = [oejtsRep(oejtsRun.id, 3), hexacoRep(hexRun.id, 4), hexacoRep(hexRun.id, 2)];
+
+    const [profile] = buildModelProfiles([cfg], [oejtsRun, hexRun], reps);
+    expect(profile.sections.map((s) => s.kind)).toEqual(["oejts", "hexaco"]);
+
+    const hex = profile.sections.find((s) => s.kind === "hexaco");
+    expect(hex?.usableReps).toBe(2);
+    if (hex?.kind === "hexaco") {
+      expect(hex.aggregate.axes.map((a) => a.key)).toEqual(["H", "E", "X", "A", "C", "O"]);
+      expect(hex.aggregate.hasModalType).toBe(false);
+      expect(hex.aggregate.modalType).toBeNull();
     }
   });
 
