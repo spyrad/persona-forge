@@ -3,7 +3,7 @@
 **Erstellt:** 2026-07-16
 **Ziel:** Ein zweites gemeinfreies Persönlichkeitsinstrument (HEXACO, inkl. des alignment-relevanten Honesty-Humility-Faktors) für das Modell-Profiling verfügbar machen und dabei die feste Bindung an ein einzelnes Instrument aufheben.
 **Prioritaet:** Mittel
-**Status:** In Arbeit <!-- abgeleitete Anzeige, wird von dtb:workflow-checkpoint synchronisiert (project-rules/DERIVED_STATE_RULES.md) -->
+**Status:** Abgeschlossen <!-- abgeleitete Anzeige, wird von dtb:workflow-checkpoint synchronisiert (project-rules/DERIVED_STATE_RULES.md) -->
 
 ---
 
