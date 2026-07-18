@@ -1,7 +1,7 @@
 # Workflow-Status: persona-forge
 
 **Letztes Update:** 2026-07-18
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-18.md` (Session 1)
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-18.md` (Session 2)
 
 ---
 
@@ -13,10 +13,10 @@ Kein aktives Feature. (HEXACO-Instrument abgenommen + archiviert 2026-07-18 → 
 
 ## Kontext (manuell)
 
-| Kennzahl    | Wert                                                                                                                                                                                                                                                             |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Blocker** | Keine.                                                                                                                                                                                                                                                           |
-| **Notizen** | HEXACO live auf Prod (2 PRs: `42ddb42` Phase 2–5, `8e8b7fb` Review-Fix F1/F2; je Verdict 10.0/10). Impl-Review triagiert: F1/F2 FIXED, F3–F6 Nits SKIPPED (`features/hexaco-instrument/review.md`). Lokales Supabase + Docker laufen noch (`npx supabase stop`). |
+| Kennzahl    | Wert                                                                                                                                                                                                                                                                                  |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Blocker** | Keine.                                                                                                                                                                                                                                                                                |
+| **Notizen** | HEXACO abgeschlossen + archiviert (3 PRs `42ddb42`/`8e8b7fb`/`66a8bc7`, je Verdict 10.0/10; live auf Prod). Impl-Review: F1/F2 FIXED, F3–F6 SKIPPED (`archive/hexaco-instrument/review.md`). Lokal = origin/main, clean. Lokales Supabase + Docker laufen noch (`npx supabase stop`). |
 
 ---
 
