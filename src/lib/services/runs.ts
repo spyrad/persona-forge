@@ -12,6 +12,8 @@
  *     Persona-System-Prompt fest (reproduzierbar, auch wenn Persona spaeter geloescht wird).
  *   * RLS erzwingt den Scope serverseitig (select own-or-global, writes owner-only).
  */
+import { HEXACO } from "@/lib/instruments/hexaco";
+import { OEJTS } from "@/lib/instruments/oejts";
 import { getInstrument } from "@/lib/instruments/registry";
 import { STEADFASTNESS_ID } from "@/lib/instruments/steadfastness";
 import { chatCompletion } from "@/lib/llm/openai-compatible";
@@ -52,6 +54,15 @@ import type {
 type SupabaseClient = NonNullable<ReturnType<typeof createClient>>;
 
 const TABLE = "runs";
+
+// Serverseitige, alleinige Autoritaet: kind → instrument_id fuer item-basierte
+// Kinds. createRun bindet damit die beiden Felder aneinander, statt der Client-
+// `instrumentId` zu vertrauen (Review F1: sonst koennte ein Body
+// {kind:"hexaco", instrumentId:"oejts-1.2"} als HEXACO gelten, aber OEJTS scoren).
+const ITEM_INSTRUMENT_ID_BY_KIND: Record<"oejts" | "hexaco", string> = {
+  oejts: OEJTS.id,
+  hexaco: HEXACO.id,
+};
 
 /**
  * Spalten der View-Projektion (inkl. owner_id fuer `isOwn`) + eingebetteter
@@ -185,8 +196,9 @@ export async function createRun(sb: SupabaseClient, userId: string, input: Creat
     };
   } else {
     // OEJTS und HEXACO teilen den item-basierten Pfad; `kind` unterscheidet die
-    // Profil-/Vergleichs-Sektion, `instrument_id` das konkrete Instrument.
-    insert = { ...base, kind: input.kind, instrument_id: input.instrumentId };
+    // Profil-/Vergleichs-Sektion. `instrument_id` wird serverseitig aus `kind`
+    // abgeleitet (nicht aus dem Client-Wert) — die Felder koennen nie divergieren.
+    insert = { ...base, kind: input.kind, instrument_id: ITEM_INSTRUMENT_ID_BY_KIND[input.kind] };
   }
 
   const { data, error } = await sb.from(TABLE).insert(insert).select(VIEW_COLUMNS).single();

@@ -21,14 +21,23 @@ function config(id: string, modelName: string, baseUrl = "https://api.example.co
 }
 
 let runSeq = 0;
+// instrument_id folgt dem kind (serverseitig gebunden, wie createRun) — Tests
+// bekommen es automatisch passend, sofern nicht explizit ueberschrieben.
+const INSTRUMENT_ID_BY_KIND: Record<string, string> = {
+  oejts: "oejts-1.2",
+  hexaco: "hexaco-ipip-60",
+  steadfastness: "steadfastness",
+};
 function run(configId: string | null, overrides: Partial<ProfileRunRow> = {}): ProfileRunRow {
   runSeq += 1;
+  const kind = overrides.kind ?? "oejts";
   return {
     id: `run-${String(runSeq)}`,
     persona_id: null,
     model_config_id: configId,
     persona_prompt_snapshot: "",
-    kind: "oejts",
+    kind,
+    instrument_id: INSTRUMENT_ID_BY_KIND[kind],
     created_at: `2026-07-0${String((runSeq % 8) + 1)}T10:00:00Z`,
     finished_at: null,
     ...overrides,
