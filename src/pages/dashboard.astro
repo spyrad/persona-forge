@@ -1,6 +1,7 @@
 ---
 import DashboardHero from "@/components/dashboard/DashboardHero.astro";
-import OejtsAttribution from "@/components/models/OejtsAttribution";
+import InstrumentAttribution from "@/components/models/InstrumentAttribution";
+import { ATTRIBUTION_BY_KIND } from "@/lib/instruments/attribution";
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import AppLayout from "@/layouts/AppLayout.astro";
 import { modelProfileHref } from "@/lib/models/profile-link";
@@ -164,7 +165,7 @@ const register = [
   {
     showsTypes ? (
       <div class="mt-10">
-        <OejtsAttribution />
+        <InstrumentAttribution attribution={ATTRIBUTION_BY_KIND.oejts} />
       </div>
     ) : null
   }

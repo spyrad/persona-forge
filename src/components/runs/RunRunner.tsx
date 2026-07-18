@@ -36,7 +36,15 @@ const DEFAULT_REPS = 5;
 const MIN_ROUNDS = 1;
 const MAX_ROUNDS = 50;
 const DEFAULT_ROUNDS = 12;
-type RunKind = "oejts" | "steadfastness";
+type RunKind = "oejts" | "steadfastness" | "hexaco";
+
+// Item-basierte Test-Typen → ihre instrument_id (der steadfastness-Zweig sendet
+// keine). Hartkodierte IDs wie bisher, um die Instrument-Daten nicht ins
+// Client-Bundle zu ziehen.
+const INSTRUMENT_ID_BY_KIND: Record<"oejts" | "hexaco", string> = {
+  oejts: "oejts-1.2",
+  hexaco: "hexaco-ipip-60",
+};
 
 /**
  * Navigations-Side-Effect bei 401. Bewusst auf Modul-Ebene (nicht in der
@@ -313,7 +321,13 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
               repetitionCount: reps,
               maxRounds,
             }
-          : { kind, personaId: personaValue, modelConfigId, instrumentId: "oejts-1.2", repetitionCount: reps };
+          : {
+              kind,
+              personaId: personaValue,
+              modelConfigId,
+              instrumentId: INSTRUMENT_ID_BY_KIND[kind],
+              repetitionCount: reps,
+            };
       const res = await fetch("/api/runs", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
@@ -473,6 +487,9 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
           >
             <option value="oejts" className="bg-muted">
               Personality (OEJTS)
+            </option>
+            <option value="hexaco" className="bg-muted">
+              Personality (HEXACO)
             </option>
             <option value="steadfastness" className="bg-muted">
               Steadfastness
@@ -688,7 +705,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
                     <div className="flex flex-wrap items-center gap-2">
                       <StatusBadge status={run.status} />
                       <span className="border-border bg-muted text-muted-foreground inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
-                        {run.kind === "steadfastness" ? "Steadfastness" : "OEJTS"}
+                        {run.kind === "steadfastness" ? "Steadfastness" : run.kind === "hexaco" ? "HEXACO" : "OEJTS"}
                       </span>
                       {/* Baseline-Badge: Lauf lief bewusst ohne Persona (Model-Compare-Datenbasis). */}
                       {run.isBaseline ? (

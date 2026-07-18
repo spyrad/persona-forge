@@ -52,6 +52,8 @@ function failureRate(failed: number, total: number): string {
 /** Achsen-Karte (Verteilung + Kennzahlen) — auch vom Modell-Profil wiederverwendet. */
 export function AxisCard({ axis }: { axis: AxisDistribution }) {
   const reliable = axis.usableCount >= RELIABLE_MIN;
+  // Dimensionale Achse (HEXACO): keine Pol-Buchstaben → Referenzlinie ist die Skalenmitte.
+  const dimensional = axis.high === "" && axis.low === "";
   return (
     <div className="border-border bg-card space-y-3 rounded-2xl border p-5">
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -67,6 +69,7 @@ export function AxisCard({ axis }: { axis: AxisDistribution }) {
             scale={axis.scale}
             low={axis.low}
             high={axis.high}
+            referenceLabel={dimensional ? "Midpoint" : "Cutoff"}
             series={[{ scores: axis.scores, mean: axis.mean, dotClass: "bg-chart-1", meanClass: "border-chart-1" }]}
           />
 
@@ -241,11 +244,12 @@ export default function RunResult({ result, modelName = null }: Props) {
 
   return (
     <div className="space-y-6">
-      {/* Typ-Stabilitäts-Panel */}
+      {/* Kopf-Panel: Modaltyp (OEJTS) ODER dimensionales Profil (HEXACO) */}
       <section className="border-border bg-card rounded-2xl border p-6">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-muted-foreground flex items-center gap-2 font-mono text-xs tracking-[0.2em] uppercase">
-            <Sigma className="size-4" /> derived type — {aggregate.usableReps} usable runs
+            <Sigma className="size-4" />
+            {aggregate.hasModalType ? "derived type" : "dimensional profile"} — {aggregate.usableReps} usable runs
           </h2>
           {run.visibility === "global" ? (
             <span className="border-primary/30 bg-primary/10 text-primary inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs">
@@ -259,18 +263,28 @@ export default function RunResult({ result, modelName = null }: Props) {
             </span>
           )}
         </div>
-        {aggregate.modalType ? (
-          <div className="mt-2 flex flex-wrap items-baseline gap-3">
-            <span className="text-foreground font-mono text-4xl font-bold tracking-widest">{aggregate.modalType}</span>
-            {aggregate.typeConsistency != null ? (
-              <span className="text-muted-foreground text-sm">
-                Stability: {Math.round(aggregate.typeConsistency * 100)} % of runs yield this type
+        {/* Typ-Block nur bei Modaltyp-Instrumenten; dimensionale zeigen keinen Typ-Code
+            und keinen leeren „No consistent type"-Block (die Faktoren stehen unten). */}
+        {aggregate.hasModalType ? (
+          aggregate.modalType ? (
+            <div className="mt-2 flex flex-wrap items-baseline gap-3">
+              <span className="text-foreground font-mono text-4xl font-bold tracking-widest">
+                {aggregate.modalType}
               </span>
-            ) : null}
-          </div>
+              {aggregate.typeConsistency != null ? (
+                <span className="text-muted-foreground text-sm">
+                  Stability: {Math.round(aggregate.typeConsistency * 100)} % of runs yield this type
+                </span>
+              ) : null}
+            </div>
+          ) : (
+            <p className="text-muted-foreground mt-2 text-sm">
+              No consistent type — at least one axis had no repetition where all items were parseable.
+            </p>
+          )
         ) : (
           <p className="text-muted-foreground mt-2 text-sm">
-            No consistent type — at least one axis had no repetition where all items were parseable.
+            Six factor distributions across repetitions — no single-type code (HEXACO is dimensional).
           </p>
         )}
         <p className="text-muted-foreground mt-2 text-xs tabular-nums">

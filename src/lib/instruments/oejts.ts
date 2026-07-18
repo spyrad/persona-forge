@@ -24,6 +24,13 @@ export const OEJTS = {
   id: "oejts-1.2",
   permute: true,
   hasModalType: true,
+  attribution: {
+    name: "OEJTS 1.2",
+    author: "Eric Jorgenson, Open Psychometrics Project",
+    source: { label: "openpsychometrics.org", url: "https://openpsychometrics.org/tests/OJTS/" },
+    license: { label: "CC BY-NC-SA 4.0", url: "https://creativecommons.org/licenses/by-nc-sa/4.0/" },
+    note: "Not affiliated with the official MBTI.",
+  },
   axes: [
     // `midpoint` = der OEJTS-Cutoff (24): score > midpoint → high-Pol (Referenz oejts-1.2.json).
     { key: "IE", constant: 30, midpoint: 24, high: "E", low: "I", label: "Introversion–Extraversion" },

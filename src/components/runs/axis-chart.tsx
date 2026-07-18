@@ -41,9 +41,11 @@ interface Props {
   low: string;
   high: string;
   series: AxisSeries[];
+  /** Bezeichnung der Referenzlinie: „Cutoff" (Modaltyp-Schwelle, OEJTS) oder „Midpoint" (dimensional, HEXACO). */
+  referenceLabel?: string;
 }
 
-export function AxisChart({ scale, low, high, series }: Props) {
+export function AxisChart({ scale, low, high, series, referenceLabel = "Cutoff" }: Props) {
   const cutoffPct = toPct(scale.cutoff, scale.min, scale.max);
   const multi = series.length > 1;
   const overallMaxStack = Math.max(
@@ -131,7 +133,9 @@ export function AxisChart({ scale, low, high, series }: Props) {
         <span>
           {low} <span className="text-muted-foreground">({scale.min})</span>
         </span>
-        <span className="text-muted-foreground">Cutoff {scale.cutoff}</span>
+        <span className="text-muted-foreground">
+          {referenceLabel} {scale.cutoff}
+        </span>
         <span>
           <span className="text-muted-foreground">({scale.max})</span> {high}
         </span>

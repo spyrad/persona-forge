@@ -13,11 +13,17 @@
  * leckt der Stub in andere, sequenziell laufende itests (`fileParallelism: false`).
  */
 import { vi } from "vitest";
+import { HEXACO } from "@/lib/instruments/hexaco";
 import { OEJTS } from "@/lib/instruments/oejts";
 
 /** Valide OEJTS-Antwort: alle 32 Items mit demselben Skalenwert (1–5). */
 export function oejtsAnswersJson(value = 3): string {
   return JSON.stringify({ answers: OEJTS.items.map((it) => ({ id: it.id, value })) });
+}
+
+/** Valide HEXACO-Antwort: alle 60 Items mit demselben Skalenwert (1–5). */
+export function hexacoAnswersJson(value = 3): string {
+  return JSON.stringify({ answers: HEXACO.items.map((it) => ({ id: it.id, value })) });
 }
 
 /** URL aus einem fetch-Input extrahieren (string | URL | Request). */

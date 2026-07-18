@@ -14,6 +14,7 @@
  */
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { OEJTS } from "@/lib/instruments/oejts";
+import type { Instrument } from "@/types";
 
 /** Was ein Seed angelegt hat — Eingabe fuer den Cleanup. */
 export interface SeededModel {
@@ -41,9 +42,9 @@ function unwrapId(result: { data: unknown; error: unknown }, what: string): stri
   return id;
 }
 
-/** Volle OEJTS-Item-Werte (alle 32 Items) — eine „verwertbare" Repetition. */
-function fullItemValues(value: number) {
-  return OEJTS.items.map((item) => ({ id: item.id, value, status: "ok" as const }));
+/** Volle Item-Werte des Instruments (alle Items) — eine „verwertbare" Repetition. */
+function fullItemValues(instrument: Instrument, value: number) {
+  return instrument.items.map((item) => ({ id: item.id, value, status: "ok" as const }));
 }
 
 /**
@@ -54,12 +55,25 @@ function fullItemValues(value: number) {
  * zu „Persona nachtraeglich geloescht", Lektion L1) — genau die Zeilen, die der
  * model-profiles-Service poolt. `answerValue` steuert die Antworten und damit den
  * abgeleiteten Typ; zwei Modelle mit verschiedenen Werten sind im Vergleich
- * unterscheidbar.
+ * unterscheidbar. `instrument`/`kind` steuern das Test-Instrument — Default OEJTS
+ * (rueckwaertskompatibel); fuer HEXACO `instrument: HEXACO, kind: "hexaco"`.
  */
 export async function seedBaselineModel(
   sb: SupabaseClient,
   modelName: string,
-  { runs = 1, repsPerRun = 5, answerValue = 2 }: { runs?: number; repsPerRun?: number; answerValue?: number } = {},
+  {
+    runs = 1,
+    repsPerRun = 5,
+    answerValue = 2,
+    instrument = OEJTS,
+    kind = "oejts",
+  }: {
+    runs?: number;
+    repsPerRun?: number;
+    answerValue?: number;
+    instrument?: Instrument;
+    kind?: string;
+  } = {},
 ): Promise<SeededModel> {
   const configId = unwrapId(
     await sb
@@ -87,7 +101,8 @@ export async function seedBaselineModel(
           persona_id: null,
           model_config_id: configId,
           persona_prompt_snapshot: "", // leer = Baseline (nicht „Persona geloescht")
-          instrument_id: OEJTS.id,
+          instrument_id: instrument.id,
+          kind,
           repetition_count: repsPerRun,
           status: "completed",
         })
@@ -99,9 +114,9 @@ export async function seedBaselineModel(
     const repetitions = Array.from({ length: repsPerRun }, (_, i) => ({
       run_id: runId,
       rep_index: i + 1,
-      item_order: OEJTS.items.map((_, idx) => idx),
+      item_order: instrument.items.map((_, idx) => idx),
       raw_response: "{}",
-      item_values: fullItemValues(answerValue),
+      item_values: fullItemValues(instrument, answerValue),
       status: "ok",
     }));
     const { error: repError } = await sb.from("run_repetitions").insert(repetitions);

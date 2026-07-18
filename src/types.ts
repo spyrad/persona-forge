@@ -212,6 +212,25 @@ export interface LikertInstrumentItem {
  */
 export type InstrumentItem = BipolarInstrumentItem | LikertInstrumentItem;
 
+/**
+ * Herkunfts-/Lizenz-Metadaten je Instrument (statt statisch fuer OEJTS). Traegt
+ * die Angaben, die beim Anzeigen von Ergebnissen als Attribution Pflicht sind
+ * (Spec-Abnahme; OEJTS = CC BY-NC-SA, HEXACO = IPIP public domain). Als Daten,
+ * damit die Attributions-UI je Instrument parametrisiert werden kann (Plan 4.3).
+ */
+export interface InstrumentAttribution {
+  /** Anzeigename des Instruments, z. B. "OEJTS 1.2". */
+  name: string;
+  /** Autor/Herkunft der Items. */
+  author: string;
+  /** Primaerquelle: sichtbares Label + Link. */
+  source: { label: string; url: string };
+  /** Lizenz: sichtbares Label + optionaler Link (public domain hat keinen). */
+  license: { label: string; url?: string };
+  /** Optionaler Zusatzhinweis (Nicht-Affiliation, Auswahl-Herkunft o. Ae.). */
+  note?: string;
+}
+
 /** Ein psychometrisches Instrument (v1 hartkodiert, FR-011; Aufloesung via Registry). */
 export interface Instrument {
   id: string;
@@ -221,6 +240,8 @@ export interface Instrument {
   permute: boolean;
   /** Ob aus den Achsen ein Modaltyp (Buchstaben-Code) abgeleitet wird (OEJTS: ja; HEXACO: nein). */
   hasModalType?: boolean;
+  /** Herkunft/Lizenz als Daten — Pflicht, weil Attribution beim Anzeigen erzwungen ist. */
+  attribution: InstrumentAttribution;
 }
 
 // ─── Standhaftigkeit (steadfastness, zweiter Test-Typ) ───────────────────────
@@ -312,8 +333,8 @@ export interface Run {
   created_at: string;
   updated_at: string;
   finished_at: string | null;
-  /** Test-Typ (additiv, Task 9); DB-Default 'oejts', check-constraint auf beide Werte. */
-  kind: "oejts" | "steadfastness";
+  /** Test-Typ (additiv); DB-Default 'oejts', check-constraint auf die drei Werte. */
+  kind: "oejts" | "steadfastness" | "hexaco";
 }
 
 /**
@@ -375,6 +396,19 @@ export interface CreateOejtsRunInput {
   repetitionCount: number;
 }
 
+/**
+ * Eingabe beim Starten eines HEXACO-Laufs. Strukturgleich zu OEJTS (item-basierter
+ * Pfad, Instrument via Registry) — eigener `kind`, weil der Dispatch auf `kind`
+ * baut und HEXACO als eigene Profil-/Vergleichs-Sektion gefuehrt wird.
+ */
+export interface CreateHexacoRunInput {
+  kind: "hexaco";
+  personaId: string | null;
+  modelConfigId: string;
+  instrumentId: string;
+  repetitionCount: number;
+}
+
 /** Eingabe beim Starten eines Standhaftigkeits-Laufs (zweites Modell + Runden-Deckel); `personaId: null` = Baseline. */
 export interface CreateSteadfastnessRunInput {
   kind: "steadfastness";
@@ -386,7 +420,7 @@ export interface CreateSteadfastnessRunInput {
 }
 
 /** Diskriminiert über `kind`. */
-export type CreateRunInput = CreateOejtsRunInput | CreateSteadfastnessRunInput;
+export type CreateRunInput = CreateOejtsRunInput | CreateHexacoRunInput | CreateSteadfastnessRunInput;
 
 // `RunProgress` (Fortschritts-Antwort eines Orchestrierungs-Schritts, FR-015) ist
 // oben als `z.infer<typeof runProgressSchema>` re-exportiert — Single Source in
@@ -424,7 +458,13 @@ export interface AxisDistribution {
 /** Aggregiertes Lauf-Ergebnis: Achsen-Verteilungen + Typ-Stabilitaet. */
 export interface RunAggregate {
   axes: AxisDistribution[];
-  /** Modaltyp aus den achsenweisen Mehrheits-Buchstaben (null, wenn keine Achse beitrug). */
+  /**
+   * Ob das Instrument einen Modaltyp kennt (OEJTS: true; HEXACO/dimensional: false).
+   * Trennt „kein Typ, weil dimensional" von „Modaltyp unvollstaendig (Dropout)" —
+   * beides hat `modalType: null`, aber die UI zeigt Ersteres ohne Typ-Block.
+   */
+  hasModalType: boolean;
+  /** Modaltyp aus den achsenweisen Mehrheits-Buchstaben (null, wenn keine Achse beitrug ODER dimensional). */
   modalType: string | null;
   /** Anteil der Wiederholungen mit vollstaendigem Typ, die exakt `modalType` ergeben (0–1; null wenn n. a.). */
   typeConsistency: number | null;
@@ -501,6 +541,7 @@ export interface ModelProfileMeta {
  */
 export type ModelProfileSection =
   | { kind: "oejts"; runCount: number; usableReps: number; aggregate: RunAggregate }
+  | { kind: "hexaco"; runCount: number; usableReps: number; aggregate: RunAggregate }
   | { kind: "steadfastness"; runCount: number; usableReps: number; aggregate: SteadfastnessAggregate };
 
 /** Profil eines Modells: Meta + eine Sektion je Instrument mit mind. 1 Baseline-Lauf. */

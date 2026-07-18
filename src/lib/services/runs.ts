@@ -184,7 +184,9 @@ export async function createRun(sb: SupabaseClient, userId: string, input: Creat
       max_rounds: input.maxRounds,
     };
   } else {
-    insert = { ...base, kind: "oejts", instrument_id: input.instrumentId };
+    // OEJTS und HEXACO teilen den item-basierten Pfad; `kind` unterscheidet die
+    // Profil-/Vergleichs-Sektion, `instrument_id` das konkrete Instrument.
+    insert = { ...base, kind: input.kind, instrument_id: input.instrumentId };
   }
 
   const { data, error } = await sb.from(TABLE).insert(insert).select(VIEW_COLUMNS).single();

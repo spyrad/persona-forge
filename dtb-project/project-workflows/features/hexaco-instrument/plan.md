@@ -325,19 +325,19 @@ Vollständige Absicherung, PR über das Verdict-Gate, Prod-Abnahme.
 - [x] 1.1 Instrument-Interface generalisieren (Modaltyp optional, midpoint, Likert-Union) — `5cdac4b`
 - [x] 1.2 Instrument-Registry (schlank) — `5cdac4b`
 - [x] 1.3 runs.ts auf Registry + Prompt-Bau parametrisieren — `5cdac4b`
-- [ ] 2.1 IPIP-HEXACO-60 Instrument-Definition
-- [ ] 2.2 Scoring-Korrektheits-Test (Keying)
-- [ ] 2.3 Früher Smoke-Lauf gegen echtes Modell
-- [ ] 2.4 Attributions-Metadaten je Instrument
-- [ ] 2.5 Migration kind-Constraint erweitern
-- [ ] 3.1 Eingabe-Validierung erweitern
-- [ ] 3.2 Lauf-Formular
-- [ ] 3.3 End-to-end-Lauf über die UI
-- [ ] 4.1 Lauf-Ergebnis ohne Typ-Code
-- [ ] 4.2 Modell-Profil / Vergleich / Dashboard
-- [ ] 4.3 Attribution parametrisieren + Landing live
-- [ ] 5.1 Fehlerpfad + volle Suite
-- [ ] 5.2 E2E-Kette HEXACO
+- [x] 2.1 IPIP-HEXACO-60 Instrument-Definition — `0d80ae9`
+- [x] 2.2 Scoring-Korrektheits-Test (Keying) — `0d80ae9`
+- [x] 2.3 Früher Smoke-Lauf gegen echtes Modell — `0d80ae9`
+- [x] 2.4 Attributions-Metadaten je Instrument — `0d80ae9`
+- [x] 2.5 Migration kind-Constraint erweitern — `0d80ae9`
+- [x] 3.1 Eingabe-Validierung erweitern — `332ea71`
+- [x] 3.2 Lauf-Formular — `332ea71`
+- [x] 3.3 End-to-end-Lauf über die UI — `332ea71`
+- [x] 4.1 Lauf-Ergebnis ohne Typ-Code — `6c9a31b`
+- [x] 4.2 Modell-Profil / Vergleich / Dashboard — `6c9a31b`
+- [x] 4.3 Attribution parametrisieren + Landing live — `6c9a31b`
+- [x] 5.1 Fehlerpfad + volle Suite
+- [x] 5.2 E2E-Kette HEXACO
 - [ ] 5.3 PR + Verdict-Gate + Prod-Abnahme
 
 ---

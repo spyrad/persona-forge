@@ -101,5 +101,5 @@ export function aggregateRun(reps: Pick<RunRepetition, "item_values">[], instrum
   // Verwertbare Wiederholungen: trugen zu mindestens einer Achse bei.
   const usableReps = perRepScores.filter((s) => Object.values(s).some((v) => v != null)).length;
 
-  return { axes, modalType, typeConsistency, usableReps };
+  return { axes, hasModalType: wantsType, modalType, typeConsistency, usableReps };
 }
