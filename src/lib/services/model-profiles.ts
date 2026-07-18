@@ -19,8 +19,7 @@
  *   - Reps werden BATCH-geladen (eine in-Klausel ueber alle Run-Ids) — keine
  *     Per-Lauf-Ladeschleife (N+1).
  */
-import { HEXACO } from "@/lib/instruments/hexaco";
-import { OEJTS } from "@/lib/instruments/oejts";
+import { getInstrument } from "@/lib/instruments/registry";
 import { isBaselineRun } from "@/lib/runs/baseline";
 import { aggregateRun } from "@/lib/runs/oejts-aggregate";
 import { aggregateSteadfastness } from "@/lib/runs/steadfastness-aggregate";
@@ -54,7 +53,14 @@ export interface ProfileConfigRow {
 /** Abgeschlossener Lauf auf einer eigenen Konfig (serverseitig vorgefiltert). */
 export type ProfileRunRow = Pick<
   Run,
-  "id" | "persona_id" | "model_config_id" | "persona_prompt_snapshot" | "kind" | "created_at" | "finished_at"
+  | "id"
+  | "persona_id"
+  | "model_config_id"
+  | "persona_prompt_snapshot"
+  | "kind"
+  | "instrument_id"
+  | "created_at"
+  | "finished_at"
 >;
 
 /** Repetition eines Baseline-Laufs — traegt je nach `kind` item_values ODER experiment. */
@@ -120,18 +126,17 @@ export function buildModelProfiles(
     const finished = baseline.map((r) => r.finished_at ?? r.created_at).sort();
 
     // Sektionen: gepoolte Reps je Instrument (Pooling = je Rep gleiches Gewicht).
+    // Item-basierte Kinds loesen ihr Instrument ueber die Registry auf — dieselbe
+    // Aufloesungsregel wie getRunResult (statt je kind ein Instrument zu hardcoden).
+    // `instrument_id` ist serverseitig an `kind` gebunden (createRun) → alle Laeufe
+    // eines kind teilen es, `kindRuns[0]` ist repraesentativ.
     const sections: ModelProfileSection[] = [];
-    const oejtsRuns = baseline.filter((r) => r.kind === "oejts");
-    if (oejtsRuns.length > 0) {
-      const pooled = oejtsRuns.flatMap((r) => repsByRun.get(r.id) ?? []);
-      const aggregate = aggregateRun(pooled, OEJTS);
-      sections.push({ kind: "oejts", runCount: oejtsRuns.length, usableReps: aggregate.usableReps, aggregate });
-    }
-    const hexacoRuns = baseline.filter((r) => r.kind === "hexaco");
-    if (hexacoRuns.length > 0) {
-      const pooled = hexacoRuns.flatMap((r) => repsByRun.get(r.id) ?? []);
-      const aggregate = aggregateRun(pooled, HEXACO);
-      sections.push({ kind: "hexaco", runCount: hexacoRuns.length, usableReps: aggregate.usableReps, aggregate });
+    for (const kind of ["oejts", "hexaco"] as const) {
+      const kindRuns = baseline.filter((r) => r.kind === kind);
+      if (kindRuns.length === 0) continue;
+      const pooled = kindRuns.flatMap((r) => repsByRun.get(r.id) ?? []);
+      const aggregate = aggregateRun(pooled, getInstrument(kindRuns[0].instrument_id));
+      sections.push({ kind, runCount: kindRuns.length, usableReps: aggregate.usableReps, aggregate });
     }
     const steadfastRuns = baseline.filter((r) => r.kind === "steadfastness");
     if (steadfastRuns.length > 0) {
@@ -177,7 +182,7 @@ async function loadProfiles(sb: SupabaseClient, modelNames?: string[]): Promise<
 
   const { data: runData, error: rErr } = await sb
     .from("runs")
-    .select("id, persona_id, model_config_id, persona_prompt_snapshot, kind, created_at, finished_at")
+    .select("id, persona_id, model_config_id, persona_prompt_snapshot, kind, instrument_id, created_at, finished_at")
     .eq("status", "completed")
     .in(
       "model_config_id",
