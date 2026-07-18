@@ -336,8 +336,8 @@ Vollständige Absicherung, PR über das Verdict-Gate, Prod-Abnahme.
 - [x] 4.1 Lauf-Ergebnis ohne Typ-Code — `6c9a31b`
 - [x] 4.2 Modell-Profil / Vergleich / Dashboard — `6c9a31b`
 - [x] 4.3 Attribution parametrisieren + Landing live — `6c9a31b`
-- [ ] 5.1 Fehlerpfad + volle Suite
-- [ ] 5.2 E2E-Kette HEXACO
+- [x] 5.1 Fehlerpfad + volle Suite
+- [x] 5.2 E2E-Kette HEXACO
 - [ ] 5.3 PR + Verdict-Gate + Prod-Abnahme
 
 ---
