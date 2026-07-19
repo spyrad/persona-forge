@@ -48,6 +48,9 @@ const MAX_ROUNDS = 50;
 const DEFAULT_ROUNDS = 12;
 // Dauer des Abschluss-Moments der Live-Bühne (Finale) vor dem Ausblenden.
 const FINALE_MS = 1500;
+// MUSS der animation-duration von `.stage-fade-out` (global.css) entsprechen —
+// das Fade startet FINALE_MS - FADE_OUT_MS und endet exakt mit dem Unmount.
+const FADE_OUT_MS = 500;
 type RunKind = "oejts" | "steadfastness" | "hexaco";
 
 // Item-basierte Test-Typen → ihre instrument_id (der steadfastness-Zweig sendet
@@ -257,7 +260,15 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
   }
 
   async function refetch() {
-    const res = await fetch("/api/runs", { headers: { Accept: "application/json" } });
+    // Netzwerkfehler zentral fangen (Impl-Review F2): refetch läuft auch als
+    // `void refetch()` (Finale-Timer) — ohne catch gäbe das unhandled rejections.
+    let res: Response;
+    try {
+      res = await fetch("/api/runs", { headers: { Accept: "application/json" } });
+    } catch {
+      setServerError("Network error — please try again.");
+      return;
+    }
     if (res.status === 401) {
       redirectToSignin();
       return;
@@ -315,8 +326,12 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
     const next = parsed.data;
     setWaiting(false);
     setProgress(next);
-    // Zell-Ableitung über die pure Funktion; Delta-Basis danach nachziehen.
-    setCells((prev) => reduceStageCells(prev, prevFailedRef.current, next, activeKindRef.current));
+    // Zell-Ableitung über die pure Funktion. Delta-Basis VOR dem setState in
+    // eine Konstante ziehen: der Updater läuft deferred — läse er den Ref
+    // selbst, wäre der von der Folgezeile bereits überschrieben (Delta immer 0,
+    // failed-Zellen erschienen nie; Impl-Review F1).
+    const prevFailed = prevFailedRef.current;
+    setCells((prev) => reduceStageCells(prev, prevFailed, next, activeKindRef.current));
     prevFailedRef.current = next.failedCount;
     const d = next.lastRepDurationMs;
     if (d != null) {
@@ -411,7 +426,12 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       cancelledRef.current = false;
       // Bühnen-Reset: "start" übernimmt die Bühne aus JEDEM Zustand (auch
       // interrupted/finale-* eines Vorlaufs); dessen Finale-Timer zuerst weg.
-      clearFinaleTimer();
+      // Stand dort noch ein Timer, hätte er am Finale-Ende refetcht — nachholen,
+      // sonst bleibt der Vorlauf stale in der Liste (Impl-Review F3).
+      if (finaleTimerRef.current !== null) {
+        clearFinaleTimer();
+        void refetch();
+      }
       setActiveRunId(view.id);
       activeKindRef.current = view.kind === "steadfastness" ? "steadfastness" : "item";
       prevFailedRef.current = 0;
@@ -715,7 +735,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
           // Ausblenden am Finale-Ende: Fade startet kurz vor dem Unmount.
           style={
             stageState === "finale-success" || stageState === "finale-failed"
-              ? { animationDelay: `${String(FINALE_MS - 500)}ms` }
+              ? { animationDelay: `${String(FINALE_MS - FADE_OUT_MS)}ms` }
               : undefined
           }
         >
@@ -798,9 +818,17 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
             </p>
           ) : null}
           <p className="text-muted-foreground text-xs tabular-nums">
-            <span key={progress.promptTokens + progress.completionTokens} className="stage-tick inline-block">
-              Tokens: {progress.promptTokens} in / {progress.completionTokens} out
-            </span>
+            {/* Nur die Zahlen ticken (wie beim Reps-Zähler, Impl-Review F5);
+                String-Keys statt Summen-Key — keine Monotonie-Invariante nötig (F6). */}
+            Tokens:{" "}
+            <span key={`in-${String(progress.promptTokens)}`} className="stage-tick inline-block">
+              {progress.promptTokens}
+            </span>{" "}
+            in /{" "}
+            <span key={`out-${String(progress.completionTokens)}`} className="stage-tick inline-block">
+              {progress.completionTokens}
+            </span>{" "}
+            out
           </p>
           {lastRepMs != null ? (
             <p className="text-muted-foreground text-xs tabular-nums">

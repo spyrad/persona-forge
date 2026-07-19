@@ -222,9 +222,9 @@ Das Feature ist per Sichtprüfung als „ruhig-konzentriert" abgenommen, alle Su
 - [x] 2.1 Step-Historie in RunRunner — `e5d7618`
 - [x] 2.2 Bühne ins Panel einbetten — `e5d7618`
 - [x] 2.3 Endzustände (Finale/Einfrieren/Cancel) — `e5d7618`
-- [x] 3.1 Volle Verifikation + Feinschliff
-- [x] 3.2 Sichtprüfung
-- [ ] 3.3 PR + Verdict-Gate + Prod-Abnahme
+- [x] 3.1 Volle Verifikation + Feinschliff — `64b073c`
+- [x] 3.2 Sichtprüfung — `64b073c`
+- [x] 3.3 PR + Verdict-Gate + Prod-Abnahme — `64b073c`
 
 ---
 
