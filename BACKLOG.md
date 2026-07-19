@@ -1,14 +1,14 @@
 # Feature Backlog
 
-**Letzte Aktualisierung:** 2026-07-18 (Live-Run-Visualisierung spezifiziert; HEXACO-Instrument archiviert)
+**Letzte Aktualisierung:** 2026-07-19 (Live-Run-Visualisierung abgenommen — PR #16/#17 live)
 
 ---
 
 ## Aktive Features
 
-| Feature                 | Status       | Prio   | Datei                                    | Beschreibung                                                                                                                                                                                                                             |
-| ----------------------- | ------------ | ------ | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Live-Run-Visualisierung | Spezifiziert | Mittel | features/live-run-visualisierung/spec.md | Laufende Testläufe lebendig darstellen: „Live-Bühne" im Fortschritts-Panel (Zelle je Wiederholung, Herzschlag-Puls, sanft zählende Werte, Abschluss-Moment) — ruhig-konzentriert, rein darstellungsseitig, alle Lauf-Arten. Aus Idee #5. |
+| Feature                 | Status     | Prio   | Datei                                    | Beschreibung                                                                                                                                                                                                                             |
+| ----------------------- | ---------- | ------ | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Live-Run-Visualisierung | Abgenommen | Mittel | features/live-run-visualisierung/spec.md | Laufende Testläufe lebendig darstellen: „Live-Bühne" im Fortschritts-Panel (Zelle je Wiederholung, Herzschlag-Puls, sanft zählende Werte, Abschluss-Moment) — ruhig-konzentriert, rein darstellungsseitig, alle Lauf-Arten. Aus Idee #5. |
 
 ---
 
@@ -26,4 +26,4 @@
 Abgeschlossene Features werden archiviert und nur noch im Archiv gefuehrt:
 `dtb-project/project-workflows/archive/ARCHIVE_LOG.md` (zuletzt: HEXACO-Instrument, 2026-07-18).
 
-**Fertig, noch nicht archiviert:** Keine.
+**Fertig, noch nicht archiviert:** Live-Run-Visualisierung (abgenommen 2026-07-19, → `/dtb:archive`).

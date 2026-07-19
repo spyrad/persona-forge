@@ -1,43 +1,44 @@
 # Workflow-Status: persona-forge
 
-**Letztes Update:** 2026-07-18
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-18.md` (Session 2)
+**Letztes Update:** 2026-07-19
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-19.md` (Session 1)
 
 ---
 
 ## Status (generiert aus Artefakten — nicht manuell editieren)
 
-Kein aktives Feature. (HEXACO-Instrument abgenommen + archiviert 2026-07-18 → `archive/hexaco-instrument/`.)
+| Item                    | Status (abgeleitet) | Fortschritt | Naechster Schritt                    |
+| ----------------------- | ------------------- | ----------- | ------------------------------------ |
+| Live-Run-Visualisierung | Abgenommen          | 9/9         | /dtb:archive live-run-visualisierung |
 
 ---
 
 ## Kontext (manuell)
 
-| Kennzahl    | Wert                                                                                                                                                                                                                                                                                  |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Blocker** | Keine.                                                                                                                                                                                                                                                                                |
-| **Notizen** | HEXACO abgeschlossen + archiviert (3 PRs `42ddb42`/`8e8b7fb`/`66a8bc7`, je Verdict 10.0/10; live auf Prod). Impl-Review: F1/F2 FIXED, F3–F6 SKIPPED (`archive/hexaco-instrument/review.md`). Lokal = origin/main, clean. Lokales Supabase + Docker laufen noch (`npx supabase stop`). |
+| Kennzahl    | Wert                                                                                                                                                                                                                                                                  |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Blocker** | Keine.                                                                                                                                                                                                                                                                |
+| **Notizen** | Live-Run-Visualisierung komplett (PR #16 `64b073c` + Review-Fix #17 `7fe7108`, je Verdict 10.0/10, live). Impl-Review: 7/7 FIXED inkl. F1 blocking (`features/live-run-visualisierung/review.md`). Lokal = origin/main, clean. Docker + lokales Supabase laufen noch. |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] **Kit-Sync** — `/dtb:kit-sync sync`: 5 Updates (`skills/CLAUDE.md`, `dtb-feature-discover/-plan`, `dtb-implement`, `dtb-repo-sync`) + neuer `dtb-commit-and-push`
-- [ ] **Champion abschliessen** — `/10x-archive ci-review-agent`; PR #3–#11 in `evidence.md`. Job-Logs Verfall ~07.10.
-- [ ] **Sammel-Einreichung Termin 2 (10.08.):** Builder + Architect + Champion
-- [ ] **Lektion-Kandidat** — „generisch gebaut → generisch benennen" (Review-F3) via `/dtb:lesson`
-- [ ] **Ideen-Inbox** (offen): #1 Task-based evals, #5 Live-Run-Visualisierung, #6 Combobox-Ersatz, #7 UI-Konzepte, #8 SD3, #9 HEXACO-100, #10 Repo-LICENSE
+- [ ] **Archivieren** — `/dtb:archive live-run-visualisierung` (abgenommen 2026-07-19)
+- [ ] **Champion abschliessen** — `/10x-archive ci-review-agent`; Sammel-Einreichung Termin 2 (10.08.); Job-Logs-Verfall ~07.10.
+- [ ] **Housekeeping** — Docker + lokales Supabase stoppen (`npx supabase stop`)
+- [ ] **Lektion-Kandidaten** — CRLF-Diagnose (`git ls-files --eol` vor Diff-Verdacht) + „generisch gebaut → generisch benennen" (HEXACO-F3), beide via `/dtb:lesson`
+- [ ] **Ideen-Inbox** (offen): #1 Task-based evals, #6 Combobox-Ersatz, #7 UI-Konzepte, #8 SD3, #9 HEXACO-100, #10 Repo-LICENSE
 
 ---
 
 ## Abgeschlossene Meilensteine (kompakt)
 
-| Datum      | Meilenstein                                                | Ergebnis                                                                                                        | Details                       |
-| ---------- | ---------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| 2026-07-18 | **HEXACO Phase 5 + Impl-Review: Abschluss + Abnahme**      | 17/17; PR #12 (`42ddb42`) + Review-Fix PR #13 (`8e8b7fb`), beide deployt + prod-abgenommen; F1/F2 FIXED         | `2026-07-18.md` (S1)          |
-| 2026-07-17 | HEXACO Phase 2–4: Definition→Formular→Darstellung          | Prod-Lauf 5/5 verwertbar, 6 Faktor-Verteilungen; Result ohne Typ-Code, Attribution datengetrieben, Landing live | `2026-07-17.md` (S1–S3)       |
-| 2026-07-16 | HEXACO-Instrument geplant + reviewt                        | Discovery→Spec→Plan (5 Ph./17 Schr.)→Review REVISE eingearbeitet                                                | `features/hexaco-instrument/` |
-| 2026-07-15 | Modellname-Combobox + Dashboard Mission Control archiviert | beide abgenommen; `features/` geleert                                                                           | `archive/ARCHIVE_LOG.md`      |
+| Datum      | Meilenstein                                         | Ergebnis                                                                                    | Details                      |
+| ---------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------- | ---------------------------- |
+| 2026-07-19 | **Live-Run-Visualisierung end-to-end + abgenommen** | 9/9; PR #16 + Review-Fix #17 (7/7 FIXED, F1 blocking gefangen); Prod-Abnahme per Screenshot | `2026-07-19.md` (S1)         |
+| 2026-07-18 | HEXACO-Instrument abgeschlossen + archiviert        | 17/17; 3 PRs (`42ddb42`/`8e8b7fb`/`66a8bc7`), prod-abgenommen                               | `archive/hexaco-instrument/` |
+| 2026-07-15 | Modellname-Combobox + Dashboard Mission Control     | beide abgenommen + archiviert                                                               | `archive/ARCHIVE_LOG.md`     |
 
 ---
 
@@ -50,12 +51,11 @@ Module 1–4 = **20/20 ✅**. **10xBuilder** + **10xArchitect** einreichbereit.
 
 ## Gotchas (Referenz)
 
-- **`kind` und `instrument_id` serverseitig gebunden (seit `8e8b7fb`):** `createRun` leitet `instrument_id` aus `kind` ab (`ITEM_INSTRUMENT_ID_BY_KIND`); Client-`instrumentId` wird ignoriert. Profil-Auflösung teilt jetzt die Registry-Regel von `getRunResult` (`getInstrument(instrument_id)`).
-- **E2E-Seed HEXACO-fähig:** `tests/e2e/support/seed.ts` `seedBaselineModel({ instrument, kind })` (Default OEJTS). Volle E2E-Suite parallel flakt am Cold-`.vite`-Cache → `--workers=1` für verlässliche lokale Läufe.
-- **Squash-Merge:** danach `git fetch` + `git reset --hard origin/main`, kein `git pull`. Verdict ist Required Status Check auf `main` → PR-Weg, kein Direkt-Push.
-- **Prod-DB-Migrationen:** vor `db push` immer `migration list --linked` (blockt in Auto-Mode → User via `!`). `20260717184500_hexaco` ist remote applied.
-- **`RunResult`/`aggregateRun` dispatchen auf die Aggregat-Form (`hasModalType`), nicht auf `run.kind`** → HEXACO kann keinen OEJTS-Typ-Code rendern, selbst bei falschem Badge.
-- **`ENCRYPTION_KEY` MUSS = `.dev.vars`/`.env`-Key**, sonst haengen Laeufe 0/N. E2E nutzt separaten Node-Adapter (`.env.e2e`), Prod-Configs unberührt.
+- **Zeilenenden:** `core.autocrlf=input` seit 2026-07-19 LOKAL im Repo gesetzt (Working Tree = LF). Global bleibt `true` — bei Massen-Prettier-Fehlern `Delete ␍` zuerst `git ls-files --eol` prüfen, nicht den eigenen Diff verdächtigen.
+- **`stage-cells`-Wiring:** Delta-Basis (`prevFailedRef`) VOR `setCells` in eine Konstante ziehen — deferred Updater + synchroner Ref-Write war Review-F1 (failed-Zellen blieben teal).
+- **Squash-Merge:** danach `git fetch` + `git reset --hard origin/main`, kein `git pull`. Verdict ist Required Status Check → PR-Weg, kein Direkt-Push auf `main`.
+- **CI-`integration`-Flake:** Kong „invalid response from upstream" bei parallelen Inserts (slim Service-Set) — einmaliger Job-Re-Run, erst bei zweitem Rot echt debuggen.
+- **`kind`/`instrument_id` serverseitig gebunden** (`8e8b7fb`); **E2E lokal `--workers=1`** (Cold-`.vite`-Flake); **`ENCRYPTION_KEY` = `.dev.vars`/`.env`-Key**, sonst Läufe 0/N.
 
 ---
 
@@ -67,5 +67,5 @@ Keine.
 
 ## Handoff
 
-**Naechster Befehl:** `/dtb:workflow-next` — kein aktives Feature (HEXACO archiviert). Priorisierte Backlog-Optionen: `/dtb:kit-sync sync` (5 Updates + neuer Skill), `/10x-archive ci-review-agent` (Champion, Einreichung 10.08.), oder ein neues Instrument via `/dtb:feature-start` (#8 SD3 / #9 HEXACO-100).
+**Naechster Befehl:** `/dtb:archive live-run-visualisierung` — Feature abgenommen (9/9, Beleg im Session-Log); danach Backlog-Wahl: Champion-Abschluss (`/10x-archive ci-review-agent`, zeitkritisch 10.08.) oder neues Feature via `/dtb:feature-start` (#8 SD3 empfohlen).
 **Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume` (stellt Kontext her), danach obigen Befehl.
