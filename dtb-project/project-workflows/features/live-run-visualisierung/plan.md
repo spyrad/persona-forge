@@ -219,11 +219,11 @@ Das Feature ist per Sichtprüfung als „ruhig-konzentriert" abgenommen, alle Su
 - [x] 1.1 Motion-Vokabular `global.css` — `ade9fad`
 - [x] 1.2 `LiveRunStage`-Komponente — `ade9fad`
 - [x] 1.3 `stage-cells` + Unit-Tests — `ade9fad`
-- [x] 2.1 Step-Historie in RunRunner
-- [x] 2.2 Bühne ins Panel einbetten
-- [x] 2.3 Endzustände (Finale/Einfrieren/Cancel)
-- [ ] 3.1 Volle Verifikation + Feinschliff
-- [ ] 3.2 Sichtprüfung
+- [x] 2.1 Step-Historie in RunRunner — `e5d7618`
+- [x] 2.2 Bühne ins Panel einbetten — `e5d7618`
+- [x] 2.3 Endzustände (Finale/Einfrieren/Cancel) — `e5d7618`
+- [x] 3.1 Volle Verifikation + Feinschliff
+- [x] 3.2 Sichtprüfung
 - [ ] 3.3 PR + Verdict-Gate + Prod-Abnahme
 
 ---
