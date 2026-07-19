@@ -1,33 +1,30 @@
 # Workflow-Status: persona-forge
 
 **Letztes Update:** 2026-07-19
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-19.md` (Session 1)
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-07/2026-07-19.md` (Session 2)
 
 ---
 
 ## Status (generiert aus Artefakten — nicht manuell editieren)
 
-| Item                    | Status (abgeleitet) | Fortschritt | Naechster Schritt                    |
-| ----------------------- | ------------------- | ----------- | ------------------------------------ |
-| Live-Run-Visualisierung | Abgenommen          | 9/9         | /dtb:archive live-run-visualisierung |
+Kein aktives Feature. (Live-Run-Visualisierung abgenommen + archiviert 2026-07-19 → `archive/live-run-visualisierung/`.)
 
 ---
 
 ## Kontext (manuell)
 
-| Kennzahl    | Wert                                                                                                                                                                                                                                                                  |
-| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Blocker** | Keine.                                                                                                                                                                                                                                                                |
-| **Notizen** | Live-Run-Visualisierung komplett (PR #16 `64b073c` + Review-Fix #17 `7fe7108`, je Verdict 10.0/10, live). Impl-Review: 7/7 FIXED inkl. F1 blocking (`features/live-run-visualisierung/review.md`). Lokal = origin/main, clean. Docker + lokales Supabase laufen noch. |
+| Kennzahl    | Wert                                                                                                                                                                                                                                                              |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Blocker** | Keine.                                                                                                                                                                                                                                                            |
+| **Notizen** | Live-Run-Visualisierung komplett + archiviert (PR #16 `64b073c` + Review-Fix #17 `7fe7108`, je Verdict 10.0/10, live; Impl-Review 7/7 FIXED, `archive/live-run-visualisierung/review.md`). Lektionen #2/#3 erfasst. Supabase gestoppt; Docker Desktop läuft noch. |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] **Archivieren** — `/dtb:archive live-run-visualisierung` (abgenommen 2026-07-19)
 - [ ] **Champion abschliessen** — `/10x-archive ci-review-agent`; Sammel-Einreichung Termin 2 (10.08.); Job-Logs-Verfall ~07.10.
-- [ ] **Housekeeping** — Docker + lokales Supabase stoppen (`npx supabase stop`)
-- [ ] **Lektion-Kandidaten** — CRLF-Diagnose (`git ls-files --eol` vor Diff-Verdacht) + „generisch gebaut → generisch benennen" (HEXACO-F3), beide via `/dtb:lesson`
+- [ ] **Housekeeping** — Docker Desktop beenden (optional; Supabase bereits gestoppt)
+- [ ] **Lektion-Kandidat** — „generisch gebaut → generisch benennen" (HEXACO-F3) via `/dtb:lesson` (CRLF + Ref-im-Updater sind erfasst: lessons.md #2/#3)
 - [ ] **Ideen-Inbox** (offen): #1 Task-based evals, #6 Combobox-Ersatz, #7 UI-Konzepte, #8 SD3, #9 HEXACO-100, #10 Repo-LICENSE
 
 ---
@@ -67,5 +64,5 @@ Keine.
 
 ## Handoff
 
-**Naechster Befehl:** `/dtb:archive live-run-visualisierung` — Feature abgenommen (9/9, Beleg im Session-Log); danach Backlog-Wahl: Champion-Abschluss (`/10x-archive ci-review-agent`, zeitkritisch 10.08.) oder neues Feature via `/dtb:feature-start` (#8 SD3 empfohlen).
+**Naechster Befehl:** `/10x-archive ci-review-agent` — Champion-Abschluss (einzige terminierte Aufgabe: Sammel-Einreichung 10.08., Job-Logs-Verfall ~07.10.); alternativ neues Feature via `/dtb:feature-start` (#8 SD3 empfohlen, Lizenz vorab verifizieren).
 **Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume` (stellt Kontext her), danach obigen Befehl.
