@@ -12,12 +12,22 @@ import {
   Lock,
   Play,
   Trash2,
+  X,
   XCircle,
 } from "lucide-react";
 import { ServerError } from "@/components/auth/ServerError";
+import LiveRunStage from "@/components/runs/LiveRunStage";
 import { Button } from "@/components/ui/button";
 import { modelProfileHref } from "@/lib/models/profile-link";
 import { runProgressSchema, runViewArraySchema, runViewSchema } from "@/lib/runs/run-schemas";
+import {
+  initStageCells,
+  nextStageState,
+  reduceStageCells,
+  type StageCell,
+  type StageKind,
+  type StageState,
+} from "@/lib/runs/stage-cells";
 import { formatDateTime, formatDuration } from "@/lib/runs/run-timing";
 import { cn } from "@/lib/utils";
 import type { ModelConfigView, PersonaView, RunProgress, RunStatus, RunView } from "@/types";
@@ -36,6 +46,8 @@ const DEFAULT_REPS = 5;
 const MIN_ROUNDS = 1;
 const MAX_ROUNDS = 50;
 const DEFAULT_ROUNDS = 12;
+// Dauer des Abschluss-Moments der Live-Bühne (Finale) vor dem Ausblenden.
+const FINALE_MS = 1500;
 type RunKind = "oejts" | "steadfastness" | "hexaco";
 
 // Item-basierte Test-Typen → ihre instrument_id (der steadfastness-Zweig sendet
@@ -177,6 +189,18 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
   const [activeRunId, setActiveRunId] = useState<string | null>(null);
   const [progress, setProgress] = useState<RunProgress | null>(null);
 
+  // Live-Bühne: Zellzustände + Bühnen-Zustand (Ableitung: pure Funktionen in
+  // stage-cells.ts, Zustandsübergänge NUR über nextStageState — Race-Schutz).
+  const [cells, setCells] = useState<StageCell[]>([]);
+  const [stageState, setStageState] = useState<StageState | null>(null);
+  const [waiting, setWaiting] = useState(false);
+  // Delta-Basis der Zell-Ableitung + Lauf-Art des aktiven Laufs (kein Render-State).
+  const prevFailedRef = useRef(0);
+  const activeKindRef = useRef<StageKind>("item");
+  // Finale-Timer (verzögerter Unmount) — eigener Ref neben dem Step-Loop-Timer,
+  // wird bei Lauf-Start und Cancel gecleart (Plan 2.3, Härtung).
+  const finaleTimerRef = useRef<number | null>(null);
+
   // Live-Modell-Zeit: Summe der lastRepDurationMs über die Steps dieses Laufs.
   const [modelMsSoFar, setModelMsSoFar] = useState<number>(0);
   const [lastRepMs, setLastRepMs] = useState<number | null>(null);
@@ -207,6 +231,31 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
     }
   }
 
+  function clearFinaleTimer() {
+    if (finaleTimerRef.current !== null) {
+      window.clearTimeout(finaleTimerRef.current);
+      finaleTimerRef.current = null;
+    }
+  }
+
+  /**
+   * Terminal → Abschluss-Moment zeigen, nach FINALE_MS ausblenden und die Liste
+   * aktualisieren (Plan 2.3). Bei reduzierter Bewegung entfällt das Finale —
+   * sofortiger, harter Übergang (Spec-Randfall).
+   */
+  function finishStage(event: "terminal-completed" | "terminal-failed") {
+    setStageState((s) => nextStageState(s, event));
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    finaleTimerRef.current = window.setTimeout(
+      () => {
+        finaleTimerRef.current = null;
+        setStageState((s) => nextStageState(s, "finale-timeout"));
+        void refetch();
+      },
+      reduce ? 0 : FINALE_MS,
+    );
+  }
+
   async function refetch() {
     const res = await fetch("/api/runs", { headers: { Accept: "application/json" } });
     if (res.status === 401) {
@@ -231,12 +280,15 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
   /** Verarbeitet GENAU EINE Wiederholung und verkettet sich selbst bis terminal. */
   async function runStep(runId: string) {
     if (isCancelled()) return;
+    setWaiting(true);
     let res: Response;
     try {
       res = await fetch(`/api/runs/${runId}/step`, { method: "POST", headers: { Accept: "application/json" } });
     } catch {
       setServerError("Network error — please try again.");
       stopLoop();
+      // Bühne friert grau ein (interrupted) statt hart zu verschwinden (Plan 2.3).
+      setStageState((s) => nextStageState(s, "error"));
       return;
     }
     if (isCancelled()) return;
@@ -247,6 +299,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
     if (!res.ok) {
       setServerError(messageFromPayload(await res.json().catch(() => null)));
       stopLoop();
+      setStageState((s) => nextStageState(s, "error"));
       await refetch();
       return;
     }
@@ -255,11 +308,16 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
     if (!parsed.success) {
       setServerError("Unexpected server response.");
       stopLoop();
+      setStageState((s) => nextStageState(s, "error"));
       await refetch();
       return;
     }
     const next = parsed.data;
+    setWaiting(false);
     setProgress(next);
+    // Zell-Ableitung über die pure Funktion; Delta-Basis danach nachziehen.
+    setCells((prev) => reduceStageCells(prev, prevFailedRef.current, next, activeKindRef.current));
+    prevFailedRef.current = next.failedCount;
     const d = next.lastRepDurationMs;
     if (d != null) {
       setLastRepMs(d);
@@ -270,7 +328,8 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
     }
     if (next.status === "completed" || next.status === "failed") {
       stopLoop();
-      await refetch();
+      // refetch läuft am Ende des Finale-Timers (Plan 2.3: erst Finale, dann Liste).
+      finishStage(next.status === "completed" ? "terminal-completed" : "terminal-failed");
       return;
     }
     // Weiter mit der naechsten Wiederholung — Verkettung via setTimeout (kein
@@ -284,6 +343,7 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
     cancelledRef.current = true;
     clearTimer();
     setActiveRunId(null);
+    setWaiting(false);
   }
 
   async function start() {
@@ -349,7 +409,15 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
       const view = parsed.data;
       setRuns((prev) => [view, ...prev]);
       cancelledRef.current = false;
+      // Bühnen-Reset: "start" übernimmt die Bühne aus JEDEM Zustand (auch
+      // interrupted/finale-* eines Vorlaufs); dessen Finale-Timer zuerst weg.
+      clearFinaleTimer();
       setActiveRunId(view.id);
+      activeKindRef.current = view.kind === "steadfastness" ? "steadfastness" : "item";
+      prevFailedRef.current = 0;
+      setCells(initStageCells(view.repetitionCount));
+      setStageState((s) => nextStageState(s, "start"));
+      setWaiting(true);
       setModelMsSoFar(0);
       setLastRepMs(null);
       setLastRepError(null);
@@ -404,6 +472,8 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
     if (!window.confirm("Cancel this run? All measurement data collected so far will be lost.")) return;
     const id = activeRunId;
     stopLoop();
+    // Bewusster Abbruch: kein Finale, Panel sofort weg (Spec-Randfall).
+    setStageState((s) => nextStageState(s, "cancel"));
     setProgress(null);
     await deleteRunRequest(id);
   }
@@ -631,29 +701,91 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
         </Button>
       </form>
 
-      {/* Live-Fortschritt des aktiven Laufs */}
-      {isRunning && progress ? (
-        <section className="border-chart-2/40 bg-chart-2/10 space-y-3 rounded-2xl border p-6">
+      {/* Live-Fortschritt des aktiven Laufs — sichtbar solange die Bühne einen
+          Zustand hat (auch Finale/interrupted NACH dem Loop-Ende, Plan 2.3). */}
+      {stageState !== null && progress ? (
+        <section
+          className={cn(
+            "space-y-3 rounded-2xl border p-6",
+            stageState === "live" && "border-chart-2/40 bg-chart-2/10",
+            stageState === "finale-success" && "border-success/30 bg-success/10 stage-fade-out",
+            stageState === "finale-failed" && "border-destructive/30 bg-destructive/10 stage-fade-out",
+            stageState === "interrupted" && "border-border bg-muted",
+          )}
+          // Ausblenden am Finale-Ende: Fade startet kurz vor dem Unmount.
+          style={
+            stageState === "finale-success" || stageState === "finale-failed"
+              ? { animationDelay: `${String(FINALE_MS - 500)}ms` }
+              : undefined
+          }
+        >
           <div className="flex items-center justify-between gap-3">
             <h2 className="flex items-center gap-2 text-lg font-semibold">
-              <Loader2 className="size-4 animate-spin" />
-              Run in progress…
+              {stageState === "live" ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Run in progress…
+                </>
+              ) : stageState === "finale-success" ? (
+                <>
+                  <CheckCircle2 className="text-success size-4" />
+                  Run complete
+                </>
+              ) : stageState === "finale-failed" ? (
+                <>
+                  <XCircle className="text-destructive size-4" />
+                  Run failed
+                </>
+              ) : (
+                <>
+                  <AlertCircle className="text-muted-foreground size-4" />
+                  Run interrupted
+                </>
+              )}
             </h2>
-            <Button
-              type="button"
-              size="sm"
-              variant="destructive"
-              disabled={busyId === activeRunId}
-              onClick={() => {
-                void cancelActive();
-              }}
-            >
-              <Ban className="size-3.5" />
-              Cancel
-            </Button>
+            {/* Cancel nur im Live-Zustand (Plan-Review-Härtung: kein DELETE auf
+                fertige Läufe im Finale); interrupted bietet stattdessen Dismiss. */}
+            {stageState === "live" ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="destructive"
+                disabled={busyId === activeRunId}
+                onClick={() => {
+                  void cancelActive();
+                }}
+              >
+                <Ban className="size-3.5" />
+                Cancel
+              </Button>
+            ) : stageState === "interrupted" ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  setStageState((s) => nextStageState(s, "dismiss"));
+                }}
+                className="border-border bg-muted text-foreground hover:bg-accent"
+              >
+                <X className="size-3.5" />
+                Dismiss
+              </Button>
+            ) : null}
           </div>
+          <LiveRunStage
+            cells={cells}
+            waiting={waiting}
+            generating={progress.phase === "generating"}
+            stageState={stageState}
+          />
           <p className="text-muted-foreground text-sm tabular-nums">
-            {progress.completedReps} of {progress.totalReps} repetitions
+            {/* key-Wechsel remountet die Zahl → stage-tick läuft je Wertwechsel neu
+                (kein JS-Timer; bei klemmendem Wert kein Tick — ehrlich). */}
+            <span key={progress.completedReps} className="stage-tick inline-block">
+              {progress.completedReps}
+            </span>{" "}
+            of {progress.totalReps} repetitions
             {progress.failedCount > 0 ? ` · ${String(progress.failedCount)} failed` : ""}
           </p>
           {progress.phase === "generating" ? (
@@ -666,7 +798,9 @@ export default function RunRunner({ initialRuns, personas, modelConfigs, loadErr
             </p>
           ) : null}
           <p className="text-muted-foreground text-xs tabular-nums">
-            Tokens: {progress.promptTokens} in / {progress.completionTokens} out
+            <span key={progress.promptTokens + progress.completionTokens} className="stage-tick inline-block">
+              Tokens: {progress.promptTokens} in / {progress.completionTokens} out
+            </span>
           </p>
           {lastRepMs != null ? (
             <p className="text-muted-foreground text-xs tabular-nums">

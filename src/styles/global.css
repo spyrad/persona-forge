@@ -184,3 +184,93 @@
     transition: none;
   }
 }
+
+/* Live-Run-Bühne: Motion-Vokabular des Lauf-Panels (ruhig-konzentriert).
+   Alle Bewegungs-Klassen sind hinter prefers-reduced-motion gegated (Muster
+   page-enter) — ohne Bewegung bleiben harte, vollständig informative
+   Zustandswechsel. Farben kommen aus den semantischen Tokens der Komponente;
+   Glow via currentColor, damit hier keine Farbwerte leben. */
+@media (prefers-reduced-motion: no-preference) {
+  .stage-heartbeat {
+    animation: stage-heartbeat 1.8s ease-in-out infinite;
+  }
+  .stage-cell-pop {
+    animation: stage-cell-pop 0.45s ease-out both;
+  }
+  .stage-cell-flash {
+    animation: stage-cell-flash 0.6s ease-out both;
+  }
+  .stage-finale {
+    animation: stage-finale 0.9s ease-in-out both;
+  }
+  .stage-fade-out {
+    animation: stage-fade-out 0.5s ease both;
+  }
+  .stage-tick {
+    animation: stage-tick 0.35s ease-out both;
+  }
+}
+@keyframes stage-heartbeat {
+  0%,
+  100% {
+    opacity: 0.55;
+    scale: 1;
+  }
+  50% {
+    opacity: 1;
+    scale: 1.06;
+  }
+}
+@keyframes stage-cell-pop {
+  0% {
+    scale: 0.85;
+  }
+  60% {
+    scale: 1.12;
+    box-shadow: 0 0 10px 2px color-mix(in oklab, currentColor 35%, transparent);
+  }
+  100% {
+    scale: 1;
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+@keyframes stage-cell-flash {
+  0%,
+  40% {
+    scale: 1.15;
+    box-shadow: 0 0 12px 3px color-mix(in oklab, currentColor 45%, transparent);
+  }
+  100% {
+    scale: 1;
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+@keyframes stage-finale {
+  0% {
+    scale: 1;
+  }
+  45% {
+    scale: 1.12;
+    box-shadow: 0 0 10px 2px color-mix(in oklab, currentColor 40%, transparent);
+  }
+  100% {
+    scale: 1;
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+@keyframes stage-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes stage-tick {
+  0% {
+    scale: 1;
+  }
+  40% {
+    scale: 1.08;
+  }
+  100% {
+    scale: 1;
+  }
+}

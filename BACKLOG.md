@@ -1,14 +1,14 @@
 # Feature Backlog
 
-**Letzte Aktualisierung:** 2026-07-17 (HEXACO-Instrument gestartet)
+**Letzte Aktualisierung:** 2026-07-18 (Live-Run-Visualisierung spezifiziert; HEXACO-Instrument archiviert)
 
 ---
 
 ## Aktive Features
 
-| Feature           | Status    | Prio   | Datei                              | Beschreibung                                                                                                                                                                                                                                                       |
-| ----------------- | --------- | ------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| HEXACO-Instrument | In Arbeit | Mittel | features/hexaco-instrument/spec.md | Zweites gemeinfreies Persönlichkeitsinstrument (HEXACO, inkl. des alignment-relevanten Honesty-Humility-Faktors) fürs Modell-Profiling via gemeinfreier IPIP-Items; hebt zugleich die feste Bindung an ein einzelnes Instrument auf. Aus Idee #3, Alignment-Fokus. |
+| Feature                 | Status       | Prio   | Datei                                    | Beschreibung                                                                                                                                                                                                                             |
+| ----------------------- | ------------ | ------ | ---------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Live-Run-Visualisierung | Spezifiziert | Mittel | features/live-run-visualisierung/spec.md | Laufende Testläufe lebendig darstellen: „Live-Bühne" im Fortschritts-Panel (Zelle je Wiederholung, Herzschlag-Puls, sanft zählende Werte, Abschluss-Moment) — ruhig-konzentriert, rein darstellungsseitig, alle Lauf-Arten. Aus Idee #5. |
 
 ---
 
@@ -24,6 +24,6 @@
 ## Abgeschlossen
 
 Abgeschlossene Features werden archiviert und nur noch im Archiv gefuehrt:
-`dtb-project/project-workflows/archive/ARCHIVE_LOG.md` (zuletzt: Modellname-Combobox, 2026-07-15).
+`dtb-project/project-workflows/archive/ARCHIVE_LOG.md` (zuletzt: HEXACO-Instrument, 2026-07-18).
 
 **Fertig, noch nicht archiviert:** Keine.
