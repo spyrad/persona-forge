@@ -28,6 +28,9 @@ function cellClass(cell: StageCell, isActive: boolean): string {
     case "failed":
       return "border-destructive/40 bg-destructive/60 text-destructive stage-cell-flash";
     case "done":
+      // Bewusst Akzentfarbe statt Neutral-Grau (Plan 1.2: primary = ok/done):
+      // "verarbeitet" soll positiv lesbar sein; eine ok/failed-Differenzierung
+      // existiert bei Steadfastness live ohnehin nicht (Impl-Review F4).
       return "border-primary/30 bg-primary/55 text-primary stage-cell-pop";
     case "pending":
       // Aktive Zelle pulsiert in der "läuft"-Farbe (Amber, chart-2) — Farb-Semantik
