@@ -111,6 +111,13 @@ describe("reduceStageCells — Steadfastness (neutral 'done')", () => {
 });
 
 describe("nextStageState — Übergangstabelle (Plan 2.3)", () => {
+  it("start ist universelles Reset: aus jedem Zustand → live (neuer Lauf übernimmt die Bühne)", () => {
+    const from: (StageState | null)[] = [null, "live", "finale-success", "finale-failed", "interrupted"];
+    for (const state of from) {
+      expect(nextStageState(state, "start")).toBe("live");
+    }
+  });
+
   it("deckt alle definierten Übergänge", () => {
     expect(nextStageState(null, "start")).toBe("live");
     expect(nextStageState("live", "terminal-completed")).toBe("finale-success");
@@ -131,7 +138,6 @@ describe("nextStageState — Übergangstabelle (Plan 2.3)", () => {
       ["interrupted", "finale-timeout"],
       ["live", "dismiss"],
       ["live", "finale-timeout"],
-      ["live", "start"],
     ];
     for (const [state, event] of noops) {
       expect(nextStageState(state, event)).toBe(state);

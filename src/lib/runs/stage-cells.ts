@@ -41,9 +41,14 @@ export type StageKind = "item" | "steadfastness";
  * existiert dort nicht mehr, und selbst ein verirrtes Ereignis ändert nichts.
  */
 export function nextStageState(current: StageState | null, event: StageEvent): StageState | null {
+  // "start" ist das universelle Reset-Ereignis: ein neuer Lauf übernimmt die
+  // Bühne aus JEDEM Zustand. Nötig, weil das Formular in `interrupted`/`finale-*`
+  // bereits wieder frei ist (activeRunId = null) — ohne Reset zeigte die Bühne
+  // den neuen Lauf im alten Zustand (Abweichung zu Plan 2.3, im Session-Log).
+  if (event === "start") return "live";
   switch (current) {
     case null:
-      return event === "start" ? "live" : null;
+      return null;
     case "live":
       switch (event) {
         case "terminal-completed":

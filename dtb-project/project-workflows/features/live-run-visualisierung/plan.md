@@ -216,12 +216,12 @@ Das Feature ist per Sichtprüfung als „ruhig-konzentriert" abgenommen, alle Su
 > Abhaken gemaess Flip-Bedingung §2 (Automated-Kriterien der Phase gruen); SHA-Nachtrag beim
 > Phasen-Ende-Commit — geflippte Zeile ohne SHA ist mid-phase gueltig (§2 Regel 4).
 
-- [x] 1.1 Motion-Vokabular `global.css`
-- [x] 1.2 `LiveRunStage`-Komponente
-- [x] 1.3 `stage-cells` + Unit-Tests
-- [ ] 2.1 Step-Historie in RunRunner
-- [ ] 2.2 Bühne ins Panel einbetten
-- [ ] 2.3 Endzustände (Finale/Einfrieren/Cancel)
+- [x] 1.1 Motion-Vokabular `global.css` — `ade9fad`
+- [x] 1.2 `LiveRunStage`-Komponente — `ade9fad`
+- [x] 1.3 `stage-cells` + Unit-Tests — `ade9fad`
+- [x] 2.1 Step-Historie in RunRunner
+- [x] 2.2 Bühne ins Panel einbetten
+- [x] 2.3 Endzustände (Finale/Einfrieren/Cancel)
 - [ ] 3.1 Volle Verifikation + Feinschliff
 - [ ] 3.2 Sichtprüfung
 - [ ] 3.3 PR + Verdict-Gate + Prod-Abnahme
