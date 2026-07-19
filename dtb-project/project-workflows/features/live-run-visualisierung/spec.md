@@ -3,7 +3,7 @@
 **Erstellt:** 2026-07-18
 **Ziel:** Ein laufender Testlauf soll sich lebendig und beobachtbar anfühlen — eine ruhige „Live-Bühne" zeigt jede Wiederholung, statt dass ein statisches Panel nur Zahlen auflistet.
 **Prioritaet:** Mittel
-**Status:** Spezifiziert <!-- abgeleitete Anzeige, wird von dtb:workflow-checkpoint synchronisiert (project-rules/DERIVED_STATE_RULES.md) -->
+**Status:** Abgenommen <!-- abgeleitete Anzeige, wird von dtb:workflow-checkpoint synchronisiert (project-rules/DERIVED_STATE_RULES.md) -->
 
 ---
 
