@@ -17,9 +17,9 @@ scope: "Jedno repozytorium (persona-forge) przez wszystkie cztery artefakty L2�
 Cała ścieżka Architekta powstała na **jednym** repozytorium — świadomie, nie na obcym
 repo ćwiczeniowym.
 
-| Projekt                                                                                                                                                                                    | Stack                                                                                            | Skala                                           | Artefakty      |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ----------------------------------------------- | -------------- |
-| **persona-forge** — narzędzie webowe do psychometrycznego profilowania LLM-ów: uruchamia testy z domeny publicznej (v1: OEJTS) z N powtórzeniami przeciwko LLM-om i zwraca rozkłady per oś | Astro 6 SSR + React 19 + TypeScript + Tailwind 4 + Supabase (Postgres/Auth) + Cloudflare Workers | ~68 modułów TS/TSX, 172 commity / 20 dni / solo | L2, L3, L4, L5 |
+| Projekt                                                                                                                                                                                                      | Stack                                                                                            | Skala                                           | Artefakty      |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ----------------------------------------------- | -------------- |
+| **persona-forge** — narzędzie webowe do psychometrycznego profilowania LLM-ów: uruchamia testy na otwartej licencji (v1: OEJTS, CC BY-NC-SA 4.0) z N powtórzeniami przeciwko LLM-om i zwraca rozkłady per oś | Astro 6 SSR + React 19 + TypeScript + Tailwind 4 + Supabase (Postgres/Auth) + Cloudflare Workers | ~68 modułów TS/TSX, 172 commity / 20 dni / solo | L2, L3, L4, L5 |
 
 ## 2. Mapa projektu (L2)
 
