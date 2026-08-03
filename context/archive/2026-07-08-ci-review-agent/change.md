@@ -1,10 +1,10 @@
 ---
 change_id: ci-review-agent
 title: CI-Review-Agent — LLM-PR-Reviewer in der Pipeline (Champion-Projekt M5L3)
-status: implemented
+status: archived
 created: 2026-07-08
-updated: 2026-07-09
-archived_at: null
+updated: 2026-08-03
+archived_at: 2026-08-03T18:32:12Z
 ---
 
 ## Notes
