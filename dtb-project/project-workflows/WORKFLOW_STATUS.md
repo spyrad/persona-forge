@@ -59,8 +59,7 @@ archiviert**, Lernmodul 3/5. Termine: 2. = **10.08.** · 3. = 14.09.
   fuer Log-Belege entweder eingeloggt screenshotten oder `gh run view --log`.
 - **Doku-Push auf `main`** meldet `Bypassed rule violations — "ai-review/verdict" is expected`
   (Admin-Bypass, `enforce_admins: false`). Fuer Code den PR-Weg nehmen, nicht bypassen.
-- **Zeilenenden:** `core.autocrlf=input` seit 2026-07-19 LOKAL gesetzt (Working Tree = LF).
-  Bei Massen-Prettier-Fehlern `Delete ␍` zuerst `git ls-files --eol` pruefen.
+- **Zeilenenden:** `core.autocrlf=input` lokal (Working Tree = LF); bei Massen-Prettier-Fehlern `Delete ␍` zuerst `git ls-files --eol` pruefen.
 - **Squash-Merge:** danach **erst** `checkout main`, **dann** `reset --hard origin/main`.
 - **`kind`/`instrument_id` serverseitig gebunden**; **E2E lokal `--workers=1`**;
   **`ENCRYPTION_KEY` = `.dev.vars`/`.env`-Key**, sonst Laeufe 0/N.
