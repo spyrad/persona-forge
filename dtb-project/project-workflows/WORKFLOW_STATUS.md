@@ -1,7 +1,7 @@
 # Workflow-Status: persona-forge
 
-**Letztes Update:** 2026-08-04
-**Letzter Session-Log:** `dtb-project/project-changelog/2026-08/2026-08-04.md` (Session 1)
+**Letztes Update:** 2026-08-05
+**Letzter Session-Log:** `dtb-project/project-changelog/2026-08/2026-08-05.md` (Session 1)
 
 ---
 
@@ -14,54 +14,56 @@ Kein aktives Feature. (`features/` ist leer; letzter Change `ci-review-agent` ar
 
 ## Kontext (manuell)
 
-| Kennzahl    | Wert                                                                                                                                                                                                                                                                          |
-| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Blocker** | Keine.                                                                                                                                                                                                                                                                        |
-| **Notizen** | Zertifizierungs-Belege **komplett** in `.ressources/certyfikacja/` (gitignored): Builder 7 Bilder, Champion 6 Bilder, Architect ueber `context/architect-report.md` im Repo. Mapping-README dort. Offen ist nur noch der Versand: **zwei** Formulare, beide bis 10.08. 23:59. |
+| Kennzahl    | Wert                                                                                                                                                                                                                                          |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Blocker** | Keine.                                                                                                                                                                                                                                        |
+| **Notizen** | Zertifizierung **abgeschlossen**: beide Formulare am 2026-08-05 abgesendet (Builder · Architect+Champion), alle drei Badges im 2. Termin beantragt. Feedback-Frist bis ca. 24.08., Stille = bestanden. Belege in `.ressources/certyfikacja/`. |
 
 ---
 
 ## Offene Aufgaben
 
-- [ ] **Zwei Formulare absenden** — Kontext: Builder + Architect/Champion im **selben** Termin bis 10.08. 23:59; kein Nachreichen; Links in `.ressources/certyfikacja/README.md`
+- [ ] **Feedback abwarten** — Kontext: bis ca. 24.08.; Plattform-Nachrichten pruefen (Demo-Day-Einladungen gehen individuell raus)
 - [ ] **Naechstes Feature waehlen** — Kontext: #8 SD3 empfohlen (Registry-Umbau kommt aus HEXACO), Lizenz Jones & Paulhus 2014 vorab verifizieren
 - [ ] **Ideen-Inbox** (offen): #1 Task-based evals, #6 Combobox-Ersatz, #7 UI-Konzepte, #8 SD3, #9 HEXACO-100, #10 Repo-LICENSE
-- [ ] **Housekeeping** — Docker Desktop beenden; im Playwright-Fenster abmelden (optional)
+- [ ] **Housekeeping** — im Playwright-Fenster abmelden, Docker Desktop beenden (optional)
 
 ---
 
 ## Abgeschlossene Meilensteine (kompakt)
 
-| Datum      | Meilenstein                                       | Ergebnis                                                               | Details              |
-| ---------- | ------------------------------------------------- | ---------------------------------------------------------------------- | -------------------- |
-| 2026-08-04 | **Zertifizierungs-Belege komplett**               | 13 Artefakte fuer 3 Badges; Log-Screenshots via eingeloggtem Browser   | `2026-08-04.md`      |
-| 2026-08-03 | **Zertifizierungs-Check**                         | 2 Formulare statt 1; Bereitschaft je Badge geprueft                    | `2026-08-03.md` (S2) |
-| 2026-08-03 | **CI-Review-Agent archiviert (Champion M5L3 zu)** | PR #21 gemerged, Change archiviert (`4361839`), Lektion L4 (`f0a3187`) | `2026-08-03.md` (S1) |
+| Datum      | Meilenstein                                    | Ergebnis                                                               | Details         |
+| ---------- | ---------------------------------------------- | ---------------------------------------------------------------------- | --------------- |
+| 2026-08-05 | **Zertifizierung eingereicht (alle 3 Badges)** | 2 Formulare im 2. Termin; Report als PDF+MD, 13 Screenshots            | `2026-08-05.md` |
+| 2026-08-04 | Zertifizierungs-Belege komplett                | App-, Log- und Test-Screenshots erzeugt                                | `2026-08-04.md` |
+| 2026-08-03 | CI-Review-Agent archiviert (Champion M5L3 zu)  | PR #21 gemerged, Change archiviert (`4361839`), Lektion L4 (`f0a3187`) | `2026-08-03.md` |
 
 ---
 
 ## Kurs-Standort (10xDevs)
 
-Module 1–4 = **20/20 ✅**. **10xBuilder** + **10xArchitect** + **10xChampion** vollstaendig
-belegt — es fehlt nur der Formularversand. Termine: 2. = **10.08.** · 3. = 14.09.
+Module 1–5 durchgearbeitet. **10xBuilder + 10xArchitect + 10xChampion beantragt**
+(2. Termin, 10.08.) — Bewertung laeuft, Feedback bis ca. 24.08. Kein Nachreichen
+moeglich und keines noetig.
 
 ---
 
 ## Gotchas (Referenz)
 
-- **Zertifizierung:** zwei Formulare, ein Termin. Das allgemeine Kursdokument („formularz
-  **jeden raz**") meint einen Anlauf, nicht ein Formular — massgeblich sind die neueren
-  blockspezifischen Posts in `.ressources/infos/`.
+- **Nicht wiederherstellbare UI-Zustaende** (ausgefuellte Formulare) nie auf Zuruf
+  verlassen: Zustand selbst pruefen, bevor man navigiert — ein Seitenwechsel hat das
+  fertige Builder-Formular verworfen.
+- **Baserow-Uploads:** „Eine Datei hinzufuegen" oeffnet ein In-Page-Modal mit eigenem
+  „Hochladen"-Knopf; der Klick direkt in die Dropzone loest sofort den Dateidialog aus.
 - **Eingeloggte Screenshots ohne Passwort-Weitergabe:** Playwright-MCP headed oeffnen,
-  Nutzer meldet sich im Fenster selbst an, Agent uebernimmt danach die Navigation.
-- **GitHub-Actions-Logs** sind fuer Nicht-Eingeloggte gesperrt, auch bei public Repos —
-  eingeloggt screenshotten oder `gh run view --log`.
-- **Doku-Push auf `main`** meldet `Bypassed rule violations — "ai-review/verdict" is expected`
-  (Admin-Bypass, `enforce_admins: false`). Fuer Code den PR-Weg nehmen, nicht bypassen.
-- **Zeilenenden:** `core.autocrlf=input` lokal (Working Tree = LF); bei Massen-Prettier-Fehlern `Delete ␍` zuerst `git ls-files --eol` pruefen.
-- **Squash-Merge:** danach **erst** `checkout main`, **dann** `reset --hard origin/main`.
-- **`kind`/`instrument_id` serverseitig gebunden**; **E2E lokal `--workers=1`**;
-  **`ENCRYPTION_KEY` = `.dev.vars`/`.env`-Key**, sonst Laeufe 0/N.
+  Nutzer meldet sich im Fenster selbst an, Agent uebernimmt die Navigation.
+- **GitHub-Actions-Logs** sind fuer Nicht-Eingeloggte gesperrt, auch bei public Repos.
+- **MD→PDF ohne neue Abhaengigkeit:** remark/rehype (+`remark-gfm`) aus Astros Baum +
+  headless Chromium aus `playwright`; Skript muss im Projektbaum liegen (ESM-Aufloesung).
+- **Doku-Push auf `main`** meldet `Bypassed rule violations` (Admin-Bypass). Fuer Code
+  den PR-Weg nehmen. **Squash-Merge:** erst `checkout main`, dann `reset --hard origin/main`.
+- **`ENCRYPTION_KEY` = `.dev.vars`/`.env`-Key**, sonst Laeufe 0/N; **E2E lokal `--workers=1`**
+  und braucht laufendes lokales Supabase (Docker).
 
 ---
 
@@ -73,6 +75,6 @@ Keine.
 
 ## Handoff
 
-**Naechster Befehl:** `/dtb:workflow-next` — kein aktives Item. Terminlich zuerst der
-Formularversand bis 10.08.; danach `/dtb:feature-start` fuer Inbox-Idee #8 (SD3).
+**Naechster Befehl:** `/dtb:feature-start` fuer Inbox-Idee **#8 (SD3)** — Lizenz
+(Jones & Paulhus 2014) vor der Spec verifizieren; alternativ `/dtb:workflow-next`.
 **Empfehlung:** Neue Session mit `/clear` starten, dann `/dtb:workflow-resume` (stellt Kontext her), danach obigen Befehl.
